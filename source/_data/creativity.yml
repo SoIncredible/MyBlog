@@ -1,0 +1,47 @@
+- class_name: 开启创造力
+  creativity_list:
+    - name: Unity
+      color: "#000000"
+      icon: "/img/unity.jpg"
+    - name: C++
+      color: "#FFFFFF"
+      icon: "/img/c++.png"
+    - name: Python
+      color: "#FFFFFF"
+      icon: "/img/python.png"
+    - name: Photoshop
+      color: "#001126"
+      icon: "https://www.adobe.com/content/dam/acom/one-console/icons_rebrand/ps_appicon.svg"
+    - name: Premier
+      color: "#00004a"
+      icon: "/img/pr.png"
+    - name: AfterEffect
+      color: "#00004a"
+      icon: "/img/ae.png"
+    - name: Qt
+      color: "#00cc5c"
+      icon: "/img/qt.png"
+    - name: FinalCutPro
+      color: "#FFFFFF"
+      icon: "/img/finalcutpro.png"
+    - name: Swift
+      color: "#FFFFFF"
+      icon: "/img/swift.png"
+    - name: 
+      color: "#4499e4"
+      icon: https://img02.anzhiy.cn/adminuploads/1/2022/09/25/633004063ff15.png
+    - name: Java
+      color: "#fff"
+      icon: https://img02.anzhiy.cn/adminuploads/1/2022/09/25/633005bf0fd1e.jpg
+    - name: CSS3
+      color: "#2c51db"
+      icon: https://img02.anzhiy.cn/adminuploads/1/2022/09/25/633006cc55e07.png
+    - name: JS
+      color: "#f7cb4f"
+      icon: https://img02.anzhiy.cn/adminuploads/1/2022/09/25/633006eee047b.png
+    - name: HTML
+      color: "#e9572b"
+      icon: https://img02.anzhiy.cn/adminuploads/1/2022/09/25/633006f9ab27d.png
+    - name: Git
+      color: "#df5b40"
+      icon: https://img02.anzhiy.cn/adminuploads/1/2022/09/25/633006e37c7fd.webp
