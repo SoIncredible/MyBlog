@@ -152,7 +152,7 @@ symbols_count_time:
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   - type: git
-    repo: git@soincredible777.com.cn:/home/blogRepo/hexo.git
+    repo: git@soincredible777.com.cn:/home/git/blog.git
     branch: master
   - type: baidu_url_submitter #百度主动推送 
 

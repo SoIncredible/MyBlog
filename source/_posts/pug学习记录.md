@@ -1,10 +1,11 @@
 ---
 title: pug学习记录
+categories: 前端
+abbrlink: 3dc7bcb6
 date: 2022-12-18 14:10:27
 tags:
 updated:
 top_img:
-categories: 前端
 cover:
 description:
 ---
