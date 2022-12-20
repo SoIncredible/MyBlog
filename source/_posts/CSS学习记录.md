@@ -28,8 +28,6 @@ Css全称Cascading Style Sheet(层叠样式表),它是一种样式表语言,用�
 
 2. 将HTML文件转换成一个DOM(Document Object Model),DOM是文件在计算机内存中的表现形式,之后会更加详细的解释**DOM(挖坑),记得回来填上**
 
-   
-
    {% tip warning faa-horizontal animated %}这里挖坑了,记得填上.{% endtip %}
 
 3. 接下来,浏览器会拉取该HTML相关的大部分资源,比如嵌入到页面的图片,视频和CSS样式.JavaScript则会稍后进行处理,简单起见,我们不会过多讨论如何加载JavaScript.
@@ -133,9 +131,9 @@ span {
 }
 ```
 
-## CSS在html中有三种引用方式:
+## CSS在html中三种引用方式:
 
-1. 通过外部文件(external style sheet)，在`head`中使用link引入css外部文件
+1. 外部样式表(external style sheet)，在`head`中使用link引入css外部文件
 
    ```html
    <!DOCTYPE html>
@@ -153,9 +151,7 @@ span {
    </html>
    ```
 
-   
-
-2. 第二种是在head组件中写，添加<code>style</code>标签，缺点是会使得html看起来很臃肿.
+2. 内部样式表，添加<code>style</code>标签，缺点是会使得html看起来很臃肿.
 
    ```html
      <head>
@@ -175,7 +171,7 @@ span {
    </html>
    ```
 
-3. 使用内联方式编写,此方法最不推荐.
+3. 内连样式,此方法最不推荐.
 
    ```html
    <!DOCTYPE html>
@@ -192,14 +188,195 @@ span {
    </body>
    </html>
    ```
-   
-   
+
+
+## 小练习1
+
+在VSCode中安装`LiveServer`插件,这个插件可以在你对CSS做完更改后立刻将你所做的更改渲染到页面上.安装完成后在`html`文件中使用`右键`->`open with liver server`
+
+### 修改元素的默认属性
+
+我们可以修改浏览器默认的样式,只需要选定想要修改的元素,加一条CSS规则即可.
+
+拿无序列表`<ul>`举例,它自带项目符号,你不喜欢它就可以这样移除它们:
+
+```css
+li {
+  list-style-type: none;
+}
+```
+
+```html
+<h1>I am a level one heading</h1>
+
+<p>This is a paragraph of text. In the text is a <span>span element</span> 
+and also a <a href="http://example.com">link</a>.</p>
+
+<p>This is the second paragraph. It contains an <em>emphasized</em> element.</p>
+
+<ul>
+    <li>Item one</li>
+    <li>Item two</li>
+    <li>Item <em>three</em></li>
+</ul>
+```
+
+我们不仅可以移除项目符号,我们甚至可以改变它们的形状:
+
+```css
+li {
+  list-style-type: square;
+}
+```
+
+### 使用类名
+
+我们已经能够修改HTML元素的默认属性了,接下来我们尝试给HTML元素添加类(class),用来实现更加定制化的效果.
+
+举个例子,我们更改一下上面的html代码:
+
+```html
+<ul>
+    <li>Item one</li>
+    <li class="special">Item two</li>
+    <li>Item <em>three</em></li>
+</ul>
+```
+
+在CSS文档中,我们添加这个`special`类
+
+```css
+.special {
+  color: orange;
+  font-weight: bold;
+}
+```
+
+保存后,我们通过`live server`能够直接看到变化,通过添加类,我们实现了对HTML相同元素的不同效果的显示.
+
+应该注意的是,这个`special`类可不仅仅局限于列表,它可以应用到各种元素上,举个例子,我们可以让段落里的`<span>`也具有同样的效果.
+
+```html
+<p>This is a paragraph of text. In the text is a <span class="special">span element</span> 
+and also a <a href="http://example.com">link</a>.</p>
+```
+
+
+
+还有一种写法,HTML元素选择器跟类一起出现:
+
+```css
+li.special {
+  color: orange;
+  font-weight: bold; 
+}
+```
+
+意思就是说,“选中每个`special`类的`li`元素”,如果是这样的话,那它对`<span>`还有其他的元素都不起作用了,想要再次对`<span>`起作用就需要这样写:
+
+```css
+li.special,
+span.special {
+  color: orange;
+  font-weight: bold;
+}
+```
+
+这样写可太麻烦了,作为一个懒狗我还是想把一个类的属性应用在多个元素上,所以大部分时候我们还是不要管元素了,光看类就完事儿了.
+
+### 根据元素在文档中的位置确定样式
+
+有时候,我们希望某些内容根据它在文档中的位置而有所不同,有很多选择器可以为我们所用,在这里我们只介绍两种.在我们的文档中有两个`<em>`元素,一个在段落内,另一个在列表项内.仅选择嵌套在`<li>`元素内的`<em>`我们可以使用一个称为**包含选择符**的选择器,它只是单纯地在两个选择器之间加上了一个空格.
+
+```css
+li em {
+  color: rebeccapurple;
+}
+```
+
+该选择器将选择`<li>`内部的任何`<em>`元素(`<li>`的后代),因此在上面给到的html代码中,实现的效果应该是第三个列表项内的`<em>`是紫色,但是在段落内的那个没有发生变化.
+
+再举一个我们可能想要实现的效果:设置在HTML文档中直接出现在标题后面并且与标题有相同层级的段落样式,在两个选择器之间添加一个`+`号(称为**相邻选择符**)
+
+```css
+h1 + p {
+  font-size: 200%;
+}
+```
+
+### 根据状态确定样式
+
+在本次小练习中我们最后要看的一种修改样式的方法是根据标签的状态确定样式.一个直观的例子就是当我们修改连接的样式时,我们需要定位(针对)`<a>`标签,取决于是否是未访问的、访问过的、被鼠标悬停的、被键盘定位的,亦或是正在被点击当中的状态,这个标签有着不同的状态,我们可以使用CSS去定位或者说针对这些不同的状态进行修饰,下面的代码使得没有被访问的链接的颜色变成粉色、访问过的链接变成绿色.
+
+```css
+a:link {
+  color: pink;
+}
+
+a:visited {
+  color: green;
+}
+```
+
+我们也可以改变被鼠标悬停时候的样式,如移除下划线,下面的代码就实现了这个功能:
+
+```css
+a:hover {
+  text-decoration: none;
+}
+```
+
+### 同时使用选择器和选择符
+
+```css
+/* selects any <span> that is inside a <p>, which is inside an <article>  */
+article p span { ... }
+
+/* selects any <p> that comes directly after a <ul>, which comes directly after an <h1>  */
+h1 + ul + p { ... }
+
+```
+
+向我们自己的CSS中添加如下代码:
+
+```css
+/* 这段的意思是选取body标签中所有和h1标签同级的p标签的special类 */
+body h1 + p .special {
+  color: yellow;
+  background-color: black;
+  padding: 5px;
+}
+```
+
+可能上面的代码看起来有点复杂了,不要灰心,通过深入的学习我们会找到窍门的.
 
 ## CSS的优先级
 
 {% tip warning faa-horizontal animated %}这里挖坑了,记得填上.{% endtip %}
 
+优先级是分配给指定的CSS声明的一个权重,它由匹配的选择器中的每一种选择类型的数值所决定
 
+而当优先级与多个CSS声明中任意一个声明的优先级相等的时候,CSS中最后的那个声明将会被应用到元素上.
+
+当同一个元素有多个声明的时候,优先级才会有意义.因为每个直接作用于元素的CSS规则总是会接管/覆盖(takeover)该元素从祖先元素继承而来的规则.
+
+### 选择器类型
+
+下面给出的列表,选择器类型的优先级是递增的(出现了`伪元素`、`伪类`这些新概念不要怕,后面我们会使用到):
+
+1. 类型选择器(比如`<h1>`)和伪元素(比如,`::before`)
+2. 类选择器(比如,`.example`),属性选择器(比如,`[type="radio"]`)和伪类(比如,`:hover`)
+3. ID选择器(比如,`#example`)
+
+通配选择符(universal selector)(`*`)、关系选择符(combinators)([`+`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Adjacent_sibling_combinator), [`>`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Child_combinator), [`~`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/General_sibling_combinator), [" "](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Descendant_combinator), [`||`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Column_combinator))、否定伪类(negation pseudo-class)(`:not()`)对优先级没有影响(但是在`:not()`内部声明的选择器会影响优先级)
+
+给元素添加的内联样式(例如,`style="font-weight:bold"`)总会覆盖外部样式表的任何样式,因此可以看作是具有最高的优先级
+
+### `!important`例外规则
+
+当在一个样式声明中使用一个`!important`规则时,此声明将覆盖任何其他声明.虽然,从技术上讲,`!important`与优先级无关,但是它与最终的结果直接相关,使用`!important`是一个坏习惯,应该尽量避免,因为这破坏了样式表中固有的级联规则,使得调试找bug变得更加困难了.当两条相呼冲突的带有`!important`规则的声明被应用到相同的元素上时,拥有更大优先级的声明会被采用.
+
+{% tip info %}[此处](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Specificity)有关于`!important`的使用心得,未来某天我会将它整理到我的博客中{% endtip %}
 
 ## 验证css是否生效？
 
@@ -208,34 +385,6 @@ span {
 ![](CSS学习记录/image-20221219183501480.png)
 
 可以检验自己的css是否生效
-
-
-
-
-
-
-
-
-
-
-
-p{
-
-color: a
-
-}
-
-p{
-
-color: b
-
-}
-
-页面上的颜色为b
-
-重写
-
-​	span是什么？
 
 # CSS Selectors
 
