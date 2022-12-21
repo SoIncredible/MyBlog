@@ -392,8 +392,6 @@ CSS选择器是CSS规则的一部分,它是元素和其他部分组合起来告�
 
 我们已经遇到过几种不同的选择器,选择器可以以不同的方式选择元素,比如`h1`元素,或者是根据class(类)选择例如`.special`.
 
-
-
 ## 选择器列表
 
 如果我们有多个使用相同样式的CSS选择器,那么这些单独的选择器可以被混编为一个“选择器列表”,这样,规则就可以应用到所有的单个选择器上了,比如`h1`和`.special`类有相同的CSS,那么我可以把它们写成两个分开的规则.
@@ -427,8 +425,6 @@ h1,
 
 在下面的示例中,我们尝试把两个相同声明的选择器组合起来,展示的效果在组合起来以后应该还是一样的.
 
-
-
 {% tip warning faa-horizontal animated %}这里要插入示例{% endtip %}
 
 当我们使用**选择器列表**时,如果任何一个选择器无效(存在语法错误),那么整条规则都会被忽略.
@@ -452,8 +448,6 @@ h1, ..special {
   color: blue;
 }
 ```
-
-
 
 ## 选择器的种类
 
@@ -511,20 +505,431 @@ p::first-line { }
 article > p { }
 ```
 
-
-
 # Colors
 
+- 我们可以直接输入颜色(color name),比如red、blue、green:
+
+  ```css
+  p {
+  	color: green;
+  }
+  ```
+
+- 也可以使用RGB表示颜色,比如
+
+  ```css
+  p {
+  	color: rgb(255,0,0);
+  }
+  ```
+
+- 更复杂的,我们可以使用rgba:
+
+  ```css
+  p {
+  	color: rgba(255,0,0,0.5);
+  }
+  ```
+
+  其中的a是`alpha channel`,代表的是透明度,范围是0~1,RGB是默认Alpha Channel为1.
+
+- 使用十六进制(`hexamical`)表示颜色
+
+  ```css
+  p {
+      color: #6bb53d;
+  }
+  ```
+
+  {% tip warning faa-horizontal animated-hover %}Tips:如果颜色的Hexadecimal恰好是`aa bb cc`这样两位一重复的,可以简写(`shorthand`)成`a b a`{% endtip %}
+
+- 使用`color palette`随意调整
+
+- ![](CSS学习记录/image-20221221211007335.png)
+
+  在`color palette`中可以切换成hsl模式:hue saturation and lightness(色彩、饱和度、亮度)
+
+推荐一个配色[网站](https://coolors.co/),网站中提供了一个Contrast Checker的功能,它可以给你网站的配色进行评分.
+
+![](CSS学习记录/image-20221221212300096.png)
 
 
-透明度 rgba的概念
-
-alpha channel
-
-hsl是什么
-
-颜色可以有哪几种表示方式
-
-什么情况下颜色可以缩写
 
 # Units&Size
+
+## CSS的值
+
+在CSS规范中,我们能够看到有很多的属性值,因为它们被尖括号包围,如`<color>`或者`<length>`.当我们看到`<color>`对特定属性有效时,这意味着你可以使用任何有效的颜色作为该属性的值.
+
+比如我们使用关键字设置标题的颜色,使用`rgb()`函数设置背景:
+
+```css
+h1 {
+  color: black;
+  background-color: rgb(197,93,161);
+}
+```
+
+CSS中的值类型是一种定义了一些可使用的值的集合的方式,这意味着如果你看到的`<color>`是有效的,那么你就不需要考虑可以使用哪种类型——不管是关键字、十六进制还是`rgb()`函数都是有效的,如果浏览器支持这些可用的`<color>`值,那么就可以使用它们当中的任意一个.
+
+下面介绍一些我们常会遇到的一些值和单位类型,然后做一些实际的练习.
+
+## 数字,长度和百分比
+
+| 数值类型 | 表头  |
+|  :---  | ----  |
+| `<intenger>` | `<intenger>`是一个整数,比如1024或者-55 |
+| `<number>` | `<number>`表示已恶搞消暑——他可能有小数点后面的部分,也可能没有.例如:0.255、128或者-1.2 |
+| `<dimension>` | `<dimension>`是一个`<number>`,它有一个附加的单位,例如45deg、5s或者10px.`<dimension>`是一个伞形类别,包括`<length>`、`<angle>`、`<time>`和`<resolution>`类型 |
+| <percentage> | <percentage>表示一些其他值的一部分,例如50%.百分比值总是相对于另一个量,例如一个元素的长度相对于其父元素的长度. |
+
+### 长度
+
+最常见的数字类型是`<length>`,例如10px(像素)或者30em.CSS中有两种类型的长度——相对长度和绝对长度,重要的是要知道它们之间的区别,以便理解他们控制的元素将变的有多大.
+
+#### 绝对长度单位
+
+下面都是绝对长度单位——它们与其他任何东西都没有关系,通常被认为总是相同的大小:
+
+| 单位 | 名称         | 等价换算              |
+| ---- | ------------ | --------------------- |
+| `cm` | 厘米         | 1cm = 96px/2.54       |
+| `mm` | 毫米         | 1mm = 1/10th of 10 cm |
+| `Q`  | 四分之一毫米 | 1Q = 1/40th of 1cm    |
+| `in` | 英寸         | 1in = 2.54cm = 96px   |
+| `pc` | 十二点活字   | 1pc = 1/6th of 1in    |
+| `pt` | 点           | 1pt = 1/72th of 1in   |
+| `px` | 像素         | 1px = 1/96th of 1in   |
+
+这些值中的大多数在用于打印时比用于输出到屏幕时更加有用,例如我们通常不会在屏幕上使用`cm`,唯一一个可能经常使用的值,估计就是px(像素).
+
+#### 相对长度单位
+
+相对长度相对于其他的一些东西,比如父元素的字体大小,或者是试图端口的大小.使用相对单位的好处是,经过一些仔细的规划,我们可以使文本或者其他元素的大小与页面上的其他内容相对应,下面是我们常用到的一些单位:
+
+| 单位   | 相对于                                                       |
+| ------ | ------------------------------------------------------------ |
+| `em`   | 在font-size中使用是相对父元素的字体大小,在其他属性中使用是相对于自身的字体大小,比如width |
+| `ex`   | 字符“x”的高度                                                |
+| `ch`   | 数字“0”的宽度                                                |
+| `rem`  | 根元素的字体大小                                             |
+| `lh`   | 元素的line- height                                           |
+| `vw`   | 视窗宽度的1%                                                 |
+| `vh`   | 视窗高度的1%                                                 |
+| `vmin` | 视窗较小尺寸的1%                                             |
+| `vmax` | 视窗大尺寸的1%                                               |
+
+举一个例子:
+
+首先,第一个框以像素为单位设置width,作为一个绝对单位,这个宽度将保持不变,无论其他如何变化.它的宽度都不会改变.
+
+第二个框的宽度设置为`vw`(视口宽度)单位.这个值相对于视口宽度,所以10`vs`是视口宽度的10%.如果我们改变浏览器的宽度,那么框的大小会更改.
+
+第三个框使用`em`单位,这些是相对于字体大小的.我们在包含`<div>`的元素上设置一个 1`em`的字体大小,它有一个`.wrapper`类.将这个值更改为1.5`em`,你将看到所有元素的字体大小都增加了,但是只有最后一项会变宽,因为宽度与字体的大小有关.
+
+{% tip warning faa-horizontal animated %}我其实并没有太看出来第三个框的效果......{% endtip %}
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+    * {
+        box-sizing: border-box;
+      }
+      .box {
+        background-color: lightblue;
+        border: 5px solid darkblue;
+        padding: 10px;
+        margin: 1em 0;
+      }
+    </style>
+
+</head>
+<body>
+    <div class="wrapper">
+        <div class="box px">I am 200px wide</div>
+        <div class="box vw">I am 10vw wide</div>
+        <div class="box em">I am 10em wide</div>
+      </div>
+          
+</body>
+</html>
+```
+
+```css
+.wrapper {
+    font-size: 1em;
+  }
+  
+.px {
+	width: 200px;
+}
+
+.vw {
+	width: 10vw;
+}
+
+.em {
+	width: 10em;
+}
+```
+
+`ems` 和 `rems`
+
+`em`和`rem`是我们在从框到文本调整大小时最常遇到的两个相对长度,了解这些方法是如何工作的以及它们之间的区别是很有意义的,尤其是当我们开始学习更加复杂的主题时(我确实是因为要博客美化才学的CSS...)比如样式化文本或者CSS布局.下面举个例子.
+
+HTML是一组嵌套的列表——我们总工有三个列表,并且两个示例都有相同的HTML.唯一的区别是第一个类具有`ems`,第二个类具有`rems`.
+
+首先,我们将16px设置为`<html>`元素的字体大小
+
+概括的说,在排版属性中em单位的意思是“父元素的字体大小”.带有ems类的`<ul>`内的`<li>`元素从它们的父元素中获取大小.**因此,每一个连续的嵌套级别都会逐渐变大**,因为每个嵌套的字体大小都被设置为1.3em——是其父嵌套字体大小的1.3倍.
+
+概括的说,rem单位的意思是“根元素的字体大小”.(根em的rem标准)`<ul>`内的`<li>`元素和一个rems类从根元素(`<html>`)中获取它的大小,**这就意味着,每一个连续的嵌套层都不会不断变大**.
+
+{% tip warning faa-horizontal animated %}能看出效果,但是`<li>`作为`<ul>`的子元素,难道不是继承`<ul>`的ems属性么,为什么在CSS文件里还要对li进行定义{% endtip %}
+
+{% p green, 答疑解惑 当两个元素名之间用空格分隔时，表示[后代选择器](https://so.csdn.net/so/search?q=后代选择器&spm=1001.2101.3001.7020)，选择的是.a内的.b，只有当前的子元素才会出现效果，它们之间属于从属包含关系,即
+
+```html
+<div class="a">
+	hello1
+	<div class="b">hello2</div>
+</div>
+```
+
+ %}
+
+但是,如果你在CSS中更改`<html>`字体的大小,你讲看到所有其他相关内容都发生了改变,包括rem和em大小的文本.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <ul class="ems">
+        <li>One</li>
+        <li>Two</li>
+        <li>Three
+          <ul>
+            <li>Three A</li>
+            <li>Three B
+              <ul>
+                <li>Three B 2</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      
+      <ul class="rems">
+        <li>One</li>
+        <li>Two</li>
+        <li>Three
+          <ul>
+            <li>Three A</li>
+            <li>Three B
+              <ul>
+                <li>Three B 2</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+          
+</body>
+</html>
+```
+
+```css
+html {
+    font-size: 16px;
+  }
+  
+.ems li {
+    font-size: 1.3em;
+  }
+  
+.rems li {
+    font-size: 1.3rem;
+  }
+  
+```
+
+百分比
+
+在许多情况下,百分比与长度的处理方式是一样的,百分比的问题在于,它们总是相对于其他值设置的.例如,如果将元素的字体大小设置为百分比,那么它将是其父元素字体大小的百分比.如果使用百分比作为宽度值,那么它将是父值宽度的百分比.
+
+在下面的示例中,两个百分比大小的框和两个像素大小的框具有相同的类名.分别是200px和40%宽.
+
+不同之处在于,第二组的两个框位于一个400像素宽的包装器中,第二个200px宽的盒子和第一个一样宽,但是第二个40%的盒子现在是400px的40%——比第一个窄多了.自己尝试一下实现效果.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+          }
+          .box {
+            background-color: lightblue;
+            border: 5px solid darkblue;
+            padding: 10px;
+            margin: 1em 0;
+          }
+        </style>
+</head>
+<body>
+    <div class="box px">I am 200px wide</div>
+    <div class="box percent">I am 40% wide</div>
+    <div class="wrapper">
+    <div class="box px">I am 200px wide</div>
+    <div class="box percent">I am 40% wide</div>
+    </div>
+    
+</body>
+</html>
+```
+
+```css
+.wrapper {
+    width: 400px;
+    border: 5px solid rebeccapurple;
+}
+
+.px {
+    width: 200px;
+}
+
+.percent {
+    width: 40%;
+}
+```
+
+下面这个例子中以百分比设置字体大小,每个<li>都有80%的字体大小,因此嵌套列表项在从父级继承其大小时将逐渐变小.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+          }
+          .box {
+            background-color: lightblue;
+            border: 5px solid darkblue;
+            padding: 10px;
+            margin: 1em 0;
+          }
+        </style>
+</head>
+<body>
+    <div class="box px">I am 200px wide</div>
+    <div class="box percent">I am 40% wide</div>
+    <div class="wrapper">
+    <div class="box px">I am 200px wide</div>
+    <div class="box percent">I am 40% wide</div>
+    </div>
+    
+</body>
+</html>
+```
+
+```css
+
+body { 
+    background-color: #fff;
+    color: #333;
+    font: 1.2em / 1.5 Helvetica Neue, Helvetica, Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+li {
+    font-size: 80%;
+}
+```
+
+注意,虽然许多值接受长度或者百分比,但是也有一些值值接受长度.哪些属性接受哪些值可以在这里[查询](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference),如果允许的值包括`<length-percent>`,则可以使用长度或者百分比.如果允许的值只包括`<length>`,则不可以使用百分比.
+
+数字
+
+有些值接受数字,不添加任何的单位,接受无单位数字的属性的一个例子就是不透明度属性(`opacity`),它控制元素的不同明度(它的透明程度).此属性接受0(完全透明)和1(完全不透明)之间的数字.
+
+在下面的例子中尝试将不透明度的值改为从0到1之间的各种小数值,并查看内容是如何变得透明或者不透明的.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+          }
+          .box {
+            background-color: lightblue;
+            border: 5px solid darkblue;
+            padding: 10px;
+            margin: 1em 0;
+            /* 更改这里的数字 */
+            opacity: 0.6;
+          }
+        </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="box">I am a box with opacity</div>
+      </div> 
+      
+</body>
+</html>
+```
+
+```css
+
+.wrapper {
+    background-image: url(https://mdn.github.io/css-examples/learn/values-units/balloons.jpg);
+    background-repeat: no-repeat;
+    background-position: bottom left;
+    padding: 20px;
+}
+
+body {
+    background-color: #fff;
+    color: #333;
+    font: 1.2em / 1.5 Helvetica Neue, Helvetica, Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+```
+
+
+
+OK,这两天进度不错,稍微咕咕咕几天{% inlineimage https://cdn.jsdelivr.net/gh/volantis-x/cdn-emoji/aru-l/0000.gif, height=40px %},明天要稍微学一下线代,不过我要先去看电锯人咯.
