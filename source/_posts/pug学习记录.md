@@ -10,7 +10,7 @@ cover:
 description:
 ---
 
-# a安装pug
+# 安装pug
 
 ```shell
 npm install pug-cli
