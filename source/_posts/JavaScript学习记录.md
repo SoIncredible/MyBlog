@@ -1,5 +1,6 @@
 ---
 title: JavaScript学习记录
+abbrlink: ad73b27b
 date: 2022-12-24 21:08:08
 tags:
 updated:
