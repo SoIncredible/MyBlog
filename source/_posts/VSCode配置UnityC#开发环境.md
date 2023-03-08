@@ -1,9 +1,14 @@
 ---
 title: VSCode配置UnityC#开发环境
-tags: VSCode配置
+tags: 
+  - Unity
+  - C#
+  - VSCode
 abbrlink: e57f243c
-categories: 开发环境配置
+categories: 技术文档
 date: 2022-07-06 00:07:34
+cover:
+description: 
 ---
 
 ![](VSCode配置UnityC#开发环境/image-20220707015057151.png)

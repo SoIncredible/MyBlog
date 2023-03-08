@@ -1,11 +1,10 @@
 ---
 title: Butterfly魔改日记
-top_img: 2022_12_15_cover.png
 abbrlink: 370bdedc
 date: 2022-12-14 20:15:23
-tags: Hexo
-updated:
-categories: 博客美化
+tags: 
+  - Hexo博客
+categories: 技术文档
 cover: 2022_12_15_cover.png
 swiper_index: 1
 description: 这里是描述
@@ -823,18 +822,35 @@ button:not(:disabled) {
 
 # 给网站添加页脚徽标和计时器
 
+![](Butterfly魔改日记/image-20221010191820950.png)
 
+徽标我们在很多GitHub项目的主页中也会看到，比如：
+
+![](Butterfly魔改日记/image-20221010164514318.png)
+
+[推荐一个徽标生成网站](https://shields.io/)，但是比较可以的是徽标的label部分底色修改不了。不过我们可以自定义图标，步骤如下：
+
+1.找到合适的图片，尽量不要太大，背景透明，然后存储png格式。
+
+2.找个在线转base64图片的网站，推荐[这个在线生成Base64的网站](https://tool.chinaz.com/tools/imgtobase),把制作好的图片转为base64链接。
+
+3.把base64链接作为logo填进徽标链接，比如这样：
+
+```url
+https://img.shields.io/badge/诺倾城丶-下班啦-d021d6?style=&logo=<生成的base64编码>
+```
+
+将上面生成的链接使用Chrome浏览器打开，用Safari打开有时会抽风显示不出来。将打开的页面下载下来，下载下来的是一个<code>svg</code>文件，将这个文件放到<code>/img</code>目录下，方便索引。
+
+在<code>Terminal</code>中安装依赖：
 
 ```shell
 npm install hexo-butterfly-footer-beautify --save
 ```
 
-​	在_config.butterfly.yml中添加如下代码:
+在<code>_config.butterfly.yml</code>中添加：
 
-```yml
-# footer_beautify
-# 页脚计时器：[Native JS Timer](https://akilar.top/posts/b941af/)
-# 页脚徽标：[Add Github Badge](https://akilar.top/posts/e87ad7f8/)
+```yaml
 footer_beautify:
   enable:
     timer: true # 计时器开关
@@ -885,9 +901,10 @@ footer_beautify:
 # see https://akilar.top/posts/8e1264d1/
 ```
 
-在`[BlogRoot\/source/js/runtime/`下新建`runtime.js`,填入以下内容:
+计时器部分的两个文件：在博客根目录下的<code>source</code>文件夹下新建<code>/runtime/runtime.css</code>和<code>js/runtime/runtime.js</code>文件，填入以下内容：
 
-```js
+```javascript
+/* runtime.js */
 var now = new Date();
 function createtime() {
   var t = new Date("10/10/2022 00:00:00");
@@ -906,8 +923,8 @@ function createtime() {
   let g = "";
   (g =
     r < 18 && r >= 9
-      ? `<img class='boardsign' src='/img/诺倾城摸鱼中.svg' title='距离月入25k也就还差一个大佬带我~'><span class='textTip'> <br> 本站居然运行了 ${a} 天</span><span id='runtime'> ${r} 小时 ${i} 分 ${l} 秒 </span> <i class='fas fa-heartbeat' style='color:red'></i>`
-      : `<img class='boardsign' src='/img/诺倾城下班啦.svg' title='下班了就该开开心心的玩耍，嘿嘿~'><span class='textTip'> <br> 本站居然运行了 ${a} 天</span><span id='runtime'> ${r} 小时 ${i} 分 ${l} 秒 </span> <i class='fas fa-heartbeat' style='color:red'></i>`),
+      ? `<img class='boardsign' src='/img/诺倾城摸鱼中.svg'><span class='textTip'> <br> 本站居然运行了 ${a} 天</span><span id='runtime'> ${r} 小时 ${i} 分 ${l} 秒 </span> <i class='fas fa-heartbeat' style='color:red'></i>`
+      : `<img class='boardsign' src='/img/诺倾城下班啦.svg'><span class='textTip'> <br> 本站居然运行了 ${a} 天</span><span id='runtime'> ${r} 小时 ${i} 分 ${l} 秒 </span> <i class='fas fa-heartbeat' style='color:red'></i>`),
     document.getElementById("workboard") &&
       (document.getElementById("workboard").innerHTML = g);
 }
@@ -917,13 +934,65 @@ setInterval(() => {
 
 ```
 
-使用VSCode插件`JS & CSS Minifier (Minify)`可以将上面`runtime.js`压缩成`runtime.min.js`,节省空间
+```css
+/* runtime.css */
+div#runtime {
+  width: 180px;
+  margin: auto;
+  color: #fff;
+  padding-inline: 5px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+#workboard {
+  font-size: 12px;
+}
+[data-theme="dark"] div#runtime {
+  color: #28b4c8;
+  box-shadow: 0 0 5px rgba(28, 69, 218, 0.71);
+  animation: flashlight 1s linear infinite alternate;
+}
+#ghbdages .github-badge img {
+  height: 20px;
+}
+@-moz-keyframes flashlight {
+  from {
+    box-shadow: 0 0 5px #1478d2;
+  }
+  to {
+    box-shadow: 0 0 2px #1478d2;
+  }
+}
+@-webkit-keyframes flashlight {
+  from {
+    box-shadow: 0 0 5px #1478d2;
+  }
+  to {
+    box-shadow: 0 0 2px #1478d2;
+  }
+}
+@-o-keyframes flashlight {
+  from {
+    box-shadow: 0 0 5px #1478d2;
+  }
+  to {
+    box-shadow: 0 0 2px #1478d2;
+  }
+}
+@keyframes flashlight {
+  from {
+    box-shadow: 0 0 5px #1478d2;
+  }
+  to {
+    box-shadow: 0 0 2px #1478d2;
+  }
+}
+
+```
+
+使用<code>VSCode</code>的插件<code>JS & CSS Minifier (Minify)</code>生成<code>runtime.min.css</code>和<code>runtime.min.js</code>文件。
 
 # 添加站点动态Title
-
-
-
-
 
 在`[BlogRoot]/source/js/`下新建`title.js`,填入以下代码,**注意要在主题配置文件中Inject**
 
@@ -947,10 +1016,6 @@ document.addEventListener("visibilitychange", function () {
 });
 ```
 
-
-
-
-
 # 添加外挂标签
 
 ```shell
@@ -968,10 +1033,6 @@ npm install hexo-renderer-kramed --save
 **需要解决的问题碰到了问题:**
 
 ​	我在给个人简介的侧边栏加上变色的效果后,这一个卡片的载入动画就不受控制了,和其他的板块格格不入,除了个人信息卡处的动画不受控制以外,Git Calendar的加载动画也不受控制.需要解决
-
-
-
-
 
 ```shell
 npm install hexo-butterfly-wowjs --save
@@ -1029,10 +1090,6 @@ wowjs:
 # 在侧边栏添加电子时钟
 
 # 添加Butterfly Swiper插件
-
-# 在多台电脑上同步更新Hexo
-
-使用场景描述:
 
 # 适配B站视频
 

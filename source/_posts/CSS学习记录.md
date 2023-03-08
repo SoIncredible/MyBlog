@@ -1,15 +1,12 @@
 ---
 title: CSS学习记录
-tags: CSS
-top_img: >-
-  https://i0.wp.com/www.floxblog.com/wp-content/uploads/2020/08/What-is-CSS-1.jpg
-categories: 前端
-cover: >-
-  https://i0.wp.com/www.floxblog.com/wp-content/uploads/2020/08/What-is-CSS-1.jpg
-description: CSS学习笔记(持续更新)
+tags: 
+  - HTML CSS JS
+categories: 学习笔记
 abbrlink: 127bc3c9
 date: 2022-12-19 18:13:50
-updated:
+cover:
+description: 
 ---
 
 

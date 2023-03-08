@@ -2,8 +2,12 @@
 title: 使用Git管理Unity项目
 abbrlink: 1f15053a
 date: 2022-07-18 09:25:38
-tags:
-categories:
+tags: 
+  - Git
+  - Unity
+categories: 技术文档
+cover:
+description: 
 ---
 
 # 了解Unity的目录结构

@@ -1,9 +1,12 @@
 ---
 title: 实现基于frp的内网穿透
-tags: 内网穿透
+tags: 
+  - 云服务器
 abbrlink: 1408599b
-categories: 云服务器
+categories: 技术文档
 date: 2022-06-27 00:00:00
+cover:
+description: 
 ---
 
 

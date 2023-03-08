@@ -1,9 +1,12 @@
 ---
 title: git学习记录
-tags: git
+tags: 
+  - Git
 abbrlink: a72e4bb6
-categories: git
+categories: 学习笔记
 date: 2022-07-10 11:11:26
+cover:
+description: 
 ---
 
 这篇博客会持续更新我的Git学习记录。

@@ -3,7 +3,11 @@ title: Webapp开发记录——写给猪的FrenchTool
 abbrlink: 2e2878d4
 date: 2022-09-08 08:13:44
 tags:
-categories:
+  - Java
+  - 云服务器
+categories: 开发日志
+cover:
+description: 使用Java开发一个Tomcat应用
 ---
 
 ![](Webapp开发记录——写给猪的FrenchTool/截屏2022-09-08-08.15.13.png)

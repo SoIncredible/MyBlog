@@ -1,14 +1,15 @@
 ---
 title: 使用Apple原生邮件App管理校园网邮箱账户
 date: 2022-06-27 00:00:00
-tags: 学生邮箱
+tags: 
+  - 随笔
 abbrlink: qwerqwer
-categories: 学生邮箱
+categories: 技术文档
+cover:
+description: 
 ---
 
 用学生邮箱可以捞到不少好处，但因为不是主邮箱，每次需要验证的时候都需要进学校的官网、输入邮箱账号密码才能查看邮件，于是我决定尝试将校园网邮箱绑定给Apple原生邮件App进行管理
-
-<!-- more -->
 
 首先，我们学校的邮箱用的是网易的企业邮箱
 
