@@ -6,7 +6,7 @@ tags:
 categories: 技术文档
 abbrlink: 724ccb4
 date: 2023-03-10 16:06:25
-cover:
+cover: "http://soincredible777.com.cn:90/8.png"
 description:
 swiper_index:
 sticky:
@@ -52,3 +52,5 @@ Console.WriteLine("Hello World!");
 使用Rider打开并运行C#项目不像使用IDEA打开并运行java代码那样繁琐，直接在Rider中选择`File`->`Open`，选择你使用Terminal创建的C# application打开，就可以在Rider中运行项目了。
 
 # 在Windows上配置dotNet开发环境
+
+Windows上安装dotNet的方式多种多样，而且官方的教程也很详细，可以直接看[官网教程](https://learn.microsoft.com/zh-cn/dotnet/core/install/windows?tabs=net70)

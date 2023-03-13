@@ -5,7 +5,7 @@ tags:
   - Hexo博客
 abbrlink: e47b5157
 categories: 技术文档
-cover:
+cover: "http://soincredible777.com.cn:90/7.png"
 description: 对博客的写作进行规范约束
 swiper_index: 2
 sticky: 1

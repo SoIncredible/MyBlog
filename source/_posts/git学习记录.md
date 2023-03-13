@@ -5,7 +5,7 @@ tags:
 abbrlink: a72e4bb6
 categories: 学习笔记
 date: 2022-07-10 11:11:26
-cover:
+cover: "http://soincredible777.com.cn:90/12.png"
 description: 
 ---
 

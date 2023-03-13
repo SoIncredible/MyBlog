@@ -5,15 +5,13 @@ tags:
 abbrlink: 1408599b
 categories: 技术文档
 date: 2022-06-27 00:00:00
-cover:
+cover: "http://soincredible777.com.cn:90/4.png"
 description: 
 ---
 
 
 
 今天花了一天的时间，才把内网穿透给搞好了，这次把步骤好好记下来，下次再需要重新配置可以有个参照。
-
-<!-- more -->
 
 ## 我需要用内网穿透做什么？
 

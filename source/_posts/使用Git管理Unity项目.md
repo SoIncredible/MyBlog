@@ -6,17 +6,13 @@ tags:
   - Git
   - Unity
 categories: 技术文档
-cover:
+cover: "http://soincredible777.com.cn:90/6.png"
 description: 
 ---
 
 # 了解Unity的目录结构
 
 ![](使用Git管理Unity项目/image-20220718093817361.png)
-
-
-
-<!--more-->
 
 官方参考文档https://docs.unity3d.com/Manual/ExternalVersionControlSystemSupport.html
 

@@ -5,7 +5,7 @@ date: 2022-12-14 20:15:23
 tags: 
   - Hexo博客
 categories: 技术文档
-cover: 2022_12_15_cover.png
+cover: "http://soincredible777.com.cn:90/1.png"
 swiper_index: 1
 description: 这里是描述
 sticky: 1

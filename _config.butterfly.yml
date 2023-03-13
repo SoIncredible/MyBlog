@@ -43,9 +43,9 @@ copy:
 social:
   Github: https://github.com/SoIncredible || icon-github || faa-tada
   Email: https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=2636060652@qq.com || icon-youjian || faa-tada
-  RSS: atom.xml || icon-rss || faa-tada
+#  RSS: atom.xml || icon-rss || faa-tada
   BiliBili: https://space.bilibili.com/434655900 || icon-bilibili || faa-tada
-  QQ: tencent://Message/?Uin=2636060652&amp;websiteName=local.edu.com:8888=&amp;Menu=yes || icon-QQ1 || faa-tada
+#  QQ: tencent://Message/?Uin=2636060652&amp;websiteName=local.edu.com:8888=&amp;Menu=yes || icon-QQ1 || faa-tada
 
 # Algolia search
 algolia_search:
@@ -686,7 +686,7 @@ aside:
       link: https://github.com/xxxxxx
   card_announcement:
     enable: true
-    content: Hi,欢迎来到我的博客
+    content: Hi,这里是诺倾城丶的博客！👏👏👏
   card_recent_post:
     enable: true
     limit: 5 # if set 0 will show all
