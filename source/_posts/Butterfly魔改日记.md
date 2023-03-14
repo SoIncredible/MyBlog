@@ -11,6 +11,12 @@ description: 这里是描述
 sticky: 1
 ---
 
+
+
+
+
+<img src="https://ghchart.rshah.org/SoIncredible" alt="SoIncredible's Github chart" />
+
 # 安装Butterfly主题
 
 去到[Butterfly GitHub](https://github.com/jerryc127/hexo-theme-butterfly)主页,在博客根目录运行以下命令:
