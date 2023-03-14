@@ -1141,7 +1141,7 @@ wowjs:
 
 <div align="center" class="aspect-ratio">
   <iframe
-    src="https://player.bilibili.com/player.html?bvid=BV1r3411V7R6&&page=1&as_wide=1&high_quality=1&danmaku=0"
+    src="https://player.bilibili.com/player.html?bvid=BV1uT4y1P7CX&&page=1&as_wide=1&high_quality=1&danmaku=0"
     scrolling="no"
     border="0"
     frameborder="no"
@@ -1151,3 +1151,25 @@ wowjs:
     allowfullscreen="true"
   ></iframe>
 </div>
+
+# 存在Bug
+
+## 文章目录无法跳转
+
+打开浏览器的开发者模式，toc-link并没有生成，所以没有办法实现跳转，解决办法：
+
+安装插件：
+
+```shell
+npm install markdown-it-named-headings --save
+```
+
+然后进入项目的根目录，修改根目录下 `node_modules\hexo-renderer-markdown-it\lib\renderer.js` 文件，在 `renderer.js` 中添加一行以使用此插件：
+
+```js
+parser.use(require('markdown-it-named-headings'))
+```
+
+![](Butterfly魔改日记/截屏2023-03-1418.44.39.png)
+
+{% tip warning faa-horizontal animated %}因为`.gitignore`忽略了`node_modules`中的修改，所以在新的设备上git pull下来之后还要手动地添加上面这一行才可以{% endtip %}
