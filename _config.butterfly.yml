@@ -6,18 +6,18 @@ menu:
   首页: / || fas fa-home || faa-tada
   时间轴: /archives/ || fas fa-archive
   # 闲言碎语: /artitalk/ || fas fa-comment-dots
-  音乐馆: /music/ || fas fa-music
+  # 音乐馆: /music/ || fas fa-music
   分类: /categories/ || fas fa-folder-open
   # List||fas fa-list:
   #   Music: /music/ || fas fa-music
   #   Movie: /movies/ || fas fa-video
 
-  朋友圈: /fcircle/ || fab fa-artstation
+  # 朋友圈: /fcircle/ || fab fa-artstation
   # 留言板: /comments/ || fas fa-envelope
   # 友人帐: /link/ || fas fa-link
   # 闲言碎语: /hpptalk/ || fas fa-comment-dots
   # 追番: /bangumis/ || icon-bilibili1
-  关于: /about/ || icon-zhifeiji
+  关于: /about/ || icon-paper-full
 
 # Code Blocks (代碼相關)
 # --------------------------------------
