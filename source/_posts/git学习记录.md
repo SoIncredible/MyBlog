@@ -6,14 +6,12 @@ abbrlink: a72e4bb6
 categories: 学习笔记
 date: 2022-07-10 11:11:26
 cover: "http://soincredible777.com.cn:90/12.png"
-description: 
+description: 了解git的原理和用法是熟练使用sourcetree这类可视化工具的前提
 sticky: 1
 swiper_index: 3
 ---
 
 这篇博客会持续更新我的Git学习记录。
-
-<!--more-->
 
 [官方参考书](https://git-scm.com/book/zh/v2)
 
