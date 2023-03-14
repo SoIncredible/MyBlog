@@ -7,6 +7,8 @@ categories: 学习笔记
 date: 2022-07-10 11:11:26
 cover: "http://soincredible777.com.cn:90/12.png"
 description: 
+sticky: 1
+swiper_index: 3
 ---
 
 这篇博客会持续更新我的Git学习记录。
