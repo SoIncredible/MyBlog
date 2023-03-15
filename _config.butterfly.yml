@@ -25,8 +25,8 @@ menu:
 highlight_theme: mac light #  darker / pale night / light / ocean / mac / mac light / false
 highlight_copy: true # copy button
 highlight_lang: true # show the code language
-highlight_shrink: true # true: shrink the code blocks / false: expand the code blocks | none: expand code blocks and hide the button
-highlight_height_limit: false # unit: px
+highlight_shrink: false # true: shrink the code blocks / false: expand the code blocks | none: expand code blocks and hide the button
+highlight_height_limit: 200 # unit: px
 code_word_wrap: false
 
 # copy settings
@@ -188,7 +188,7 @@ toc:
   post: true
   page: false
   number: true
-  expand: false
+  expand: true
   style_simple: false # for post
 
 post_copyright:
@@ -633,7 +633,7 @@ hr_icon:
 
 # the subtitle on homepage (主頁subtitle)
 subtitle:
-  enable: false
+  enable: true
   # Typewriter Effect (打字效果)
   effect: true
   # Effect Speed Options (打字效果速度參數)
@@ -651,6 +651,7 @@ subtitle:
   source: false
   # 如果關閉打字效果，subtitle 只會顯示 sub 的第一行文字
   sub:
+    - 我的肩上是风，风上是闪耀的星辰✨
 
 # Loading Animation (加载动画)
 preloader:
@@ -1049,7 +1050,7 @@ electric_clock:
 # hexo-filter-gitcalendar
 # see https://akilar.top/posts/1f9c68c9/
 gitcalendar:
-  enable: false # 开关
+  enable: true # 开关
   priority: 5 #过滤器优先权
   enable_page: / # 应用页面
   # butterfly挂载容器
@@ -1058,7 +1059,7 @@ gitcalendar:
     name: recent-posts
     index: 0
   user: SoIncredible #git用户名
-  apiurl: "https://gitcalendar.soincredible777.com.cn"
+  apiurl: "gitcalendar-eight.vercel.app"
   minheight:
     pc: 280px #桌面端最小高度
     mibile: 0px #移动端最小高度
