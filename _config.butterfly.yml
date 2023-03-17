@@ -17,7 +17,7 @@ menu:
   # 友人帐: /link/ || fas fa-link
   # 闲言碎语: /hpptalk/ || fas fa-comment-dots
   # 追番: /bangumis/ || icon-bilibili1
-  关于: /about/ || fas icon-paper-full
+  关于: /about/ || icon-paper-full
 
 # Code Blocks (代碼相關)
 # --------------------------------------
