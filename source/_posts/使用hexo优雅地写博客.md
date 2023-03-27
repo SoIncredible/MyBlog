@@ -6,7 +6,7 @@ tags:
 abbrlink: e47b5157
 categories: 技术文档
 cover: "http://soincredible777.com.cn:90/7.png"
-description: 为博客写作指定一系列标准规范
+description: 博客写作的一系列标准规范
 swiper_index: 2
 sticky: 1
 ---
