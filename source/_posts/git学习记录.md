@@ -6,7 +6,7 @@ abbrlink: a72e4bb6
 categories: 学习笔记
 date: 2022-07-10 11:11:26
 cover: "http://soincredible777.com.cn:90/12.png"
-description: 了解git的原理和用法是熟练使用sourcetree这类可视化工具的前提
+description: 为SourceTree打基础
 sticky: 1
 swiper_index: 3
 ---
