@@ -60,7 +60,7 @@ JVM是Java Virtual Machine。JVM是一个引擎，它提供运行时环境驱动
 
 无论是Mac还是Windows都先进入到JDK的根目录下，然后分别在终端中输入以下指令：
 
-Window下需要输入:
+Windows下需要输入:
 
 ```shell
 bin\jlink.exe --module-path jmods --add-modules java.desktop --output jre
