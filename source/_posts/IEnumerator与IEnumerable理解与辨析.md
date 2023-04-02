@@ -546,6 +546,15 @@ Father f2 = new Child();
 
 其中`Father f2 = new Child();`虽然f2是Father类，但是它本质还是一个Child的类，所以说Child的方法f2是可以调用的。
 
+但是反过来
+
+```C#
+Child c1 = new Father();
+Child c2 = new Child();
+```
+
+c1会报错。父亲可以变成儿子，儿子不能变成父亲。
+
 # int?
 
 `int?`表示可空类型，它是一种特殊的值类型，它的值可以为null，在变量设初值的时候，给变量赋值为null，而不是0
