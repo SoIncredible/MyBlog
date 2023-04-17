@@ -1,5 +1,5 @@
 ---
-title: Webapp开发记录——写给猪的FrenchTool
+title: Webapp开发记录——写给ylk的FrenchTool
 abbrlink: 2e2878d4
 date: 2022-09-08 08:13:44
 tags:
