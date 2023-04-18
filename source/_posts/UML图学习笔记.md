@@ -1,10 +1,11 @@
 ---
 title: UML图学习笔记
-date: 2023-04-18 10:33:10
 tags:
   - 设计模式
 categories: 学习笔记
-cover: 
+abbrlink: 6ea8fdb7
+date: 2023-04-18 10:33:10
+cover:
 description:
 swiper_index:
 sticky:
