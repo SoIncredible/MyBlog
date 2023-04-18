@@ -20,8 +20,6 @@ description:
 
 现给一主串S，一模式串T，他们的值分别是S<code>"ababcabcacbab"</code>，T<code>"abcac"</code>
 
-<!--more-->
-
 根据上面给出的概念，我们可以算出子串T中每一个字符的<code>部分匹配值</code>如下表：
 
 <style type="text/css">
