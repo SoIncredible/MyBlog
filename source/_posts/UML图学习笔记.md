@@ -5,7 +5,7 @@ tags:
 categories: 学习笔记
 abbrlink: 6ea8fdb7
 date: 2023-04-18 10:33:10
-cover:
+cover: 'http://soincredible777.com.cn:90/31.png'
 description:
 swiper_index:
 sticky:
@@ -14,8 +14,6 @@ sticky:
 # 背景
 
 UML图有很多中，但是并非必须掌握所有的UML图，才能完成系统分析和设计工作。一般来说，在UML图中，只要掌握类图、用例图、时序图的使用，就能完成大部分的工作。也就是说，掌握UML的20%，就可以做80%的事情。对于程序员来说，最频繁使用的莫过于类图。因此我们先主要探讨类图，其他的图我们在之后会不断补充进来。
-
-https://zhuanlan.zhihu.com/p/109655171
 
 # 类图
 
