@@ -19,9 +19,7 @@ description: 熟悉Rider搭配Unity开发
 
 如何使用Rider创建一个普通的C#工程？它的文件结构是什么？
 
-什么是namespace？它的作用是什么？
-
-
+什么是namespace？它的作用是什么？（该问题在[这篇文章]()中得到了解决）
 
 # 背景
 

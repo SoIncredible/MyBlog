@@ -13,8 +13,6 @@ description:
 
 ![](VSCode配置UnityC#开发环境/image-20220707015057151.png)
 
-<!--more-->
-
 [麦扣的视频链接](https://www.bilibili.com/video/BV19741167zU?spm_id_from=333.999.0.0&vd_source=83f4165825ce9df46cf4fd576ccb1102)
 
 [VS code 官方文档](https://code.visualstudio.com/docs/other/unity)
