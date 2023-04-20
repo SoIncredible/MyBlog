@@ -12,10 +12,6 @@ description: 使用Java开发一个Tomcat应用
 
 ![](Webapp开发记录——写给猪的FrenchTool/截屏2022-09-08-08.15.13.png)
 
-
-
-<!--more-->
-
 # 写在前面
 
 在创建一个JavaWeb项目之前，有下面几点需要十分注意

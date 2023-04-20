@@ -285,7 +285,7 @@ namespace learnIEnumerator
 
 - foreach的原理
 
-  我看了一个半小时的资料，还是没有太理解foreach的原理，我现在只能用表现层给foreach做一个定义：foreach是一个完全用来遍历集合的工具，它的使用不需要数组下标的参与，能够减少我们使用数组下标会出现的问题、提高我们编写代码的效率。
+  我看了一个半小时的资料，还是没有太理解foreach的原理，我现在只能用表现层给foreach做一个定义：foreach是一个完全用来遍历集合的工具，它的使用不需要数组下标的参与，能够减少我们使用数组下标会出现的问题、提高我们编写代码的效率。（关于foreach的原理已经在[这篇博客](http://soincredible777.com.cn/posts/83d7c4e7/)中解释清楚）
 
 在对上面三点进行了了解之后，我现在对IEnumerator和IEnumerable做一个总结：
 
