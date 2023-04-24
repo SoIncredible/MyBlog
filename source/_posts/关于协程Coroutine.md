@@ -392,7 +392,221 @@ public class Program
   }
   ```
   
-  **这里留一个小坑，我可以模拟整个项目的活动处理流程，将所有的page放在那个BasePage的字典里，然后再取出来，承接上面的代码，感受一下流程。**
+  下面是我将项目中一个常规的打开界面的流程抽象了出来，里面用到了很多最近学的东西，能跑起来真的挺开心的🎉
+  
+  ```C#
+  using System.Dynamic;
+  using System.Reflection;
+  using System.Runtime.InteropServices.ComTypes;
+  
+  
+  public enum PageInfo
+  {
+      Unicorn,
+      Flower,
+      Default
+  }
+  
+  // 这里是用class好还是struct好？
+  public class UIInfo
+  {
+      public readonly PageInfo PageID;
+      public readonly Type PageType;
+  
+      public UIInfo(PageInfo pageID, Type pageType)
+      {
+          PageID = pageID;
+          PageType = pageType;
+      }
+  }
+  
+  // 需要画UML图
+  
+  public class Component : Object
+  {
+      public GameObject gameObject { set; get; }
+  }
+  
+  public class GameObject : Object
+  {
+      // where关键字的作用？
+      public T AddComponent<T>() where T : Component => this.AddComponent(typeof(T)) as T;
+  
+  
+      public Component AddComponent(System.Type type)
+      {
+          // 使用这个方法实例化Page
+          // page = new type();
+          // 这里好像要用反射
+          // 如果说要实例化一个带参数的构造方法的类需要反射，我们这里实例化的是一个不带参数的构造方法的类，所以还用不到反射。
+          //ConstructorInfo constructorInfo = type.GetConstructor(new[] { typeof(), typeof() });
+          object? instance = Activator.CreateInstance(type);
+          Console.WriteLine("调用了AddComponent方法喔");
+          return instance as Component ?? throw new InvalidOperationException();
+      }
+  }
+  
+  
+  public abstract class AbstractUIManager : Component
+  {
+      protected readonly Dictionary<int, BasePage> _pages = new Dictionary<int, BasePage>(128);
+  
+      protected readonly Dictionary<System.Type, UIInfo> _infos = new Dictionary<System.Type, UIInfo>(128);
+  
+  
+      public T GetPage<T>(System.Type type, PageInfo info) where T : BasePage
+      {
+          return GetPage(type, info) as T;
+      }
+  
+      protected BasePage GetPage(System.Type type, PageInfo info)
+      {
+          if (_pages.TryGetValue((int)info, out var page))
+          {
+              return page;
+          }
+          else
+          {
+              GameObject gameObject = new GameObject();
+              page = gameObject.AddComponent(type) as BasePage;
+              _pages.Add((int)page.PageID, page);
+              return page;
+          }
+      }
+  
+      public bool OpenPage(System.Type type, PageInfo info)
+      {
+          var page = GetPage(type, info);
+          page.OnOpen();
+          return true;
+      }
+  
+      public bool ClosePage(PageInfo info)
+      {
+          return true;
+      }
+  }
+  
+  public class UIManager : AbstractUIManager
+  {
+      public static UIManager Instance;
+  
+      public static void Create()
+      {
+          Instance = new UIManager();
+          Instance.LoadInfo();
+      }
+  
+  
+      private void LoadInfo()
+      {
+          AddInfo(typeof(Unicorn), new UIInfo(PageInfo.Unicorn, typeof(Unicorn)));
+          AddInfo(typeof(Flower), new UIInfo(PageInfo.Flower, typeof(Flower)));
+      }
+  
+      protected void AddInfo(System.Type type, UIInfo info)
+      {
+          if (_infos.ContainsKey(type))
+          {
+              return;
+          }
+  
+          _infos.Add(info.PageType, info);
+      }
+  
+      public bool AddToPagesDic(int id, BasePage page)
+      {
+          if (_pages.ContainsKey(id))
+          {
+              Console.WriteLine("存储数据时发生了冲突！再见👋！");
+              return false;
+          }
+  
+          _pages.Add(id, page);
+          return true;
+      }
+  }
+  
+  public class BasePage : Component
+  {
+      protected PageInfo _pageID;
+  
+      public PageInfo PageID
+      {
+          get { return _pageID; }
+          private set { _pageID = value; }
+      }
+  
+  
+      public void OnOpen()
+      {
+          Prepare();
+      }
+  
+      public virtual void Prepare()
+      {
+          Console.WriteLine("我是BasePagePrepare方法");
+      }
+  }
+  
+  public class Unicorn : BasePage
+  {
+      public Unicorn()
+      {
+          _pageID = PageInfo.Flower;
+      }
+  
+      public override void Prepare()
+      {
+          Console.WriteLine("我是UnicornPrepare方法");
+      }
+  }
+  
+  public class Flower : BasePage
+  {
+      public Flower()
+      {
+          _pageID = PageInfo.Unicorn;
+      }
+  
+      public override void Prepare()
+      {
+          Console.WriteLine("我是FlowerPrepare方法");
+      }
+  }
+  
+  public class Program
+  {
+      static void Main(string[] args)
+      {
+          PageInfo pageInfo = PageInfo.Default;
+          System.Type type = typeof(BasePage);
+          UIManager.Create();
+          // 在这里写一个输入模拟用户打开窗口的操作。
+          Console.WriteLine("现在有这样几个窗口供你选择：1.独角兽 2.种花 你想要打开哪一个？");
+          string? input = Console.ReadLine();
+          if (input == "1")
+          {
+              pageInfo = PageInfo.Unicorn;
+              type = typeof(Unicorn);
+          }
+          else if (input == "2")
+          {
+              pageInfo = PageInfo.Flower;
+              type = typeof(Flower);
+          }
+          else
+          {
+              Console.WriteLine("输入错误！再见👋！");
+          }
+  
+  
+          UIManager.Instance.OpenPage(type, pageInfo);
+      }
+  }
+  ```
+  
+  
 
 ![](关于协程Coroutine/image-20230420175208448.png)
 
@@ -419,7 +633,36 @@ public class Program
 
 ![](关于协程Coroutine/image-20230420202526656.png)
 
-# 到底什么是迭代器？
+
+
+我们先来看两段代码：
+
+```C#
+public static IEnumerable<int> Fibonacci(int count)
+{
+    int prev1 = 0;
+    int prev2 = 1;
+    
+    for (int i = 0; i < count; ++i)
+    {
+        int current = prev1 + prev2;
+        yield return current; // 使用yield return返回当前值
+        
+        prev1 = prev2;
+        prev2 = current;
+    }
+}
+```
+
+
+
+```
+
+```
+
+
+
+
 
 
 
