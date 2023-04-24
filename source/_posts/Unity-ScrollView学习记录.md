@@ -15,11 +15,9 @@ sticky:
 
 在经过两周多与迭代器纠缠不清的拉扯之后，我好疲惫，底层的东西固然有趣并且巧妙，但是把迭代器这种东西吃透是要花费太多功夫了，下面这段时间我想把精力多放在学习Unity组件使用上。
 
-# Scroll View使用
+# Scroll View
 
-ScrollView的学习是学习无限滑动列表的前提
-
-我们在Unity中先创建一个滑动列表，看看它的结构、以及每个节点上挂在的组件的作用：
+ScrollView是实现无限滑动列表的基础，我们先来看看它的结构、以及每个节点上挂在的组件的作用：
 
 ```
 - ScrollView (GameObject)
@@ -38,7 +36,7 @@ ScrollView的学习是学习无限滑动列表的前提
      └─ Scrollbar (Script)
 ```
 
-
+这里面有两个组件需要我们搞清楚：`Scroll Rect`和`Rect Transform`
 
 ## Scroll Rect组件
 
@@ -60,21 +58,23 @@ ScrollView的学习是学习无限滑动列表的前提
 9. Horizontal ScrollBar和Vertical ScrollBar：缩略图栏，可以将Scrollbar组件连接到Scroll Rect组，与滚动内容同步变化。
 10. Visibility：定义ScrollBar是否一直可见、仅在拖动时可见、或者用户悬停时可见。另外还有不支持此功能的选项AutoHideAndExpandViewport，它不仅可以自动隐藏滚动条，并且在隐藏时会扩大可视界面以填充原本滚动条占据的空间。
 
+## RectTransform
 
+在 Unity 中，RectTransform（矩形变换）组件是 UI 元素的核心部分。它用于定义 2D 界面元素在屏幕上的位置、大小和方向。RectTransform 专为 Unity 的 UI 系统（UGUI，Unity Graphic User Interface）设计，继承自 Transform 组件。与标准的 Transform 组件相比，RectTransform 提供了针对二维空间的额外功能。
 
+以下是 RectTransform 的一些关键特性和属性：
 
+1. **锚定（Anchors）**：锚点用于确定 UI 元素在其父容器中的相对位置。有两种类型的锚点：最小锚点和最大锚点。最小锚点表示左下角的位置，最大锚点表示右上角的位置。通过调整这两个锚点，您可以将 UI 元素固定到父容器的一个角落、边缘或中心。
+2. **轴对齐（Pivot）**：轴心点是旋转和缩放操作的参考点。默认情况下，轴心点位于矩形的中心（0.5, 0.5）。您可以移动轴心点以更改 UI 元素的旋转和缩放方式。
+3. **尺寸（Width and Height）**：这两个属性定义了 UI 元素的宽度和高度。你可以通过直接设置数值或使用 RectTransform 工具在场景视图中进行调整。
+4. **位置（Position）**：还可以设置 RectTransform 的位置属性，以确定 UI 元素在屏幕上的具体位置。位置属性包括 X、Y 和 Z 坐标。
+5. **缩放（Scale）**：与 Transform 组件类似，RectTransform 也有一个表示局部缩放的属性，允许您改变 UI 元素的大小。
 
-## 我想要隐藏掉ScrollBar
+要使用 RectTransform，需要先确保已经导入了 Unity 的 UI 系统。然后，在场景中创建 UI 元素（例如按钮、文本框、图像等），它们将自动带有 RectTransform 组件。通过调整 RectTransform 的各种属性，您可以灵活地布局和设计 UI 界面。
 
-我们可以通过调整ScrollBar Visibility属性来将ScrollBar隐藏掉，但是给出的选项中是没有将ScrollBar一直隐藏掉的功能，我们需要通过其他的方式实现：
+总之，RectTransform 是 Unity UI 系统的核心组件，用于在场景中定位、旋转、缩放和调整大小。借助 RectTransform，开发者可以轻松设计出响应式和美观的用户界面。
 
-将ScrollBar的透明度设置为0，选中包含ScrollBar组件的GameObject，在Inspector窗口找到Image组件。展开`Color`属性并将Alpha设置为0。这将使ScrollBar变为透明，看起来像是消失了一样，但是仍然具有交互的功能。不过要注意的是我们要确保将所有跟ScrollBar相关的图片、颜色、子物体都设置成透明。
-
-到此还没有结束，因为虽然ScrollBar现在看上去已经透明了，但是ScrollBar占据的空间还在那，所以效果上就像是少了什么东西一样，我们需要修改ScrollRect组件中的ScrollBar的Spacing的值。个人测试将值修改为-20可以达到理想的展示效果。
-
-
-
-
+除了上面这两个组件之外，还有一个组件我们需要了解：`Grid Layout Group`
 
 ## GridLayoutGroup
 
@@ -90,169 +90,33 @@ Grid Layout Group组件是一种UI布局组件，它可以让我们轻松地创�
 - Child Alignment：子物体对齐方式，设置子元素在网格内的对齐方式。
 - Constraint：约束，可选择无约束、固定列数或者固定行数，在此情况下会自动调整它们的数量或者高度/宽度以满足限制条件。
 
-# 代码在这
-
-```C#
-using System.Collections;
-using System.Collections.Generic;
-using Platform.Analyze;
-using Resource;
-using UnityEngine;
-using UnityEngine.UI;
-
-public class MyScrollView : MonoBehaviour
-{
-    public GridLayoutGroup grid_layout_group;
-    public ScrollRect scroll_rect;
-    public RectTransform rect_transform;
-    public GameObject prefab;
-
-    public int buffer_count;
-    public int total_count;
-
-    public List<GameObject> game_objects;
-
-    [SerializeField] private int headIndex;
-    [SerializeField] private int tailIndex;
-    [SerializeField] private Vector2 firstItemAnchoredPos;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        firstItemAnchoredPos = new Vector2(grid_layout_group.padding.left + grid_layout_group.cellSize.x / 2,
-            -grid_layout_group.padding.top - grid_layout_group.cellSize.y / 2);
-        grid_layout_group.startAxis = GridLayoutGroup.Axis.Vertical;
-        grid_layout_group.startCorner = GridLayoutGroup.Corner.UpperLeft;
-        grid_layout_group.childAlignment = TextAnchor.UpperLeft;
-        grid_layout_group.constraintCount = 1;
-        SetContentLength();
-        headIndex = 0;
-        tailIndex = buffer_count - 1;
-        game_objects = new List<GameObject>(5);
-        for (int i = 0; i < buffer_count; i++)
-        {
-            GameObject tempGameObject = GameObject.Instantiate(prefab, rect_transform);
-            tempGameObject.GetComponentInChildren<Text>().text = (i + 1).ToString();
-            tempGameObject.name = (i + 1).ToString();
-            game_objects.Add(tempGameObject);
-        }
-
-        Debug.Log("List的容量：" + game_objects.Count);
-        scroll_rect.onValueChanged.AddListener(OnScroll);
-    }
 
 
-    public void SetContentLength()
-    {
-        rect_transform.sizeDelta = new Vector2(grid_layout_group.cellSize.x,
-            grid_layout_group.padding.top + grid_layout_group.padding.bottom +
-            (grid_layout_group.cellSize.y + grid_layout_group.spacing.y) * total_count - grid_layout_group.spacing.y);
-    }
+## 如何隐藏掉ScrollBar
 
-    public void OnScroll(Vector2 v)
-    {
-        // 向上滑，新元素从底部出现
-        while (rect_transform.anchoredPosition.y >=
-               (grid_layout_group.cellSize.y + grid_layout_group.spacing.y) * (headIndex + 1) +
-               grid_layout_group.padding.top &&
-               tailIndex != total_count - 1)
-        {
-            GameObject tempObject = game_objects[0];
-            game_objects.Remove(tempObject);
-            headIndex++;
-            tailIndex++;
-            // 新元素的位置
-            SetPos(tempObject, tailIndex);
-            // 设置显示效果
-            SetShow(tempObject, tailIndex + 1);
-            game_objects.Add(tempObject);
-        }
+我们可以通过调整ScrollBar Visibility属性来将ScrollBar隐藏掉，但是给出的选项中是没有将ScrollBar一直隐藏掉的功能，我们需要通过其他的方式实现：
 
-        // 向下滑，新元素从顶部出现
-        while (rect_transform.anchoredPosition.y <=
-               (grid_layout_group.cellSize.y + grid_layout_group.spacing.y) * headIndex +
-               grid_layout_group.padding.top && headIndex != 0)
-        {
-            GameObject tempObject = game_objects[buffer_count - 1];
-            game_objects.Remove(tempObject);
-            headIndex--;
-            tailIndex--;
-            // 设置新的元素的位置
-            SetPos(tempObject, headIndex);
-            // 设置显示效果：
-            SetShow(tempObject, headIndex + 1);
-            game_objects.Insert(0, tempObject);
-        }
-    }
+将ScrollBar的透明度设置为0，选中包含ScrollBar组件的GameObject，在Inspector窗口找到Image组件。展开`Color`属性并将Alpha设置为0。这将使ScrollBar变为透明，看起来像是消失了一样，但是仍然具有交互的功能。不过要注意的是我们要确保将所有跟ScrollBar相关的图片、颜色、子物体都设置成透明。
 
-    public void SetPos(GameObject obj, int index)
-    {
-        // 这里是因为对锚点的理解不到位导致的
-        obj.GetComponent<RectTransform>().anchoredPosition = new Vector2(
-            firstItemAnchoredPos.x,
-            // firstItemAnchoredPos是一个负数
-            // 我觉得不该加这个-grid_layout_group.padding.top
-            firstItemAnchoredPos.y -
-            index * (grid_layout_group.cellSize.y + grid_layout_group.spacing.y));
-    }
+到此还没有结束，因为虽然ScrollBar现在看上去已经透明了，但是ScrollBar占据的空间还在那，所以效果上就像是少了什么东西一样，我们需要修改ScrollRect组件中的ScrollBar的Spacing的值。个人测试将值修改为-20可以达到理想的展示效果。
 
-    public void SetShow(GameObject obj, int index)
-    {
-        obj.GetComponentInChildren<Text>().text = index.ToString();
-        obj.name = index.ToString();
-    }
-}
-```
+# 如何实现无限滑动列表？
 
+首先滑动列表的原理就是用固定的一组Prefab来表示更大的一组东西，我们称我们要展示的这些东西叫做`Item`，我们用一个`ItemList`的List来存放它们，
 
+我们来看一下具体的场景：
 
+放图1
 
+当头部的这个Item完全出了我的可视区域，或者说headIndex后面的第二个Item移动到可视区域的顶部边界的时候 ，上面的Item已经看不到了，我们就可以将它转移到我们Item List的末尾去
 
+放图2
 
+当头部的这个Item恰好在可视区域的顶部边界的时候，头部Item上面没有Item了，就需要将ItemList尾部的Item插入到头部，
 
+放图3
 
-
-
-
-
-
-
-
-
-
-
-
-我们先提一个简单的需求：
-
-我想要纵向展示四个按钮，这四个按钮高度很高，一次性展示补全，所以我要利用ScrollView做一个简单的列表效果：
-
-1. 创建一个ScrollView，创建四个按钮，将四个按钮都放在content节点下。
-
-   ![](Unity-ScrollView学习记录/截屏2023-04-23 10.56.16.png)
-
-2. 调节参数，
-
-
-
-有很多实现的方案，哪种方案是最完美的？
-
-- 不依托其他的组件？
-- 通用性？
-- ...
-
-问了宇哥，宇哥说要依情况而定。
-
-
-
-# 实现思路
-
-通过头下标和尾下标记录当前实例化数据的最大最小索引，之后用Content的锚点位置与当前头下标的位置进行比较判断滑动的方向以及是否超出滑动范围，如果正方向滑动超出范围则将第一个元素移动到最后一个，如果反方向滑动超出范围则将最后一个元素移到第一个，这样的场景中始终存在5个实例化的元素，依次改变元素的位置和显示即可
-
-首先我们要明确：谁先谁后的问题。所谓谁先谁后，指的是什么组件的移动引起了什么组件的变化，在我们要实现滑动列表的这个案例中，是content先动引起了item生成位置的变化，明确这一点对我们理解无限滑动列表的原理至关重要。
-
-我们就以上下滑动为例，探讨一下无限滑动列表的工作原理：
-
-首先我们要明确我们的整个content的容量（长度），它包含我们元素和顶部的间隔、元素和底部的间隔、元素个数*元素的高度、元素的间隔高度x元素个数-1。
+ 所以说，当头部的Item处在可视区域顶部边界之间的时候，是不会发生Item位置的变化的，只有到达了顶部或者底部的边界的时候，才会发生变化。
 
 ![](Unity-ScrollView学习记录/image-20230424165422902.png)
 
@@ -268,342 +132,136 @@ public class MyScrollView : MonoBehaviour
 
 这里我们需要了解一个属性的含义了：`anchoredPosition`，这个属性表示当前UI元素相对于其锚点的位置（二维向量）。它基于父级UI元素的矩形边界以及自身的锚点设定来计算相对坐标。注意锚点是不会随着
 
-
-
-## 向上滑动，底部出现新的Item的情况
-
-
+# 代码在这
 
 ```C#
+using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json.Converters;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 
-
-/// <summary>
-/// 无限滑动列表
-/// </summary>
-public class InfiniteScrollView : MonoBehaviour
+public class MyScrollView : MonoBehaviour
 {
-    // Scroll View节点上的Scroll Rect组件
-    private ScrollRect scrollRect; //滑动框组件
 
-    private RectTransform content; //滑动框的Content
+    public RectTransform content;
 
-    // 先搞清楚所有用到的变量属性
-    // 使用到了该组件
-    private GridLayoutGroup layout; //布局组件
+    public ScrollRect scrollRect;
 
-    [Header("滑动类型")] public ScrollType scrollType;
-    [Header("固定的Item数量")] public int fixedCount;
-    [Header("总共要显示的数量")] public int totalCount;
-    [Header("Item的预制体")] public GameObject itemPrefab;
+    public GridLayoutGroup gridLayoutGroup;
 
+    public GameObject prefab;
+    public int bufferCount;
 
-    private List<RectTransform> dataList = new List<RectTransform>(); //数据实体列表
-    private int headIndex; //头下标
-    private int tailIndex; //尾下标
-    private Vector2 firstItemAnchoredPos; //第一个Item的锚点坐标
+    public int totalCount;
 
+    [SerializeField]private int headIndex;
+    [SerializeField]private int tailIndex;
 
-    // 接下来要做的就是，搞懂原理。
+    public List<GameObject> Items;
+
+    public Vector2 firstItemAnchoredPos;
+    // Start is called before the first frame update
     void Start()
     {
-        Init();
-    }
-
-    #region Init
-
-    /// <summary>
-    /// 实例化Item
-    /// </summary>
-    private void InitItem()
-    {
-        for (int i = 0; i < fixedCount; i++)
-        {
-            GameObject tempItem = Instantiate(itemPrefab, content);
-            dataList.Add(tempItem.GetComponent<RectTransform>());
-            // Prefab的size在GridLayoutGroup插件里面设置    
-            // 这里没有问题，因为数组下标从0开始嘛
-            SetShow(tempItem.GetComponent<RectTransform>(), i + 1);
-        }
-    }
-
-    /// <summary>
-    /// 设置Content大小
-    /// </summary>
-    private void SetContentSize()
-    {
-        // content的x应该和一个按钮一样大，这是在Vertical展示的情况下
-        // 如果是在Horizontal展示的情况下它才会把Content的宽设置成这么长
-        // 所以应该做一个区分。如果是Vertical
-        // 如果是Horizontal
-        content.sizeDelta = new Vector2
-        (
-            // 使用Grid Layout Group组件访问了以下数据：
-            // 其中包含了间隔、每个Item的高度
-            layout.padding.left + layout.padding.right + totalCount * (layout.cellSize.x + layout.spacing.x) -
-            layout.spacing.x - content.rect.width,
-            layout.padding.top + layout.padding.bottom + totalCount * (layout.cellSize.y + layout.spacing.y) -
-            layout.spacing.y
-            // 间隔比Item个数少一个
-            // 加上边距
-        );
-    }
-
-    /// <summary>
-    /// 设置布局
-    /// </summary>
-    private void SetLayout()
-    {
-        // 一些看不懂的设置
-        layout.startCorner = GridLayoutGroup.Corner.UpperLeft;
-        layout.startAxis = GridLayoutGroup.Axis.Horizontal;
-        layout.childAlignment = TextAnchor.UpperLeft;
-        layout.constraintCount = 1;
-
-        // 设置结束
-
-
-        if (scrollType == ScrollType.Horizontal)
-        {
-            scrollRect.horizontal = true;
-            scrollRect.vertical = false;
-            layout.constraint = GridLayoutGroup.Constraint.FixedRowCount;
-        }
-        else if (scrollType == ScrollType.Vertical)
-        {
-            scrollRect.horizontal = false;
-            scrollRect.vertical = true;
-            layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-        }
-    }
-
-    /// <summary>
-    /// 得到第一个数据的锚点位置
-    /// </summary>
-    private void GetFirstItemAnchoredPos()
-    {
-        firstItemAnchoredPos = new Vector2
-        (
-            layout.padding.left + layout.cellSize.x / 2,
-            -layout.padding.top - layout.cellSize.y / 2
-        );
-    }
-
-    #endregion
-
-    #region Main
-
-    /// <summary>
-    /// 滑动中
-    /// </summary>
-    private void OnScroll(Vector2 v)
-    {
-        if (dataList.Count == 0)
-        {
-            Debug.LogWarning("先调用SetTotalCount方法设置数据总数量再调用Init方法进行初始化");
-            return;
-        }
-
-        if (scrollType == ScrollType.Vertical)
-        {
-            // 向上滑
-            // 新元素从底部出现
-            // content的y值一直比layout高
-            while (content.anchoredPosition.y >=
-                   layout.padding.top + (headIndex + 1) * (layout.cellSize.y + layout.spacing.y)
-                   && tailIndex != totalCount - 1)
-            {
-                // 思想就是当headIndex的那个元素被移出可视范围以后，就把这个移出的Item移动到队列后面去
-                // 将数据列表中的第一个元素移动到最后一个
-                // 这个过程会设计新的元素的创建和消除么？
-                // 暂定不会
-                RectTransform item = dataList[0];
-                dataList.Remove(item);
-                dataList.Add(item);
-
-                headIndex++;
-                tailIndex++;
-                // 设置位置
-                SetPos(item, tailIndex);
-                // 设置显示
-                // 这里的下标有问题
-                SetShow(item, tailIndex + 1);
-            }
-
-            // 向下滑
-            // 新元素从顶部出现
-            while (content.anchoredPosition.y <= layout.padding.top + headIndex * (layout.cellSize.y + layout.spacing.y)
-                   && headIndex != 0)
-            {
-                // 将数据列表中的最后一个元素移动到第一个
-                RectTransform item = dataList.Last();
-                dataList.Remove(item);
-                // 然后插入头部
-                dataList.Insert(0, item);
-
-                // 因为它是逐个刷新
-                headIndex--;
-                tailIndex--;
-                // 设置位置
-                SetPos(item, headIndex);
-                // 设置显示
-                SetShow(item, headIndex + 1);
-                // 这样就统一咧！☺
-            }
-        }
-        else if (scrollType == ScrollType.Horizontal)
-        {
-            // 向左滑
-            while (content.anchoredPosition.x <=
-                   -layout.padding.left - (headIndex + 1) * (layout.cellSize.x + layout.spacing.x)
-                   && tailIndex != totalCount - 1)
-            {
-                // 将数据列表中的第一个元素移动到最后一个
-                RectTransform item = dataList[0];
-                dataList.Remove(item);
-                dataList.Add(item);
-
-                // 设置位置
-                SetPos(item, tailIndex + 1);
-                // 设置显示
-                SetShow(item, tailIndex + 1);
-
-                headIndex++;
-                tailIndex++;
-            }
-
-            // 向右滑
-            while (content.anchoredPosition.x >=
-                   -layout.padding.left - headIndex * (layout.cellSize.x + layout.spacing.x)
-                   && headIndex != 0)
-            {
-                //将数据列表中的最后一个元素移动到第一个
-                RectTransform item = dataList.Last();
-                dataList.Remove(item);
-                dataList.Insert(0, item);
-
-                // 为什么这里就没问题呢？
-                //设置位置
-                SetPos(item, headIndex - 1);
-                //设置显示
-                SetShow(item, headIndex - 1);
-
-                headIndex--;
-                tailIndex--;
-            }
-        }
-    }
-
-    #endregion
-
-    #region Tool
-
-    /// <summary>
-    /// 设置位置
-    /// </summary>
-    private void SetPos(RectTransform trans, int index)
-    {
-        if (scrollType == ScrollType.Horizontal)
-        {
-            trans.anchoredPosition = new Vector2
-            (
-                // index为0怎么了？
-                index == 0
-                    ? layout.padding.left + firstItemAnchoredPos.x
-                    : layout.padding.left + firstItemAnchoredPos.x + index * (layout.cellSize.x + layout.spacing.x),
-                firstItemAnchoredPos.y
-            );
-        }
-        else if (scrollType == ScrollType.Vertical)
-        {
-            // 设置新生成的元素的位置
-            trans.anchoredPosition = new Vector2
-            (
-                firstItemAnchoredPos.x,
-                index == 0
-                    ? -layout.padding.top + firstItemAnchoredPos.y
-                    : -layout.padding.top + firstItemAnchoredPos.y - index * (layout.cellSize.y + layout.spacing.y)
-            );
-        }
-    }
-
-    #endregion
-
-    #region 外部调用
-
-    /// <summary>
-    /// 初始化
-    /// </summary>
-    public void Init()
-    {
-        scrollRect = GetComponent<ScrollRect>();
-        content = scrollRect.content;
-        layout = content.GetComponent<GridLayoutGroup>();
-        scrollRect.onValueChanged.AddListener(OnScroll);
-
-        // 设置布局
-        SetLayout();
-
-        // 设置头下标和尾下标
-        // 没问题
+        
+        SetContentLength();
+        SetGridLayoutGroupDefault();
+        // 给初始化一下
+        SetFirstItemAnchoredPosition();
+        
+        
+        // 实例化Item
+        // 第一次初始化的时候我们时不需要关心它的位置的，因为它会自动帮助我们调整好
+        Items = new List<GameObject>(totalCount);
         headIndex = 0;
-        tailIndex = fixedCount - 1;
-
-        //设置Content大小
-        SetContentSize();
-        // content.sizeDelta = new Vector2(0, 3000);
-        //实例化Item
-        InitItem();
-
-        //得到第一个Item的锚点位置
-        GetFirstItemAnchoredPos();
-    }
-
-    /// <summary>
-    /// 设置显示
-    /// </summary>
-    public void SetShow(RectTransform trans, int index)
-    {
-        //=====根据需求进行编写
-        // 生成对应的name和index
-        trans.GetComponentInChildren<Text>().text = index.ToString();
-        trans.name = index.ToString();
-    }
-
-    /// <summary>
-    /// 设置总的数据数量
-    /// </summary>
-    public void SetTotalCount(int count)
-    {
-        totalCount = count;
-    }
-
-    /// <summary>
-    /// 销毁所有的元素
-    /// </summary>
-    public void DestoryAll()
-    {
-        for (int i = dataList.Count - 1; i >= 0; i--)
+        tailIndex = bufferCount - 1;
+        for (int i = 0; i < bufferCount; i++)
         {
-            DestroyImmediate(dataList[i].gameObject);
+            GameObject tempGameobject = Instantiate(prefab, content);
+            Items.Add(tempGameobject);
+            SetShow(tempGameobject, i+1);
         }
-
-        dataList.Clear();
+        
+        scrollRect.onValueChanged.AddListener(OnScroll);
+        
     }
 
-    #endregion
+    public void SetFirstItemAnchoredPosition()
+    {
+        firstItemAnchoredPos = new Vector2(
+            gridLayoutGroup.padding.left + gridLayoutGroup.cellSize.x / 2,
+            - gridLayoutGroup.padding.top - gridLayoutGroup.cellSize.y / 2);
+    }
+
+    public void SetGridLayoutGroupDefault()
+    {  
+        // 给GridLayoutGroup进行初始化
+        gridLayoutGroup.startCorner = GridLayoutGroup.Corner.UpperLeft;
+        gridLayoutGroup.startAxis = GridLayoutGroup.Axis.Vertical;
+        gridLayoutGroup.childAlignment = TextAnchor.UpperLeft;
+        gridLayoutGroup.constraint = GridLayoutGroup.Constraint.Flexible;
+        gridLayoutGroup.constraintCount = 1;
+    }
+
+
+    public void OnScroll(Vector2 v)
+    {
+        // 向上滑动
+        while (content.anchoredPosition.y >= gridLayoutGroup.padding.top + (headIndex + 1) * (gridLayoutGroup.spacing.y + gridLayoutGroup.cellSize.y) && tailIndex != totalCount - 1)
+        {
+            GameObject tempGameObj = Items[0];
+            Items.Remove(tempGameObj);
+            
+           
+            headIndex++;
+            tailIndex++;
+            SetPos(tempGameObj,tailIndex);
+            SetShow(tempGameObj,tailIndex+1);
+            Items.Add(tempGameObj);
+            
+            
+        }
+        // 向下滑动
+        while (content.anchoredPosition.y <= gridLayoutGroup.padding.top + headIndex * (gridLayoutGroup.spacing.y + gridLayoutGroup.cellSize.y) && headIndex != 0)
+        {
+            GameObject temGamObj = Items[bufferCount - 1];
+            Items.Remove(temGamObj);
+            headIndex--;
+            tailIndex--;
+            SetPos(temGamObj,headIndex);
+            SetShow(temGamObj, headIndex + 1);
+            Items.Insert(0,temGamObj);
+        }
+    }
+    public void SetPos(GameObject obj ,int index)
+    {
+        obj.GetComponent<RectTransform>().anchoredPosition = new Vector2(
+            firstItemAnchoredPos.x,
+            firstItemAnchoredPos.y - index * (gridLayoutGroup.spacing.y + gridLayoutGroup.cellSize.y));
+    }
+
+    public void SetShow(GameObject obj, int index)
+    {
+        obj.name = index.ToString();
+        obj.GetComponentInChildren<Text>().text = index.ToString();
+    }
+
+    public void SetContentLength()
+    {
+        content.sizeDelta = new Vector2(
+            gridLayoutGroup.cellSize.x,gridLayoutGroup.padding.top + gridLayoutGroup.padding.bottom + gridLayoutGroup.cellSize.y * totalCount + gridLayoutGroup.spacing.y * (totalCount -1));
+    }
 }
 
-/// <summary>
-/// 滑动类型
-/// </summary>
-public enum ScrollType
-{
-    Horizontal, //竖直滑动
-    Vertical, //水平滑动
-}
 ```
+
+其实是有很多实现滑动列表的方案，哪种方案是最完美的？
+
+- 不依托其他的组件？
+- 通用性？
+- ...
+
+问了宇哥，宇哥说要依情况而定，按照需求设计最合适的滑动列表，不愧是宇哥👍
 
