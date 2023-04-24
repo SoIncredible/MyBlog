@@ -328,7 +328,7 @@ public class PersonSet : IEnumerable
 
 yield关键字是一个语法糖，背后其实生成了一个新的类，是一个枚举器，枚举器具体实现了MoveNext、Reset和Current。
 
-先看一段代码，通过`yield return`实现了类似用foreach便利数组的功能，说明yield return也是用来实现迭代器的功能的
+先看一段代码，通过`yield return`实现了类似用foreach便遍历数组的功能，说明yield return也是用来实现迭代器的功能的
 
 ```C#
 using static System.Console;
@@ -417,7 +417,7 @@ namespace learnIEnumerator
             {
                 Person[] person = new Person[4]
                 {
-                    new Person("李磊"),
+                    new Person("李磊"),ty
                     new Person("王刚"),
                     new Person("彤彤"),
                     new Person("丹丹"),
@@ -436,7 +436,110 @@ namespace learnIEnumerator
 }
 ```
 
-可以看到我代码中并没有定义GetEumertator方法的实现，但是我仍然可以去调用它，至于为什么可以，可能需要使用IL工具进行反编译才能够找到原因了，这不是我想要探讨的重点，我应该把重点放在如何使用迭代器和yield使我的程序更加高效且紧密地运行，那么关于`IEnumerator`、`IEnumerable`和`yield`的探讨就先告一段落了。
+再来看一段代码：
+
+```C#
+public static IEnumerable<int> Fibonacci(int count)
+{
+    int prev1 = 0;
+    int prev2 = 1;
+    
+    for (int i = 0; i < count; ++i)
+    {
+        int current = prev1 + prev2;
+        yield return current; // 使用yield return返回当前值
+        
+        prev1 = prev2;
+        prev2 = current;
+    }
+}
+```
+
+在这段代码中我们使用了for循环嵌套了一个`yield return` 语句，我在这里时常会有一个误区就是，我会习惯性地认为for循环是用来实现`MoveNext`的方法的，但其实不是，因为看这段代码
+
+```C#
+    public static IEnumerable<int> enumerableFuc()
+    {
+        yield return 1;
+        yield return 2;
+        yield return 3;
+    }
+```
+
+它里面没有for循环但是依然可以实现`MoveNext`的功能啊😂，所以无论是使用for循环还是把所有元素罗列出来，这个环节的目的都是为了告诉yield return自动生成的那个迭代器它要遍历的这个集合中有多少个元素，仅此而已，`MoveNext`会被编译器隐式地处理，完全不需要我们操心。
+
+还有一点，我们一个IEnumerable方法中只会生成一个迭代器，理解一下这句话，还是蛮重要的，回顾一下迭代器模式中的四个角色，有一个叫做具体聚合角色，有一个叫做具体迭代器角色，具体迭代器迭代的就是具体聚合角色 （集合），集合本质就是一类事物的组合，因此我们只需要使用一个迭代器就可以完成对这一个集合的全部遍历了，我之前存在的一个误区是我认为每调用一次yield语句就会生成一个迭代器。
+
+最后再来看看使用了yield语句后我们可以少写哪些代码，我们首先不需要自己编写具体的迭代器类了，相对应的抽象迭代器类也不需要了，我们现在只需要在具体聚合类中定义一下获取迭代器的方法就可以了。所以真的好省事啊！
+
+好！然后我们再来看一下unity中的协程！现在整篇博客的逻辑已经十分混乱了，五一需要整理博客喔！
+
+一般我们会在协程中处理各种各样的业务嘛，比如下图：
+
+![](IEnumerator与IEnumerable理解与辨析/image-20230421111245324.png)
+
+可以看到里面yield return的东西五花八门，但是牢记我们上面讲到的，遍历一个具体聚合角色只会有一个迭代器，来看看ChatGPT怎么说：
+
+![](IEnumerator与IEnumerable理解与辨析/image-20230421111517366.png)
+
+我们现在理解一下StartCoroutine方法，该方法里面会传入一个IEnumerator类型的方法，所以我们类比一下调用StartCoroutine方法就相当于是使用了foreach，看一下伪代码：
+
+```C#
+public class YieldExample
+{
+    public static IEnumerable<int> GetValues(int count)
+    {
+
+       for (int i = 1; i <= count; i++)
+        {
+            yield return i;
+        }
+
+    }
+}
+class Program
+{
+    static void Main(string[] args)
+    {
+        // 调用静态方法GetValues，获取迭代器
+        IEnumerable<int> valuesEnumerable = YieldExample.GetValues(5);
+
+        Console.WriteLine("Type of the GetEnumerator instance: " + valuesEnumerable.GetType().FullName);
+
+        // 使用foreach循环遍历迭代器
+        foreach (int value in valuesEnumerable)
+        {
+            Console.WriteLine(value);
+        }
+    }
+}
+```
+
+当我们调用了StartCoroutine方法后类似于调用了foreach循环，会不断遍历整个集合，但是在Unity的StartCoroutine方法中它所遍历的集合是执行时机的集合，因为在Unity的协程中我们一般yield return的都是一些协程再执行的时机，而且仔细想想协程的运作方式跟纯C#还不一样，在纯C#中我们需要用yield return返回我们要遍历的集合的元素，比如上面这段代码
+
+而协程的代码：
+
+```C#
+FlyPfxManager.Create();
+ActivityManager.Create();
+yield return null;
+PlayDefine.Init();
+PlayViewDefine.Init(1.5f);
+yield return null;
+CmdManager.Create();
+yield return null;
+DataManager.Create();
+yield return null;
+AuthManager.Create();
+```
+
+我们的目的是在一段时间内执行很多种方法，yield return返回的元素不是我们想要的东西，它是我们达到异步的手段，我认为这是协程和纯C#中IEnumerator的区别
+
+总之就是使用StartCoroutine和foreach都能达到遍历一个具体聚合角色的所有元素的作用，但是它们遍历这个集合元素的目的是不同的，StartCoroutine遍历集合是为了实现时间间隔，而纯C#的foreach遍历集合是为了展示或者读取到（只读）集合中所有元素的信息。
+
+那我想协程到此应该就理解了，比如我们定义了一个`IEnumerator Func()`，那么我们会使用`StartCoroutine(Func());`，因此，`Func()`就是一个具体聚合角色（一个集合）而StartCoroutine就是一个迭代器，它去遍历整个`Func()`集合，所以说协程的本质是迭代器好像没什么问题。
+
+关于`IEnumerator`、`IEnumerable`和`yield`的探讨就先告一段落了。
 
 <span id = "1">关于装箱和拆箱</span>
 
