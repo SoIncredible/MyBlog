@@ -100,13 +100,25 @@ Grid Layout Group组件是一种UI布局组件，它可以让我们轻松地创�
 
 到此还没有结束，因为虽然ScrollBar现在看上去已经透明了，但是ScrollBar占据的空间还在那，所以效果上就像是少了什么东西一样，我们需要修改ScrollRect组件中的ScrollBar的Spacing的值。个人测试将值修改为-20可以达到理想的展示效果。
 
+
+
+
+
+# 如何自己实现一个Scroll View？
+
+为什么会有这个环节？
+
+因为我们要尽可能地了解底层，然后避免对于Unity通用组件的依赖。
+
+
+
 # 如何实现无限滑动列表？
 
 首先滑动列表的原理就是用固定的一组Prefab来表示更大的一组东西，我们称我们要展示的这些东西叫做`Item`，我们用一个`ItemList`的List来存放它们，
 
 我们来看一下具体的场景：
 
-放图1
+![](Unity-ScrollView学习记录/image-20230425093946102.png)
 
 当头部的这个Item完全出了我的可视区域，或者说headIndex后面的第二个Item移动到可视区域的顶部边界的时候 ，上面的Item已经看不到了，我们就可以将它转移到我们Item List的末尾去
 
@@ -264,4 +276,39 @@ public class MyScrollView : MonoBehaviour
 - ...
 
 问了宇哥，宇哥说要依情况而定，按照需求设计最合适的滑动列表，不愧是宇哥👍
+
+唉，本来今天刚一来还因为自己成功实现了滑动列表而沾沾自喜，结果和侯大师对了一下之后发现自己写的滑动列表实在是一言难尽，所以原计划今天要看DOTWEEN插件的，但是看这个情况应该是要把DOTWEEN插件延后到下周五一的时候看了😢
+
+如果我们想要实现一个所谓的完美的无限滑动列表，那么我们最好的选择就是不要依赖任何Unity提供的现成的组件，因为有了Unity组件的加持，我们可以不去关心某项功能是怎么实现的，现在有了对卓越的追求时候，很多我们依赖的组件是需要我们搞清楚我们需要这个组件里面的哪些属性的，我们只需要自己把这些属性写出来，省去那些不去要的属性，那么我们项目的性能就能得到一个很大的飞跃。
+
+下一步的工作就是了解：
+
+1.要实现一个滑动列表所依赖的最最基础的属性有哪些？
+
+2.需要实现哪些方法才能实现滑动列表
+
+3.可以去GitHub上看一看无限滑动列表的案例
+
+
+
+
+
+# 关于RectTransform和Transform
+
+Unity中所有在场景中的物体肯定都会有这两个组件的其中一个，因为场景中的物体都需要一些数据表明自己的位置，而物体的位置信息就由这两个组件表明：
+
+1. `Transform Component`：三维空间中任何游戏物体都会拥有一个Transform组件。Transform组件负责记录物体的位置`position`、旋转`rotation`和缩放`scale`。这些属性是基于父物体的坐标系来描述的。Transform表示的坐标主要用于3D场景物体
+2. `RectTranform Component`：RectTransform组件用于UI元素比如`Text`、`Image`、`Button`等，它**继承自**Transform组件，在二维环境下（在`Canvas`内）描述UI元素的位置和尺寸。RectTransform包含了对齐/锚点设置`Anchors`、尺寸`Width and Height`以及`anchoredPosition`等属性。创建2D UI的时候，RectTransform提供了更多适应屏幕变化和布局的便利。
+
+总的来说，表示场景中物体坐标的两个核心组件分别是`Transform`（一般对象，主要针对3D）和`RectTransform`（UI对象，针对UI布局）。其他与坐标相关的功能多数时候会涉及操作这两个组件。
+
+在Unity中，对于UI元素来讲，使用rectTransform而非Transform组件是至关重要的。使用Transform组件处理UI元素可能导致以下问题：
+
+1. 布局缩放和适应性：RectTransform组件针对二维UI设计，其锚点、pivot和布局设定可以更好地适应不同屏幕尺寸或者方向。而使用Transform组件设计UI布局的时候无法保证良好的自适应性。
+2. UI层级丢失：所有UI元素都需要位于Canvas内，并且由Canvas渲染。将UI元素转换为普通物体试图使用Transform组件时，可能会导致UI层级结构的丢失，从而造成渲染问题。
+3. 位置、尺寸与交互问题：Rect Transform独有众多属性（比如锚点、宽度、高度等），很难在Transform组件上实现。使用Transform组件处理UI布局将无法确保正确的位置、尺寸与屏幕交互。
+
+但是在Unity中，我们可以将2D的UI元素放置于3D空间中，并且产生立体的效果，我们可以通过World SpaceCanvas来完成，这个原理也比较简单，使用World Space Canvas的时候，UI元素会被视作一个在三维空间中存在的平面。这意味着它们可以与其他3D物体共享相同的坐标空间，并且有明确的深度关系。因此，尽管UI元素本身仍然是2D的，但是通过将它们放在World Space里的Canvas上，那些元素在三维空间中便拥有了虚拟的XYZ坐标。
+
+使用World Space Canvas，UI元素会变成场景的一部分，而不再是位于屏幕覆盖模式ScreenSpace - Overlay或者相机模式Screen Space - Camera Mode下由专用的Canvas独立渲染的UI层。这使得它们具有了更多与3D场景交互、变换和运动的可能性，从而实现丰富的视觉效果或游戏玩法。但是UI元素的2D属性并没有改变。
 
