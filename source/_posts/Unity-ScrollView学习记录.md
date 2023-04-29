@@ -1,11 +1,12 @@
 ---
 title: Unity ScrollView学习记录
-date: 2023-04-23 10:44:19
 tags:
   - Unity
 categories:
   - 学习笔记
-cover:
+abbrlink: d5c2d910
+date: 2023-04-23 10:44:19
+cover: 'http://soincredible777.com.cn:90/32.png'
 description:
 swiper_index:
 sticky:
@@ -13,7 +14,7 @@ sticky:
 
 # 背景
 
-在经过两周多与迭代器纠缠不清的拉扯之后，我好疲惫，底层的东西固然有趣并且巧妙，但是把迭代器这种东西吃透是要花费太多功夫了，下面这段时间我想把精力多放在学习Unity组件使用上。
+在经过两周多与迭代器纠缠不清的拉扯之后，终于理解了迭代器的设计思想，但是把迭代器这种东西是要花费太多功夫了，下面这段时间我想把精力多放在学习Unity组件使用上。
 
 # Scroll View
 
@@ -90,8 +91,6 @@ Grid Layout Group组件是一种UI布局组件，它可以让我们轻松地创�
 - Child Alignment：子物体对齐方式，设置子元素在网格内的对齐方式。
 - Constraint：约束，可选择无约束、固定列数或者固定行数，在此情况下会自动调整它们的数量或者高度/宽度以满足限制条件。
 
-
-
 ## 如何隐藏掉ScrollBar
 
 我们可以通过调整ScrollBar Visibility属性来将ScrollBar隐藏掉，但是给出的选项中是没有将ScrollBar一直隐藏掉的功能，我们需要通过其他的方式实现：
@@ -100,17 +99,11 @@ Grid Layout Group组件是一种UI布局组件，它可以让我们轻松地创�
 
 到此还没有结束，因为虽然ScrollBar现在看上去已经透明了，但是ScrollBar占据的空间还在那，所以效果上就像是少了什么东西一样，我们需要修改ScrollRect组件中的ScrollBar的Spacing的值。个人测试将值修改为-20可以达到理想的展示效果。
 
-
-
-
-
 # 如何自己实现一个Scroll View？
 
 为什么会有这个环节？
 
 因为我们要尽可能地了解底层，然后避免对于Unity通用组件的依赖。
-
-
 
 # 如何实现无限滑动列表？
 
@@ -288,8 +281,6 @@ public class MyScrollView : MonoBehaviour
 2.需要实现哪些方法才能实现滑动列表
 
 3.可以去GitHub上看一看无限滑动列表的案例
-
-
 
 
 
