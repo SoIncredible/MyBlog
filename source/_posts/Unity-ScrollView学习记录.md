@@ -1,5 +1,5 @@
 ---
-title: Unity ScrollView学习记录
+title: Unity组件学习记录
 tags:
   - Unity
 categories:
@@ -16,7 +16,9 @@ sticky:
 
 在经过两周多与迭代器纠缠不清的拉扯之后，终于理解了迭代器的设计思想，但是把迭代器这种东西是要花费太多功夫了，下面这段时间我想把精力多放在学习Unity组件使用上。
 
-# Scroll View
+# UI组件
+
+## Scroll View
 
 ScrollView是实现无限滑动列表的基础，我们先来看看它的结构、以及每个节点上挂在的组件的作用：
 
@@ -39,7 +41,7 @@ ScrollView是实现无限滑动列表的基础，我们先来看看它的结构�
 
 这里面有两个组件需要我们搞清楚：`Scroll Rect`和`Rect Transform`
 
-## Scroll Rect组件
+### Scroll Rect组件
 
 在Unity中，ScrollRect组件用于实现滚动窗口，在这个窗口中，我们可以移动其内容来查看被遮挡的部分。经常搭配UI元素（比如列表、长文本等）使用
 
@@ -59,7 +61,7 @@ ScrollView是实现无限滑动列表的基础，我们先来看看它的结构�
 9. Horizontal ScrollBar和Vertical ScrollBar：缩略图栏，可以将Scrollbar组件连接到Scroll Rect组，与滚动内容同步变化。
 10. Visibility：定义ScrollBar是否一直可见、仅在拖动时可见、或者用户悬停时可见。另外还有不支持此功能的选项AutoHideAndExpandViewport，它不仅可以自动隐藏滚动条，并且在隐藏时会扩大可视界面以填充原本滚动条占据的空间。
 
-## RectTransform
+### RectTransform
 
 在 Unity 中，RectTransform（矩形变换）组件是 UI 元素的核心部分。它用于定义 2D 界面元素在屏幕上的位置、大小和方向。RectTransform 专为 Unity 的 UI 系统（UGUI，Unity Graphic User Interface）设计，继承自 Transform 组件。与标准的 Transform 组件相比，RectTransform 提供了针对二维空间的额外功能。
 
@@ -77,7 +79,7 @@ ScrollView是实现无限滑动列表的基础，我们先来看看它的结构�
 
 除了上面这两个组件之外，还有一个组件我们需要了解：`Grid Layout Group`
 
-## GridLayoutGroup
+### GridLayoutGroup
 
 Grid Layout Group组件是一种UI布局组件，它可以让我们轻松地创建规则的二维网格布局。Grid Layout Group组件可以在其中放置子元素，并根据指定的行列书自动整理排列这些子物体
 
@@ -91,7 +93,7 @@ Grid Layout Group组件是一种UI布局组件，它可以让我们轻松地创�
 - Child Alignment：子物体对齐方式，设置子元素在网格内的对齐方式。
 - Constraint：约束，可选择无约束、固定列数或者固定行数，在此情况下会自动调整它们的数量或者高度/宽度以满足限制条件。
 
-## 如何隐藏掉ScrollBar
+### 如何隐藏掉ScrollBar
 
 我们可以通过调整ScrollBar Visibility属性来将ScrollBar隐藏掉，但是给出的选项中是没有将ScrollBar一直隐藏掉的功能，我们需要通过其他的方式实现：
 
@@ -99,13 +101,15 @@ Grid Layout Group组件是一种UI布局组件，它可以让我们轻松地创�
 
 到此还没有结束，因为虽然ScrollBar现在看上去已经透明了，但是ScrollBar占据的空间还在那，所以效果上就像是少了什么东西一样，我们需要修改ScrollRect组件中的ScrollBar的Spacing的值。个人测试将值修改为-20可以达到理想的展示效果。
 
-# 如何自己实现一个Scroll View？
+## 如何自己实现一个Scroll View？
 
 为什么会有这个环节？
 
 因为我们要尽可能地了解底层，然后避免对于Unity通用组件的依赖。
 
-# 如何实现无限滑动列表？
+## 如何实现无限滑动列表？
+
+一个优秀的无限滑动列表不是一天两天就能写出来的，只有对Unity UI组件的底层实现有全面的了解之后才能写出一个高性能的无限滑动列表，本篇博客主要是Unity UI组件的学习，在这里详细讨论无限滑动列表的实现不太合适，当我对Unity的UI组件有一个较为全面的了解之后我会尝试自己去写一个无限滑动列表
 
 首先滑动列表的原理就是用固定的一组Prefab来表示更大的一组东西，我们称我们要展示的这些东西叫做`Item`，我们用一个`ItemList`的List来存放它们，
 
@@ -284,7 +288,7 @@ public class MyScrollView : MonoBehaviour
 
 
 
-# 关于RectTransform和Transform
+## 关于RectTransform和Transform
 
 Unity中所有在场景中的物体肯定都会有这两个组件的其中一个，因为场景中的物体都需要一些数据表明自己的位置，而物体的位置信息就由这两个组件表明：
 
@@ -302,4 +306,29 @@ Unity中所有在场景中的物体肯定都会有这两个组件的其中一个
 但是在Unity中，我们可以将2D的UI元素放置于3D空间中，并且产生立体的效果，我们可以通过World SpaceCanvas来完成，这个原理也比较简单，使用World Space Canvas的时候，UI元素会被视作一个在三维空间中存在的平面。这意味着它们可以与其他3D物体共享相同的坐标空间，并且有明确的深度关系。因此，尽管UI元素本身仍然是2D的，但是通过将它们放在World Space里的Canvas上，那些元素在三维空间中便拥有了虚拟的XYZ坐标。
 
 使用World Space Canvas，UI元素会变成场景的一部分，而不再是位于屏幕覆盖模式ScreenSpace - Overlay或者相机模式Screen Space - Camera Mode下由专用的Canvas独立渲染的UI层。这使得它们具有了更多与3D场景交互、变换和运动的可能性，从而实现丰富的视觉效果或游戏玩法。但是UI元素的2D属性并没有改变。
+
+
+
+## Unity中的坐标参考系
+
+在Unity Editor的Hierarchy窗口中，我们经常看到一个节点下会挂载很多的子节点。比如说我们现在有一个父节点`Parent Cube`，有一个子节点`Child Sphere`，如果我们现在在Scene窗口中移动`Parent Cube`物体，Child Sphere也会跟着移动；而如果我们只是移动Child Sphere，Parent Cube物体并不会跟着移动。
+
+我们可以看一下在Inspector窗口中，Child Sphere物体Transform组件的position，在父节点移动的时候，position属性没有发生任何改变。而在移动
+
+上面移动的场景是比较好理解的。
+
+![](Unity-ScrollView学习记录/image-20230507170000872.png)
+
+在Unity的Scene窗口中，有一个`Toggle Tool Handle Position`和一个`Toggle Tool Handle Rotation`，这是Unity的Scene窗口中的两个选项，用于切换Transform工具的操控模式。它们主要影响移动、旋转和缩放游戏对象所使用的参考坐标系。
+
+- Toggle Tool Handle Position（快捷键T）：这个按钮用于在局部Local和全局Global坐标系之间的切换。当我们选择这个选项时，并且处于移动或者缩放模式，我们可以看到在Scene视图中的Transform工具会在这两种坐标系之间切换。
+  - 局部坐标系：Transform工具将基于游戏对象自身的坐标系进行操作。这意味着当我们在场景中移动、旋转或者缩放游戏对象的时候，Unity将根据游戏对象的本地方向执行操作。
+  - 全局坐标系：Transform工具将基于世界坐标系进行操作。这意味着当我们在场景中移动、旋转或缩放游戏对象的时候，Unity将根据全局方向执行操作。
+- Toggle Tool Handle Rotation（快捷键R）：这个按钮用于在角度旋转（Rotation）和方向旋转（Orientation）之间切换。当我们选择这个选项的时候并且处于旋转模式，我们可以看到在Scene视图中的Transform工具会在这两种旋转方式之间切换。
+  - 角度旋转：Transform工具将基于游戏对象的角度进行操作。这意味着当我们在场景中旋转游戏对象的时候，Unity将根据游戏对象的角度进行操作。
+  - 方向旋转：Transform工具将基于游戏对象的方向进行操作。这意味着当我们在场景中旋转游戏对象的时候，Unity将根据独享的方向执行操作
+
+这些选项对于灵活地调整与游戏相关地位置、旋转和缩放非常有用。通过不同的选项，可以方便地以游戏对象地局部坐标系或者世界坐标系为基准来调整它们在场景中地变换。需要注意地是，这些选项仅会影响Scene窗口中的操作方式，并不会改变游戏对象在运行时的表现。
+
+# 非UI组件
 
