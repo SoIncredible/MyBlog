@@ -115,7 +115,7 @@ Grid Layout Group组件是一种UI布局组件，它可以让我们轻松地创�
 
 我们来看一下具体的场景：
 
-![](Unity-ScrollView学习记录/image-20230425093946102.png)
+![](Unity组件学习记录/image-20230425093946102.png)
 
 当头部的这个Item完全出了我的可视区域，或者说headIndex后面的第二个Item移动到可视区域的顶部边界的时候 ，上面的Item已经看不到了，我们就可以将它转移到我们Item List的末尾去
 
@@ -127,11 +127,11 @@ Grid Layout Group组件是一种UI布局组件，它可以让我们轻松地创�
 
  所以说，当头部的Item处在可视区域顶部边界之间的时候，是不会发生Item位置的变化的，只有到达了顶部或者底部的边界的时候，才会发生变化。
 
-![](Unity-ScrollView学习记录/image-20230424165422902.png)
+![](Unity组件学习记录/image-20230424165422902.png)
 
 接下来我们先对于整个过程有一个感性的认知：
 
-![](Unity-ScrollView学习记录/image-20230424174050893.png)
+![](Unity组件学习记录/image-20230424174050893.png)
 
 在我们向上滑动，底部出现新的Item的时候，会出现这种情况：
 
@@ -317,7 +317,7 @@ Unity中所有在场景中的物体肯定都会有这两个组件的其中一个
 
 上面移动的场景是比较好理解的。
 
-![](Unity-ScrollView学习记录/image-20230507170000872.png)
+![](Unity组件学习记录/image-20230507170000872.png)
 
 在Unity的Scene窗口中，有一个`Toggle Tool Handle Position`和一个`Toggle Tool Handle Rotation`，这是Unity的Scene窗口中的两个选项，用于切换Transform工具的操控模式。它们主要影响移动、旋转和缩放游戏对象所使用的参考坐标系。
 
