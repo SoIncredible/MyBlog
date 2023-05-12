@@ -354,71 +354,39 @@ _StyleCop.Cache
 
 # 使用SourceTree管理Unity项目
 
-SourceTree不过就是Git的可视化版，下面举几个在开发中碰到的场景
+`SourceTree`是带有可视化界面的`Git`，有了它能够大大提高我们版本管理的效率，下面记录的是我在使用`SourceTree`面对一些较为复杂的使用场景时的基本流程，为之后遇到类似流程做一个参照。
 
-1.在Windows系统上面更改连接方式为OpenSSH
-
-2.我在使用sourcetree的时候，有以下的使用场景：我现在有两个云端仓库A和B，远程仓库A是我们公司项目的仓库，而远程仓库B是我自己的个人仓库，我在本地有两个分支：learn和master，learn分支是我自己学习使用的分支，在这个分支上我会做很多和公司项目需求无关的内容，所以不能上传到远程仓库A中去，但我又想能在多设备上进行learn分支的开发，所以我将该分支的内容上传到了我自己的仓库B中去，master分支是我们公司项目开发所用的分支，这个分支需要和云端仓库A时刻保持同步，我现在希望我的learn分支除了能够存储我自己所做的所有更改，同时也囊括master分支上所有的修改，然后将learn分支的内容上传到云端仓库B中去，我该怎么做？
-
-你可以使用如下步骤实现你的需求：
-
-1. 首先确保在 SourceTree 中添加了两个远程仓库：A（公司项目）和 B（个人仓库）。可以在 Repository Settings 中添加新的远程仓名。
-2. 在 SourceTree 中切换到 master 分支，并从远程仓库 A 拉取最新的更改：
+## 在Windows上使用SourceTree执行git命令有如下报错
 
 ```
-复制代码git checkout master
-git pull A master
-```
-
-1. 切换回 learn 分支，然后将 master 分支的修改合并到 learn 分支：
-
-```
-复制代码git checkout learn
-git merge master
-```
-
-在这一步中，如果有任何冲突，需要手动解决并提交修改。
-
-1. 确保本地 learn 分支包含 master 分支上的所有更改。现在，你可以将 learn 分支推送到个人远程仓库 B：
+The host key is not cached for this server:
+ gitee.com(port22)
+You have no guarantee that the server is the computer
+you think it is
+The server's ssh-ed25519 key fingerprint is:
+	.................................
+if you trust this host, enter "y" to add thie key to
 
 ```
-复制代码git push B learn
-```
 
-这样，你就可以将本地 learn 分支的所有更改（包括 master 分支的同步）上传到远程个人仓库 B。注意每次 master 分支有新更改时，你需要重复这些步骤以使 learn 分支保持更新。
+打开Windows版的SourceTree，在菜单栏中选择`工具``->``选项``->``一般``->``SSH客户端配置``->``SSH客户端`选择`OpenSSH`就可以解决问题 。
 
-3.我使用SourceTree在错误的分支上做了修改，我怎么把我在错误的分支上做的修改转移到正确的分支上
+## 使用SourceTree实现在一个项目中向两个云端仓库同步更新版本
 
-要将在错误分支上的修改转移到正确分支，请按照以下步骤操作：
+**需求描述：**我们Bubble项目的远程仓库部署在Gerrit上，我已经将它拉取下来创建了本地的仓库，由于我需要学习和熟悉项目，为了检验学习成果我会在项目中创建很多和需求无关的脚本或做一些修改，我不想将这些内容丢弃，但又不能上传到Gerrit上污染了远端的仓库，所以我打算将我所做修改上传到我自己的`gitee`仓库中。有两点好处，首先我保存了我为了学习所做的修改，可以时常回顾；其次我实现了多设备同步更新，在公司没有学完的知识回家可以继续学。我自己学习用的分支名为`Learn`分支，它远端的仓库是`gitee`仓库，开发分支是`master`，对应`Gerrit`仓库。同步的基本流程如下：以向gitee仓库中提交Learn分支所做修改为例，阐述基本的流程：
 
-1. 在错误分支上，使用`git stash save`命令保存当前的更改。这会将你的更改暂时存储起来。
+1. 从`gitee`上拉取到最新的`Learn`分支，
+2. 在本地创建了很多脚本或者修改了Prefab的属性等等
+3. 修改完成之后，切换到`master`分支上，从Gerrit仓库中拉取最新的`master`分支到本地
+4. 切换回`Learn`分支，将刚拉取到的最新的`master`分支合并到`Learn`分支上
+5. 提交并推送所做的修改到`gitee`仓库，完成版本更新
 
-```
-复制代码   git stash save "我的修改"
-```
+## 使用SourceTree在错误的分支上做了修改，如何将修改从错误的分支转移到正确的分支上？
 
-1. 切换到正确的分支。
+紧接着上面那个在一个项目中向两个云端仓库同步更新版本的例子使用场景，我极有可能在`Learn`分支上进行学习的时候突然要修复一个bug或者完成新的需求，但是我忘记切换分支到`master`上，于是我在`Learn`分支上完成的代码的编写，在这种情况下，我希望将我在`Learn`分支上做的修改转移到`master`分支上，需要使用贮藏`stash`的功能，基本流程如下：
 
-```
-复制代码   git checkout 正确分支
-```
-
-1. 使用`git stash apply`将暂存的更改应用到正确的分支。
-
-```
-复制代码   git stash apply
-```
-
-1. 如果一切顺利，提交更改：
-
-```
-复制代码   git add .
-   git commit -m "将修改转移到正确分支"
-```
-
-1. （可选）删除在错误分支上创建的暂存点（如果不再需要），运行：
-
-```
-复制代码   git stash drop
-```
+1. 当前分支是`Learn`，确保需要更改分支的内容都处于未提交`commit`的状态
+2. 选中需要更改分支的内容，点击贮藏`stash`
+3. 切换到`master`分支上，应用刚才生成的贮藏，就将在`Learn`分支上做的修改移动到了`master`分支上
+4. 提交到远程仓库
 
