@@ -117,7 +117,7 @@ crashlytics-build.properties
 2. 添加如下内容：
 
    ```bash
-   Generate_unity_gitignore() {
+   generate-unity-gitignore() {
      curl https://raw.githubusercontent.com/github/gitignore/master/Unity.gitignore -o .gitignore
    }
    ```
@@ -128,7 +128,7 @@ crashlytics-build.properties
    source ~/.zshrc
    ```
 
-现在，我们在创建了一个新的Unity项目后，去到该项目的根目录下，使用`generate_gitignore_unity`就可以生成`.gitignore`文件了。
+现在，我们在创建了一个新的Unity项目后，去到该项目的根目录下，使用`generate-unity-gitignore`就可以生成`.gitignore`文件了。
 
 ## Windows
 
@@ -149,7 +149,7 @@ crashlytics-build.properties
 4. 将下面的内容添加到其中：
 
    ```powershell
-   function Generate_Unity_gitignore {
+   function generate-unity-gitignore {
        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/github/gitignore/master/Unity.gitignore" -OutFile ".gitignore"
    }
    ```
@@ -160,9 +160,9 @@ crashlytics-build.properties
    . $Profile
    ```
 
-现在我们在PowerShell窗口中输入`Generate_Unity_Gitignore`就可以生成`.gitignore`了
+现在我们在PowerShell窗口中输入`generate-unity-gitignore`就可以生成`.gitignore`了
 
-不过在近期的使用中我发现，`gitigonre`的文件内容是从github上获取的，对网络质量要求高，有可能会创建失败；而且由于我使用的编辑器是Rider，项目文件夹中会有一个.idea的文件夹并没有被列入gitignore中，当然我们可以在生成了gitignore文件之后再将这个文件夹加入到文件的末尾，但是还是太繁琐了，所以我们修改一下创建`gitignore`文件的方式，我们将Mac和Windows对应的Shell脚本和PowerShell脚本中`Generate_Gitignore_Unity`方法的内容替换：
+不过在近期的使用中我发现，`gitigonre`的文件内容是从github上获取的，对网络质量要求高，有可能会创建失败；而且由于我使用的编辑器是Rider，项目文件夹中会有一个.idea的文件夹并没有被列入gitignore中，当然我们可以在生成了gitignore文件之后再将这个文件夹加入到文件的末尾，但是还是太繁琐了，所以我们修改一下创建`gitignore`文件的方式，我们将Mac和Windows对应的Shell脚本和PowerShell脚本中`generate-unity-gitignore`方法的内容替换：
 
 **Mac**
 
@@ -347,7 +347,7 @@ if you trust this host, enter "y" to add thie key to
 
 ## gitignore没有生效，将本应该ignore的文件提交了该怎么办？
 
-今天在使用`Generate_Unity_gitignore`方法在终端中生成gitignore文件的时候，在提交的时候发现gitignore文件好像并没有生效，提交了大量Library和Logs文件夹中的文件，导致`git add .`操作卡了好久，但是已经将不该提交的文件提交上去了，解决方案如下：
+今天在使用`generate-unity-gitignore`方法在终端中生成gitignore文件的时候，在提交的时候发现gitignore文件好像并没有生效，提交了大量Library和Logs文件夹中的文件，导致`git add .`操作卡了好久，但是已经将不该提交的文件提交上去了，解决方案如下：
 
 1.删除掉原来的.gitignore文件
 
