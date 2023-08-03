@@ -66,7 +66,7 @@ protected、private、protected internal只能用于嵌套的类
 
 # IEnumerable和IEnumerator
 
-IEnumerable和IEnumerator本质是两个接口，二者的源码如下：
+`IEnumerable`和`IEnumerator`本质是两个接口，二者的源码如下：
 
 ```C#
 // Decompiled with JetBrains decompiler
@@ -287,8 +287,6 @@ namespace learnIEnumerator
 
   我看了一个半小时的资料，还是没有太理解foreach的原理，我现在只能用表现层给foreach做一个定义：foreach是一个完全用来遍历集合的工具，它的使用不需要数组下标的参与，能够减少我们使用数组下标会出现的问题、提高我们编写代码的效率。
 
-
-
 在对上面三点进行了了解之后，我现在对IEnumerator和IEnumerable做一个总结：
 
 如果我们要实现枚举我们自己定义的数据结构的功能，我们总共要实现三个类：
@@ -328,7 +326,7 @@ public class PersonSet : IEnumerable
 
 # yield关键字
 
-yield关键字是一个语法糖，背后其实生成了一个新的类，肯定是一个枚举器，枚举器具体实现了MoveNext、Reset和Current。
+yield关键字是一个语法糖，背后其实生成了一个新的类，是一个枚举器，枚举器具体实现了MoveNext、Reset和Current。
 
 先看一段代码，通过`yield return`实现了类似用foreach便利数组的功能，说明yield return也是用来实现迭代器的功能的
 
@@ -372,7 +370,7 @@ yield return 3;
 
 那么结果就只会输出1和2，说明这个迭代器被yield break给停掉了，所以yield break是用来终止迭代的。
 
-我们现在把上面遍历人名的那个程序改写成yield的形式看一下：
+我们现在把上面遍历人名的那个程序改写成`yield`的形式看一下：
 
 ```C#
 namespace learnIEnumerator
@@ -405,7 +403,7 @@ namespace learnIEnumerator
             }
         }
 
-        public IEnumerable<String> PersonEnum()
+        public IEnumerable<Str4ing> PersonEnum()
         {
             for (int i = 0; i < people.Length; i++)
             {
