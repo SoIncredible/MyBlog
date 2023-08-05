@@ -6,7 +6,7 @@ tags:
   - Git
   - Unity
 categories: 技术文档
-cover: "http://soincredible777.com.cn:90/6.png"
+cover: "139.224.82.218:90/6.png"
 description: 
 sticky: 2
 swiper_index: 4

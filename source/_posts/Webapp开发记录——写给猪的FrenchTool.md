@@ -6,7 +6,7 @@ tags:
   - Java
   - 云服务器
 categories: 开发日志
-cover: "http://soincredible777.com.cn:90/15.png"
+cover: "139.224.82.218:90/15.png"
 description: 使用Java开发一个Tomcat应用
 ---
 

@@ -6,7 +6,7 @@ categories:
   - 学习笔记
 abbrlink: d5c2d910
 date: 2023-04-23 10:44:19
-cover: 'http://soincredible777.com.cn:90/32.png'
+cover: '139.224.82.218:90/32.png'
 description:
 swiper_index:
 sticky:

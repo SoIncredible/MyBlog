@@ -5,7 +5,7 @@ tags:
 abbrlink: a72e4bb6
 categories: 学习笔记
 date: 2022-07-10 11:11:26
-cover: "http://soincredible777.com.cn:90/12.png"
+cover: "139.224.82.218:90/12.png"
 description: 为SourceTree打基础
 sticky: 1
 swiper_index: 3
@@ -901,5 +901,3 @@ git tag -a <tagname> -m "blabla....."
 ```
 
 标签打错了也可以删除，因为标签都只存储在本地，不会自动推送到远程，使用<code>git push origin --tags</code>将标签推送至远程。
-
-以上是截止<code>2022年7月26</code>号以前我全部的Git学习成果，后续本篇博客会持续更新。
