@@ -7,7 +7,7 @@ tags:
 abbrlink: e57f243c
 categories: 技术文档
 date: 2022-07-06 00:07:34
-cover: "http://soincredible777.com.cn:90/14.png"
+cover: "139.224.82.218:90/14.png"
 description: 
 ---
 

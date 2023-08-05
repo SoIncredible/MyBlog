@@ -5,7 +5,7 @@ tags:
 abbrlink: 1408599b
 categories: 技术文档
 date: 2022-06-27 00:00:00
-cover: "http://soincredible777.com.cn:90/4.png"
+cover: "139.224.82.218:90/4.png"
 description: 
 ---
 

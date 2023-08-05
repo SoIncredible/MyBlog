@@ -3,7 +3,7 @@ title: Java基础语法
 tags:
   - Java
 categories: 学习笔记
-cover: 'http://soincredible777.com.cn:90/23.png'
+cover: '139.224.82.218:90/23.png'
 abbrlink: ea538f2a
 date: 2023-03-14 19:56:33
 description:
