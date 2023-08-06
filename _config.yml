@@ -13,7 +13,7 @@ timezone: 'Asia/Shanghai'
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://soincredible777.com.cn
+url: https://soincredible777.com.cn
 permalink: posts/:abbrlink/ 
 # abbrlink config
 abbrlink:
@@ -152,7 +152,7 @@ symbols_count_time:
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   - type: git
-    repo: git@soincredible777.com.cn:/home/git/blog.git
+    repo: git@139.224.82.218:/home/git/blog.git
     branch: master
   - type: 
 
