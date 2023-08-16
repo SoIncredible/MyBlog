@@ -1,19 +1,21 @@
 ---
-title: git学习记录
+ title: git学习记录
 tags: 
   - Git
 abbrlink: a72e4bb6
 categories: 学习笔记
 date: 2022-07-10 11:11:26
 cover: "139.224.82.218:90/12.png"
-description: 为SourceTree打基础
+description: 
 sticky: 1
 swiper_index: 3
 ---
 
-# 2023.7.11更新
+# Git实践
 
-经过了一段时间在工作中对版本管理工具的使用，我对Git有了更深刻的了解，之前的学习Git使用的方法十分地笨拙，因为对于很多的使用场景都没有概念，只会照抄官网上的文档。而且当时还是单纯地使用git命令行来进行操作，过程十分低效。因此这一次博客更新我将会结合具体的工作场景和Source Tree的图形化界面来说明我们在使用git管理项目时的一套流程规范，流程中的每一个环节我尽量详细阐述，我会演示每个环节如何使用命令行完成，对应地，我也会演示如何使用Source Tree的图形化界面来达到同样的效果。我还有[另外一篇]()文章介绍了我使用Git和Source Tree管理Unity项目中的时候遇到的问题、解决办法，以及一些shell编程相关的知识。
+本章节编写于我在工作中使用过一段时间的`git`和`SourceTree`之后，如果正在阅读本文的你已经对git有一个初步的了解了，那么你可以从这里继续看下去，我会在这一小节分享两方面内容：1.Git在开发中的使用流程，2.`git`与`SourceTree`使用心得；如果你还不了解git，那么你可以往后翻一翻，先阅读本文后面的[Git基础](#git基础)小结。
+
+因此这一次博客更新我将会结合具体的工作场景和Source Tree的图形化界面来说明我们在使用git管理项目时的一套流程规范，流程中的每一个环节我尽量详细阐述，我会演示每个环节如何使用命令行完成，对应地，我也会演示如何使用Source Tree的图形化界面来达到同样的效果。我还有[另外一篇]()文章介绍了我使用Git和Source Tree管理Unity项目中的时候遇到的问题、解决办法，以及一些shell编程相关的知识。
 
 当然，在你看这一部分内容之前，希望你能够对git现有一个基本的了解，比如常用的`git add`、`git commit`、`git push`命令，这部分基础的内容可以点击[此处](#git基础)去到本篇博客内对应的部分
 
@@ -141,7 +143,7 @@ git branch --set-upstream-to origin/master
 
 一般情况下按照以上四个步骤我们是可以快速地参与到团队开发中并且不会产生严重的冲突的
 
-## 对一些概念的理解
+## 重新理解Git经常出现的基础概念
 
 ### 重置Reset
 
@@ -159,11 +161,11 @@ git branch --set-upstream-to origin/master
 
 ![](git学习记录/4c523f7696cf64cc9420f97c0e1d36c.jpg)
 
-### 交互式变基
+#### 交互式变基
 
 它可以帮助我们清理本地的提交和分支
 
-### 理解`使用变基代替合并`
+#### 理解`使用变基代替合并`
 
 我们在拉取远端仓库的时候最常用的指令是git pull 或者 git fetch + git merge，大部分情况下git pull等价于git fetch + git merge
 
@@ -215,23 +217,31 @@ git钩子是一个触发器，当你在进行一些操作的时候，比如你�
 
 
 
+# <span id = git基础>Git基础</span>
 
+## Git的前生今世
 
+2002年,Linux内核社区开始使用BitKeeper作为版本控制系统。BitKeeper是当时为数不多的分布式版本控制系统。但是到了2005年,BitKeeper的商业公司同Linux内核社区的合作关系终止,Linux社区面临不能继续使用BitKeeper的困境。
 
+Linus Torvalds认为这是一个危机,必须尽快解决版本控制问题,否则Linux内核开发会陷入混乱。他考察了当时流行的集中式版本控制系统,包括CVS、Subversion等,但都不符合Linux内核社区的分布式协作需求。
 
-下面的内容是一开始照抄的官网文档，可以不用看
+于是Linus决定自己动手创建新的版本控制系统,把它设计为分布式管理。Linus认为这样的系统可以充分利用每个开发者的本地存储空间来保存多个版本的代码,更适合社区化的开发模式。
 
-这篇博客会持续更新我的Git学习记录。
+在设计之初,Linus就决定采用分布式object模型,而非集中式的delta模型。每个版本控制对象作为一个独立单元被完整保存,包含文件的数据、元数据和目录结构。对象间通过commit进行关联。
 
-[官方参考书](https://git-scm.com/book/zh/v2)
+Linus选择C语言来实现这个设想。他非常看重性能问题,需要版本控制系统有极快的速度来处理大量数据。2005年4月,Linus着手编写新系统的代码,一个月后第一个版本诞生,即Git v0.99。
 
-# <span id ="在GitHub上创建仓库">在GitHub上创建仓库</span>
+Git在Linux内核社区迅速推广开来。同年6月,Linux 2.6.12版的内核代码就完全迁移到了Git。之后Git又被GitHub和GitLab等代码托管平台引入,使得更多开源社区可以免费使用它。
 
-## 创建仓库
+Git简单高效的分布式模式获得广泛认可。它的分支管理、多人协作等功能大大改进了软件开发流程。各大技术公司纷纷将Git作为版本控制的首选。在短短几年内,Git就成为当今最流行的版本控制系统。
+
+## <span id ="在GitHub上创建仓库">在GitHub上创建仓库</span>
+
+### 创建仓库
 
 ![](git学习记录/image-20220710112133622.png)
 
-## 创建分支
+### 创建分支
 
 默认情况下，Repository有一个名为main的分支，被视为最终分支。我们可以在Repository中创建mian以外的其他分支，使用分支可以一次拥有项目的不同版本，如果想要在不更改主要代码源的情况下向项目添加新功能，这就十分有用，在合并主分支前，在不同分支上完成的工作不会显示在主分支上。
 
@@ -251,20 +261,17 @@ git钩子是一个触发器，当你在进行一些操作的时候，比如你�
 
     ![](git学习记录/image-20220710112838151-7423722.png)
 
-## 创建和提交更改
+### 创建和提交更改
 
 在上一步创建新分支时，github会跳转到新创建的readme-edits分支的代码页
 
-# <span id = git基础>Git基础使用</span>
-
-## 基础配置
+### 基础配置
 
 1. 配置user信息，查看配置文件
 
    ```shell
    git config --global user.name 'your_name'
    git config --global user.mail 'your_mail'
-   
    
    #查看配置文件
    git config --list
@@ -274,14 +281,14 @@ git钩子是一个触发器，当你在进行一些操作的时候，比如你�
    
    #如果一台电脑要配置多个git用户，则需要取消全局配置--global然后进入到该项目中--local本地配置，这样才能同时使用两个不同的账号管理同一套代码。
    ```
-
+   
 2. config三个作用域
 
    <code>local</code> <code>global</code> <code>system</code>
 
 3. 查看git日志信息<code>git log</code>
 
-## 基本的Git命令
+### 基本的Git命令
 
 - <code>git init</code> 初始化一个全新的Git存储库并开始跟踪现有目录，它在现有目录中添加一个隐藏的子文件夹，该子文件夹包含版本控制所需的内部数据结构。
 - <code>git clone</code> 创建远程已存在的项目的本地副本。克隆包括项目的所有文件、历史记录和分支。
@@ -295,7 +302,7 @@ git钩子是一个触发器，当你在进行一些操作的时候，比如你�
 - <code>git log</code> 查看git提交历史，会按照时间的先后顺序列出所有的提交，最近的更新会排在最上面。
 - <code>git diff</code> 查看一个文件已暂存状态和未暂存状态的区别。
 
-## 示例：通过Git将本地仓库添加到GitHub的仓库中（主要看这个！！！）
+### 示例：通过Git将本地仓库添加到GitHub的仓库中
 
 ```shell
 #1.在GitHub中创建一个新的仓库，不要生成README、LICENSE或者.gitignore文件
@@ -323,7 +330,7 @@ git push -u origin main
 
 ```
 
-## 示例：参与现有存储库
+### 示例：参与现有存储库
 
 假设现在有一个尚未进行版本控制的项目目录，我们想要使用Git来控制它，那么首先要进入该项目的根目录下使用：<code>git init</code>，该命令将创建一个为<code>.git</code>的子目录，这个子目录含有初始化的Git仓库中所有的必须文件，这些文件是Git仓库的骨干，但是在这个时候我们仅仅是做了一个初始化的操作，我们的项目里的文件还没有被跟踪。
 
@@ -350,7 +357,7 @@ git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPOSITORY-NAME.git
 git push --set-upstream origin main
 ```
 
-## 示例：启动新存储库并将其发布到GitHub
+### 示例：启动新存储库并将其发布到GitHub
 
 首先，我们需要在[GitHub上创建一个新的存储库](#在GitHub上创建仓库)，**不要**使用README、.gitignore或许可文件初始化存储库，这个空的存储库将等待你的代码
 
@@ -378,7 +385,7 @@ git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPOSITORY-NAME.git
 git push --set-upstream origin main
 ```
 
-## 示例：为GitHub现有的分支做出贡献
+### 示例：为GitHub现有的分支做出贡献
 
 此示例假定本地计算机上已经有一个名为<code>repo</code>的项目，并且上次在本地进行更改以来，已经将新分支推送到GitHub。
 
@@ -404,7 +411,7 @@ git commit -m "edit file1"
 git push
 ```
 
-## git add多个文件或文件夹的方法
+### git add多个文件或文件夹的方法
 
 ```shell
 #方法一
@@ -425,19 +432,19 @@ git add .
 git add --all
 ```
 
-## git 删除本地分支
+### git 删除本地分支
 
 ```shell
 git branch -d 分支名
 ```
 
-## 给文件重命名
+### 给文件重命名
 
 ```shell
 git mv 旧文件名 新文件名
 ```
 
-## <code>git fetch</code> <code>git pull</code> <code>git clone</code>区别
+### <code>git fetch</code> <code>git pull</code> <code>git clone</code>区别
 
 ```shell
 git pull = git fetch + git merge
@@ -466,7 +473,7 @@ git push
 git push --set-upstream origin <本地分支名>
 ```
 
-# Git分支
+## Git分支
 
 每次提交，Git都把它们串成一条时间线，这条时间线就是一个分支，如果仅仅是在本地使用<code>git init</code>了一下，那么本地就只有一条时间线，在Git里，这个分支叫做主分支，即<code>master</code>分支。
 
@@ -525,7 +532,7 @@ git merge dev
 git branch -d de
 ```
 
-# <span id = "版本回退">版本回退</span>
+## <span id = "版本回退">版本回退</span>
 
 在使用Git的过程中，文件修改到一定程度的时候，可以保存一个“快照”，也就是<code>commit</code>。一旦误删了文件，或者文件被改乱，还可以从最近的一个<code>commit</code>中恢复，然后继续工作。
 
@@ -547,7 +554,7 @@ git reset --hard HEAD^
 
 但我们再用<code>git log</code>查看时，我们就看不到最新的版本了，如果我们还记得最新版本的commitid，我们可以使用<code>git reset --hard commitid</code>来重新回到最新版本，当然commitid不需要写全，git会自动去找。如果很不幸地忘记了<code>commitid</code>，可以使用<code>git reflog</code>，它用来记录你的每一次命令，这样就可以找到<code>commitid</code>然后使用<code>git reset</code>了。
 
-# <span id = 3>工作区和暂存区</span>
+## <span id = 3>工作区和暂存区</span>
 
 **工作区**就是在本地电脑里能看到的目录，例如<code>hello-world</code>这个文件夹。
 
@@ -599,7 +606,7 @@ Git的版本库里存了很多东西，其中最重要的就是称为stage或者
 
 知道了对这个文件做了什么修改后，再将它提交到仓库就可以放心了，通过<code>add</code> <code>commit</code>完成。
 
-# Git在合并分支时存在冲突
+## Git在合并分支时存在冲突
 
 现在准备新的<code>feature</code>分支，继续我们的新分支开发：
 
@@ -687,7 +694,7 @@ git log --graph --pretty=oneline --abbrev-commit
 git branch -d feature 
 ```
 
-# 管理修改
+## 管理修改
 
 Git管理的是修改，而不是文件，做一个实验：
 
@@ -723,7 +730,7 @@ git status
 
 第一次修改 -> <code>git add</code> -> 第二次修改 -> <code>git add</code> -> <code>git commit</code>
 
-# 撤销修改
+## 撤销修改
 
 现在假设已经add完毕，准备commit了，但是在commit之前，我们发现了某个文件中的错误，这时可以使用<code>git checkout -- file</code>来丢弃工作区的更改，比如对于<code>README.md</code>，意思就是把<code>README.md</code>在工作区的修改全部撤销，这里有两种情况：
 
@@ -741,7 +748,7 @@ git status
 
 ![](git学习记录/image-20220722100642804.png)
 
-# 删除文件
+## 删除文件
 
 在Git中，删除也是一个修改操作。
 
@@ -778,7 +785,7 @@ git checkout -- test.txt
 git rm --cached 文件名
 ```
 
-# 添加远程库
+## 添加远程库
 
 现在的情景是我们已经在本地创建了GIt仓库，又想在GitHub上创建一个Git仓库，并且让这恋歌仓库进行远程同步，这样，GitHub上的仓库既可以作为备份，又可以让其他人通过该仓库来协作，一举两得，按照[在GitHub上创建仓库](#在GitHub上创建仓库)步骤创建一个**空仓库**。
 
@@ -802,7 +809,7 @@ git push -u origin master
 
 如果我们从零开发，最好的方式是先创建远程库，然后从远程库克隆，依旧是在GitHub上创建一个新的空仓库，然后使用git clone克隆一个本地库。如果多人协作开发，那么每个人各自从远程克隆一份可以了。
 
-# <span id = "1">忽略文件</span>
+## <span id = "1">忽略文件</span>
 
 一般有些文件无需纳入Git的管理，也不希望它们总出现在未跟踪文件列表，通常都是些自动生成的文件，比如日志文件或者编译过程中创建的临时文件等，在这种情况下，我们可以创建一个名为<code>.gitignore</code>的文件，列出要忽略的文件的模式。
 
@@ -843,7 +850,7 @@ doc/**/*.pdf
 
 现在理解`.gitignore`文件的作用了吧？点[这里](#2)回去，我们继续。
 
-# Git中的origin/master
+## Git中的origin/master
 
 在使用git时，如果我们使用了clone或者git push到远程的某个origin上之后，使用命令git branch -a会发现，有一个origin/master分支，这实际上是git从远程clone的一个分支，origin/master指向远端origin的master，用来跟踪远程origin/master变化情况，只有git再和远程的origin通讯，比如fetch、pull后，origin/master分支的指针次才会更新移动，当我们使用git fetch或者git remote update时，就会把远端的代码给更新到origin/master上，此时，如果我们想以远程的分支为基础，建立一个本地分支来做开发，那么git checkout -b local_branch origin/master 所以，当合并的时候，需要git merge origin/master，之前讲过，Git往远程push前修改commit信息，使用的是git rebase -i origin/master，也就不难理解，它rebase的是origin/master的commit信息，所以push之后，远端的commit信息就会改变了。
 
@@ -871,7 +878,7 @@ git branch --set-upstream-to=test/piggy piggy
 git pull
 ```
 
-# 标签
+## 标签
 
 发布一个版本时，我们通常先在版本库中打一个标签tag，这样我们就唯一确定了打标签时刻的版本，将来无论什么时候，取某个标签的版本，就是把那个打标签的时刻的历史版本取出来，所以标签也是版本库的一个快照。
 
@@ -901,3 +908,9 @@ git tag -a <tagname> -m "blabla....."
 ```
 
 标签打错了也可以删除，因为标签都只存储在本地，不会自动推送到远程，使用<code>git push origin --tags</code>将标签推送至远程。
+
+
+
+# 参考资料
+
+[官方参考书](https://git-scm.com/book/zh/v2)
