@@ -68,11 +68,31 @@ Canvas Scaler组件用来控制UI元素在Canvas上的整体缩放和像素密�
     - Default Sprite DPI
     - Reference Pixels Per Unit
 - 当Canvas的RenderMode被设置为WorldSpace的时候
-  - Dynamic Pixels Per Unit
-  - Reference Pixels Per Unit
+  - Dynamic Pixels Per Unit： 表示UI中动态创建的位图，比如Text，中单个单元的像素数量
+  - Reference Pixels Per Unit:  如果一个sprite有这个Pixels Per Unity的设置，那么在Sprite中的一个像素将会覆盖世界场景中韩的一个单元，如果Reference Pixel Per Unit 被设置为了1，那么在sprite中的Pixels Per Unit设置将会被直接使用
+
+## 细节
+
+对于被设置为Screen Space - Overlay 或者 Screen Space - Camera 的 Canvas，Canvas Scaler UI 的 Scale Mode 可以被设置为Constant PixelSize， Scale With Screen 或者 Constant Physical Size
+
+## Constant Pixel Size
+
+## Scale With Screen Size
+
+## Constant Physical Size
+
+## World Space
 
 # CanvasGroup
 
+ CanvasGroup用来控制某些方面
+
 # CanvasRenderer
+
+Canvas Renderer 组件将一个Canvas中的一个图像UI渲染出来，该组件需要挂载在每一个需要显示在屏幕上的UI组件上，Canvas Renderer组件没有任何属性暴露在inspector窗口中
+
+## 细节
+
+在Unity的菜单中可以创建的标准的UI组件上不论你需不需要都挂载有Canvas Renderer组件，但是当我们开发我们自定义的UI组件的时候，我们需要手动将该组件挂载到自定义UI上，尽管在Inspector窗口中没有任何的属性，但是有一些属性和功能还是可以通过代码的形式来控制
 
 # GraphicRaycaster
