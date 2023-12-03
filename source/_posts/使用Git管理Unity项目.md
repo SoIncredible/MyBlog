@@ -6,7 +6,7 @@ tags:
   - Git
   - Unity
 categories: 技术文档
-cover: "139.224.82.218:90/6.png"
+cover: "https://soincredible777pic.top/api/image/F6066F8P.png"
 description: 
 sticky: 2
 swiper_index: 4

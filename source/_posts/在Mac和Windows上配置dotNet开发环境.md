@@ -6,7 +6,7 @@ tags:
 categories: 技术文档
 abbrlink: 724ccb4
 date: 2023-03-10 16:06:25
-cover: "139.224.82.218:90/8.png"
+cover: "https://soincredible777pic.top/api/image/484FNZ62.png"
 description:
 swiper_index:
 sticky:

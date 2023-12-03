@@ -6,7 +6,7 @@ tags:
 abbrlink: 5e0804b8
 date: 2022-08-23 21:39:03
 categories: 学习笔记
-cover: "139.224.82.218:90/17.png"
+cover: "https://soincredible777pic.top/api/image/8N280N6T.png"
 description: 
 ---
 

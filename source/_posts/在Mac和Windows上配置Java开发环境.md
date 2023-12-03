@@ -6,7 +6,7 @@ tags:
 categories: 技术文档
 abbrlink: f57878ea
 date: 2023-03-08 18:00:38
-cover: "139.224.82.218:90/9.png"
+cover: "https://soincredible777pic.top/api/image/0H0VX88H.png"
 description:
 swiper_index:
 sticky:

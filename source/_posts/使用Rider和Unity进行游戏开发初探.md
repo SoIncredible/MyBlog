@@ -7,7 +7,7 @@ tags:
 categories: 技术文档
 abbrlink: 61a4721e
 date: 2023-03-07 10:35:39
-cover: "139.224.82.218:90/16.png"
+cover: "https://soincredible777pic.top/api/image/0020R4NH.png"
 description: 熟悉Rider搭配Unity开发
 ---
 

@@ -5,7 +5,7 @@ tags:
   - Hexo博客
 abbrlink: e47b5157
 categories: 技术文档
-cover: "139.224.82.218:90/7.png"
+cover: "https://soincredible777pic.top/api/image/B2246244.png"
 description: 博客写作的一系列标准规范
 swiper_index: 2
 sticky: 1

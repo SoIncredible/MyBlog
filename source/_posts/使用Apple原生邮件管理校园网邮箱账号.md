@@ -5,7 +5,7 @@ tags:
   - 随笔
 abbrlink: qwerqwer
 categories: 技术文档
-cover: "139.224.82.218:90/5.png"
+cover: "https://soincredible777pic.top/api/image/6VN6282V.png"
 description: 
 ---
 

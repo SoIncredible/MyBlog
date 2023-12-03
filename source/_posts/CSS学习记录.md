@@ -5,7 +5,7 @@ tags:
 categories: 学习笔记
 abbrlink: 127bc3c9
 date: 2022-12-19 18:13:50
-cover: "139.224.82.218:90/11.png"
+cover: "https://soincredible777pic.top/api/image/D6BD48Z2.png"
 description: 
 ---
 
