@@ -51,15 +51,12 @@ external_link:
 filename_case: 0
 render_drafts: false
 
-
 post_asset_folder: true
 
 # 这里配置的是 hexo-renderer-marked 包
 marked:
   prependRoot: true
   postAsset: true
-
-
 
 relative_link: false
 future: true
@@ -90,14 +87,11 @@ default_category: uncategorized
 category_map:
 tag_map:
 
-
-
 search:
   path: search.xml
   field: post
   content: true
 #  template: ./search.xml
-
 
 # Metadata elements
 ## https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
@@ -126,11 +120,9 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: butterfly
+theme: anzhiyu
 butterfly_article_double_row:
   enable: true
-
-
 
 #文章、站点字数统计
 symbols_count_time:
@@ -140,14 +132,6 @@ symbols_count_time:
   total_time: true             # 站点总阅读时长
   exclude_codeblock: false     # 排除代码字数统计
 
-
-
-
-
-
-
-
-
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
@@ -155,7 +139,6 @@ deploy:
     repo: git@139.224.82.218:/home/git/blog.git
     branch: master
   - type: 
-
 
   # https://github.com/hexojs/hexo-generator-sitemap
 sitemap:
@@ -183,9 +166,6 @@ plugins:
     - hexo-generator-sitemap
     # rss订阅
     - hexo-generate-feed
-
-
-
 
 # APlayer
 # https://github.com/MoePlayer/hexo-tag-aplayer/blob/master/docs/README-zh_cn.md

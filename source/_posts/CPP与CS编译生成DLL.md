@@ -1,5 +1,6 @@
 ---
 title: CPP与CS编译生成DLL
+abbrlink: 4ea0c9c3
 date: 2023-09-28 18:04:28
 tags:
 categories:

@@ -1,5 +1,5 @@
 ---
- title: git学习记录
+title: git学习记录
 tags: 
   - Git
 abbrlink: a72e4bb6
