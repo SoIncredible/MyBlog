@@ -29,7 +29,7 @@ GLAD是一个开源的库，它能解决我们上面提到的那个繁琐的问�
 
 # 准备工作
 
-在参考的[OpenGL教程](https://learnopengl-cn.github.io/01%20Getting%20started/02%20Creating%20a%20window/)中使用的开发平台是VisualStudio，但是Mac系统上的VisualStudio不能进行c++开发，为了在Mac和Windows上保持相同的开发体验，双平台统一使用`VSCode` + `CMake` + `Clang`的开发方案。
+在参考的[OpenGL教程](https://learnopengl-cn.github.io/01%20Getting%20started/02%20Creating%20a%20window/)中使用的开发平台是VisualStudio，但是Mac系统上的VisualStudio不能进行C++开发，为了在Mac和Windows上保持相同的开发体验，双平台统一使用`VSCode` + `CMake` + `Clang`的开发方案。
 
 
 ## 安装[VSCode](https://code.visualstudio.com/)
@@ -53,6 +53,22 @@ lib是Windows系统上的静态链接库
 ### Windows上编译GLFW源码
 
 ### MacOS上编译GLFW源码
+
+去到[GLFW官网](https://www.glfw.org/download.html)下载GFLW源码
+
+CMake可以指定用来编译使用的编译器
+Windows下默认使用的编译器是VisualStudio 
+MacOS下默认使用的编译器是Clang
+
+1.解压下载好的文件
+2.在终端中进入源码的根目录
+3.在根目录下创建名为`build`的路径
+4.进入路径cd build
+5.终端输入`cmake .. -G "Unix Makefiles"`命令
+
+
+
+使用。。命令可以把lib安装到系统路径下
 
 ## VSCodeCoding体验优化
 
