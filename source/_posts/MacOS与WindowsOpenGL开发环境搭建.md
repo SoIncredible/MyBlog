@@ -31,47 +31,47 @@ GLAD是一个开源的库，它能解决我们上面提到的那个繁琐的问�
 
 在参考的[OpenGL教程](https://learnopengl-cn.github.io/01%20Getting%20started/02%20Creating%20a%20window/)中使用的开发平台是VisualStudio，但是Mac系统上的VisualStudio不能进行C++开发，为了在Mac和Windows上保持相同的开发体验，双平台统一使用`VSCode` + `CMake` + `Clang`的开发方案。
 
-
 ## 安装[VSCode](https://code.visualstudio.com/)
 
 ## 安装[CMake](https://cmake.org/)
 
-## 下载GLAD与GLFW
+## 编译GLFW源码
 
-Windows和MacOs上都是用了Clang编译器 他们编译GLFW源码的方法应该是一样的
+去到[GLFW官网](https://www.glfw.org/download.html)下载GFLW源码，解压下载好的源码文件，在终端中进入源码的根目录，创建名为`build`的路径
+
+```
+mkdir build
+```
+
+要使我们编写的程序正确地调用GLFW库中的方法，我们可以使用动态链接或者静态链接GLFW库的方式，选择任意一种方式就可以，在这里我把两种方式都尝试了一下。
+
+使用静态链接方式要生成静态链接库，Windows下对应的文件是.lib，Mac下对应的文件是.a
+
+CMake可以指定将源码编译成何种类型的构建系统，Windows下默认构建的是VisualStudio工程，这并不是我们想要的，因此在调用cmake指令的时候要手动指定要构建的系统
+  
+```
+cmake .. -G "Unix Makefiles"
+```
+MacOS下默认构建的系统就是类Unix的Makefile，因此可以不指定。
+
+接着使用`make`指令
+
+使用动态链接的方式要生成动态链接库，Windows下对应的文件是.dll，Mac下对应的文件是.dylib，动态链接库的编译命令和静态链接库是一样的，但是需要指定一下`DBUILD_SHARED_LIBS`参数，还要注意Windows下指定要构建的系统
+
+```
+cmake .. -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON
+```
+接着使用`make`指令
+
+对于MacOS系统，还使用`make install`命令可以把动态链接库安装到本机，可能需要管理员权限。动态库将会被安装到`usr/local/lib`目录，头文件安装到`usr/local/include`。
+
+执行完上面的操作之后，就可以在`build`目录的`src`目录下看到对应的链接库文件了
+
+## 下载GLAD
 
 尝试一下在Windows上编译成dylib文件可不可以运行
 
-dylib是Unix系统上的动态链接库
-
-a是Unix系统上的静态链接库
-
-dll是Windows系统上的动态链接库
-
-lib是Windows系统上的静态链接库
-
-### Windows上编译GLFW源码
-
-### MacOS上编译GLFW源码
-
-去到[GLFW官网](https://www.glfw.org/download.html)下载GFLW源码
-
-CMake可以指定用来编译使用的编译器
-Windows下默认使用的编译器是VisualStudio 
-MacOS下默认使用的编译器是Clang
-
-1.解压下载好的文件
-2.在终端中进入源码的根目录
-3.在根目录下创建名为`build`的路径
-4.进入路径cd build
-5.终端输入`cmake .. -G "Unix Makefiles"`命令
-
-
-
-使用。。命令可以把lib安装到系统路径下
-
 ## VSCodeCoding体验优化
-
 
 ### 更改设置
 
@@ -104,7 +104,8 @@ MacOS下默认使用的编译器是Clang
 #### 插件
 
 MarkDown插件
-- 
+Markdown Preview Enhanced
+Markdown All in One
 
 代码截图工具 CodeSnap
 
@@ -150,6 +151,33 @@ make 是干什么？
 
 参考OpenGL教程编写代码
 
+编写可以在Mac和Windows上通用的CMakeList
+
+```
+cmake_minimum_required(VERSION 3.10)
+project(HelloWindow VERSION 0.1.0)
+
+# 设置源代码的目录
+set(SOURCE_DIR "${PROJECT_SOURCE_DIR}/src")
+
+# 设置头文件目录
+set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/../../include")
+
+# 设置lib目录
+set(LIBRARY_DIR "${PROJECT_SOURCE_DIR}/../../lib")
+
+# 添加头文件目录
+include_directories(${INCLUDE_DIR})
+
+# 找到所有的源代码
+file(GLOB SOURCES "${SOURCE_DIR}/main.cpp" "${SOURCE_DIR}/glad.c")
+
+add_executable(${PROJECT_NAME} ${SOURCES})
+target_link_libraries(${PROJECT_NAME} "${LIBRARY_DIR}/libglfw.3.dylib")
+
+```
+
+创建build目录
 
 
 
