@@ -1,8 +1,9 @@
 ---
 title: UGUI学习记录——Canvas
-date: 2023-08-17 14:41:01
 tags:
- - UGUI
+  - UGUI
+abbrlink: 723d2ba
+date: 2023-08-17 14:41:01
 categories:
 cover:
 description:

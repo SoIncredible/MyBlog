@@ -1,5 +1,6 @@
 ---
 title: MacOS与WindowsOpenGL开发环境搭建
+abbrlink: fd5f8e8b
 date: 2024-04-02 19:10:32
 tags:
 categories:
@@ -139,7 +140,7 @@ cmake .. -G Ninja -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=clang -D CMAKE_CXX
 "cmake.configureOnOpen": false,
 ```
 
-#### 插件与字体
+### 插件与字体
 
 **MarkDown插件**
 
@@ -157,7 +158,7 @@ Markdown All in One
 
 **字体** [JetBrains Mono](https://www.jetbrains.com/lp/mono/)
 
-#### 智能提示
+### 智能提示
 
 GLAD和GLFW都是第三方库，在VSCode直接使用是没有提示的。使用Mac上的 `Shift + CMD + P` 或者 Windows上的 `Shift + Control + P` 在弹出的搜索栏中输入`C/C++:Edit Configurations(JSON)`，会新建如下Json文件：
 ```
@@ -184,7 +185,7 @@ GLAD和GLFW都是第三方库，在VSCode直接使用是没有提示的。使用
 
 在`includePath`中将项目的include目录添加进去，保存重启VSCode，编写OpenGL相关代码时就会有提示了。
 
-#### include头文件第一行报红问题
+### include头文件第一行报红问题
 
 按照上面的流程设置完之后,点击include的头文件也能跳转到对应头文件的内容中，但是在第一行会有一个红色的波浪线，原因是设置中`clang.diagnostic.enable`选项被打开了，将它关掉就不会有问题了。
 

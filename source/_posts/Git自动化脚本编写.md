@@ -1,5 +1,6 @@
 ---
 title: Git自动化脚本编写
+abbrlink: 7c7fba1c
 date: 2023-10-01 23:19:59
 tags:
 categories:

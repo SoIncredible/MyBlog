@@ -1,5 +1,5 @@
 ---
- title: git学习记录
+title: git学习记录
 tags: 
   - Git
 abbrlink: a72e4bb6
@@ -10,13 +10,6 @@ description:
 sticky: 1
 swiper_index: 3
 ---
-
-测试测试测试
-
-
-
-
-
 # Git实践
 
 本章节编写于我在工作中使用过一段时间的`git`和`SourceTree`之后，如果正在阅读本文的你已经对git有一个初步的了解了，那么你可以从这里继续看下去，我会在这一小节分享两方面内容：1.Git在开发中的使用流程，2.`git`与`SourceTree`使用心得；如果你还不了解git，那么你可以往后翻一翻，先阅读本文后面的[Git基础](#git基础)小结。
