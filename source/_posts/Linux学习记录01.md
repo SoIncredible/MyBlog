@@ -1,6 +1,5 @@
 ---
 title: Linux学习记录01
-abbrlink: 5878c671
 date: 2023-08-16 18:33:18
 tags:
 categories:
