@@ -1,5 +1,5 @@
 ---
-title: Unity Canvas Screen Space模式下UI与粒子混用问题记录
+title: Unity渲染顺序
 date: 2024-04-29 08:57:16
 tags:
 categories:
@@ -52,3 +52,14 @@ Canvas2
 RectTransform的PosZ不能用来处理UI元素之间的层级关系 但是可以用来处理UI和3D物体之间的层级关系
 
 Unity是如何渲染UI的？
+
+# Unity的渲染顺序
+如果开启了深度测试永远都是离摄像机近的物体该在离摄像机远的物体之前
+
+
+
+
+
+# 参考文章
+[Unity渲染顺序](https://zhuanlan.zhihu.com/p/473875401)
+[UI和模型的层级处理](https://zhuanlan.zhihu.com/p/673810066)
