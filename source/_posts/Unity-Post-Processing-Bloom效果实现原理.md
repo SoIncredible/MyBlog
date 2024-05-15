@@ -9,4 +9,16 @@ swiper_index:
 sticky:
 ---
 
+# PostProcess 代码框架
 
+OnPreRender
+OnPreCull
+OnRenderImage
+
+Graphics.Blit()方法
+
+
+
+# Bloom效果的实现
+
+在Render方法中
