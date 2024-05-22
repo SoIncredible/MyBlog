@@ -1,5 +1,5 @@
 ---
-title: Unity Post Processing Bloom效果实现原理
+title: 通过Bloom效果了解Unity Post Processing代码框架
 date: 2024-05-13 07:04:40
 tags:
 categories:
@@ -11,13 +11,79 @@ sticky:
 
 # 前置知识
 
+## 从GPU如何将数据绘制到屏幕上说起
+
+### Frame Buffer
+
+
+
+
+### Render Buffer
+
+
+## 从Unity Render Pipeline
+
+Render Pipeline中包括三个主要步骤
+
+1. Culling
+2. Rendering
+3. PostProcessing
+
+后处理将场景渲染到一个或多个Render Texture上，而不是直接渲染到屏幕上，后续的后处理效果都会在这一个或者多个Render Texture上进行
+
+
 ## CommandBuffer
 
 ## CameraEvent
 
 配合CommandBuffer使用，允许我们在UnityRenderLoop的一些节点添加我们自定义的渲染操作
 
+# Post Processing后处理
+
+后处理值得是在渲染完整个场景得到屏幕图像后，再对这个图像进行一系列的操作，实现各种屏幕特效。
+要实现后处理，需要用到Unity提供的接口：OnRenderImage函数，这个函数的调用时机是在所有的Shader中不透明和透明的Pass全部执行完毕后调用的
+
+# Bloom效果
+
+Bloom效果模拟真实摄像机，让图片中的较亮区域“扩散”到周围区域，造成一种朦胧的效果。
+
+## Bloom效果实现原理
+
+Bloom的实现原理比较简单：首先根据一个阈值提取出图像中较亮的部分，把它们存储在一张渲染纹理(RenderTexture)中；再利用一些模糊算法对这张纹理进行模糊处理，模拟光线扩散的效果；最后再将其和原图像进行混合，得到最终的效果。
+
+## Bloom效果实现
+
+### Bloom的Shader实现
+
+上文提到实现Bloom效果需要三个环节：提取高亮、进行模糊、与原图像混合。那么我们就要在Shader中去编写三个Pass分别处理这三个阶段。
+
+**阶段一：提取图片高亮部分**
+
+
+
+**阶段二：将高亮部分模糊处理**
+
+
+
+**阶段三：将模糊处理后的图像与原图混合**
+
+
+
+### 提取高亮部分 结合Shader入门精要
+
+
+
+Shader部分
+```
+
+```
+
+
+
+
 # PostProcess 代码框架
+
+整个代码框架包括
 
 整个后处理都是基于CommandBuffer来实现的，也就是说后处理通过CommandBuffer，自定义Camera不同绘制阶段的行为，来达到效果实现
 在Unity中，渲染管线负责处理所有的图形渲染任务，从场景中的对象到最终的图像输出。内置渲染管线是Unity提供的一种标准的渲染流程，它允许开发者通过编写脚本和着色器来定制和扩展其功能。而CommandBuffer正是内置渲染管线中的一个强大工具，用于在渲染过程中插入自定义的渲染命令。
@@ -46,224 +112,12 @@ m_Camera.AddCommandBuffer(CameraEvent.BeforeImageEffects, m_LegacyCmdBuffer);
 先看到PostProcessLayer
 在每一帧的OnPreCull和OnPreRender中都会调用BuildCommandBuffers但是本文只讨论在Androud、MacOS和Windows平台上的Bloom效果的原理 OnPreRender方法中的BuildCommandBuffer判不过去
 
-# Bloom效果
-
-## Blomm效果实现原理
-提取图片的高亮部分进行高斯模糊，将模糊后的结果叠加回原图片
-
-采样
-
-## Bloom着色器
-```
-Shader "Hidden/PostProcessing/Bloom"
-{
-    HLSLINCLUDE
-
-        #include "Packages/com.unity.postprocessing/PostProcessing/Shaders/StdLib.hlsl"
-        #include "Packages/com.unity.postprocessing/PostProcessing/Shaders/Colors.hlsl"
-        #include "Packages/com.unity.postprocessing/PostProcessing/Shaders/Sampling.hlsl"
-
-        TEXTURE2D_SAMPLER2D(_MainTex, sampler_MainTex);
-        TEXTURE2D_SAMPLER2D(_BloomTex, sampler_BloomTex);
-        TEXTURE2D_SAMPLER2D(_AutoExposureTex, sampler_AutoExposureTex);
-
-        float4 _MainTex_TexelSize;
-        float  _SampleScale;
-        float4 _ColorIntensity;
-        float4 _Threshold; // x: threshold value (linear), y: threshold - knee, z: knee * 2, w: 0.25 / knee
-        float4 _Params; // x: clamp, yzw: unused
-
-        // ----------------------------------------------------------------------------------------
-        // Prefilter
-
-        half4 Prefilter(half4 color, float2 uv)
-        {
-            half autoExposure = SAMPLE_TEXTURE2D(_AutoExposureTex, sampler_AutoExposureTex, uv).r;
-            color *= autoExposure;
-            color = min(_Params.x, color); // clamp to max
-            color = QuadraticThreshold(color, _Threshold.x, _Threshold.yzw);
-            return color;
-        }
-
-        half4 FragPrefilter13(VaryingsDefault i) : SV_Target
-        {
-            half4 color = DownsampleBox13Tap(TEXTURE2D_PARAM(_MainTex, sampler_MainTex), i.texcoord, UnityStereoAdjustedTexelSize(_MainTex_TexelSize).xy);
-            return Prefilter(SafeHDR(color), i.texcoord);
-        }
-
-        half4 FragPrefilter4(VaryingsDefault i) : SV_Target
-        {
-            half4 color = DownsampleBox4Tap(TEXTURE2D_PARAM(_MainTex, sampler_MainTex), i.texcoord, UnityStereoAdjustedTexelSize(_MainTex_TexelSize).xy);
-            return Prefilter(SafeHDR(color), i.texcoord);
-        }
-
-        // ----------------------------------------------------------------------------------------
-        // Downsample
-
-        half4 FragDownsample13(VaryingsDefault i) : SV_Target
-        {
-            half4 color = DownsampleBox13Tap(TEXTURE2D_PARAM(_MainTex, sampler_MainTex), i.texcoord, UnityStereoAdjustedTexelSize(_MainTex_TexelSize).xy);
-            return color;
-        }
-
-        half4 FragDownsample4(VaryingsDefault i) : SV_Target
-        {
-            half4 color = DownsampleBox4Tap(TEXTURE2D_PARAM(_MainTex, sampler_MainTex), i.texcoord, UnityStereoAdjustedTexelSize(_MainTex_TexelSize).xy);
-            return color;
-        }
-
-        // ----------------------------------------------------------------------------------------
-        // Upsample & combine
-
-        half4 Combine(half4 bloom, float2 uv)
-        {
-            half4 color = SAMPLE_TEXTURE2D(_BloomTex, sampler_BloomTex, uv);
-            return bloom + color;
-        }
-
-        half4 FragUpsampleTent(VaryingsDefault i) : SV_Target
-        {
-            half4 bloom = UpsampleTent(TEXTURE2D_PARAM(_MainTex, sampler_MainTex), i.texcoord, UnityStereoAdjustedTexelSize(_MainTex_TexelSize).xy, _SampleScale);
-            return Combine(bloom, i.texcoordStereo);
-        }
-
-        half4 FragUpsampleBox(VaryingsDefault i) : SV_Target
-        {
-            half4 bloom = UpsampleBox(TEXTURE2D_PARAM(_MainTex, sampler_MainTex), i.texcoord, UnityStereoAdjustedTexelSize(_MainTex_TexelSize).xy, _SampleScale);
-            return Combine(bloom, i.texcoordStereo);
-        }
-
-        // ----------------------------------------------------------------------------------------
-        // Debug overlays
-
-        half4 FragDebugOverlayThreshold(VaryingsDefault i) : SV_Target
-        {
-            half4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoordStereo);
-            return half4(Prefilter(SafeHDR(color), i.texcoord).rgb, 1.0);
-        }
-
-        half4 FragDebugOverlayTent(VaryingsDefault i) : SV_Target
-        {
-            half4 bloom = UpsampleTent(TEXTURE2D_PARAM(_MainTex, sampler_MainTex), i.texcoord, UnityStereoAdjustedTexelSize(_MainTex_TexelSize).xy, _SampleScale);
-            return half4(bloom.rgb * _ColorIntensity.w * _ColorIntensity.rgb, 1.0);
-        }
-
-        half4 FragDebugOverlayBox(VaryingsDefault i) : SV_Target
-        {
-            half4 bloom = UpsampleBox(TEXTURE2D_PARAM(_MainTex, sampler_MainTex), i.texcoord, UnityStereoAdjustedTexelSize(_MainTex_TexelSize).xy, _SampleScale);
-            return half4(bloom.rgb * _ColorIntensity.w * _ColorIntensity.rgb, 1.0);
-        }
-
-    ENDHLSL
-
-    SubShader
-    {
-        Cull Off ZWrite Off ZTest Always
-
-        // 0: Prefilter 13 taps
-        Pass
-        {
-            HLSLPROGRAM
-
-                #pragma vertex VertDefault
-                #pragma fragment FragPrefilter13
-
-            ENDHLSL
-        }
-
-        // 1: Prefilter 4 taps
-        Pass
-        {
-            HLSLPROGRAM
-
-                #pragma vertex VertDefault
-                #pragma fragment FragPrefilter4
-
-            ENDHLSL
-        }
-
-        // 2: Downsample 13 taps
-        Pass
-        {
-            HLSLPROGRAM
-
-                #pragma vertex VertDefault
-                #pragma fragment FragDownsample13
-
-            ENDHLSL
-        }
-
-        // 3: Downsample 4 taps
-        Pass
-        {
-            HLSLPROGRAM
-
-                #pragma vertex VertDefault
-                #pragma fragment FragDownsample4
-
-            ENDHLSL
-        }
-
-        // 4: Upsample tent filter
-        Pass
-        {
-            HLSLPROGRAM
-
-                #pragma vertex VertDefault
-                #pragma fragment FragUpsampleTent
-
-            ENDHLSL
-        }
-
-        // 5: Upsample box filter
-        Pass
-        {
-            HLSLPROGRAM
-
-                #pragma vertex VertDefault
-                #pragma fragment FragUpsampleBox
-
-            ENDHLSL
-        }
-
-        // 6: Debug overlay (threshold)
-        Pass
-        {
-            HLSLPROGRAM
-
-                #pragma vertex VertDefault
-                #pragma fragment FragDebugOverlayThreshold
-
-            ENDHLSL
-        }
-
-        // 7: Debug overlay (tent filter)
-        Pass
-        {
-            HLSLPROGRAM
-
-                #pragma vertex VertDefault
-                #pragma fragment FragDebugOverlayTent
-
-            ENDHLSL
-        }
-
-        // 8: Debug overlay (box filter)
-        Pass
-        {
-            HLSLPROGRAM
-
-                #pragma vertex VertDefault
-                #pragma fragment FragDebugOverlayBox
-
-            ENDHLSL
-        }
-    }
-}
-
-```
 
 # 参考资料
+[Unity PostProcessing后处理官方文档]()
+
+[Unity Render Pipeline官方文档](https://docs.unity3d.com/Manual/render-pipelines-overview.html)
+
 [CommandBuffer官方文档](https://docs.unity3d.com/ScriptReference/Rendering.CommandBuffer.html)
 
 [Extending the Built-in Render Pipeline with CommandBuffers](https://docs.unity3d.com/Manual/GraphicsCommandBuffers.html)
