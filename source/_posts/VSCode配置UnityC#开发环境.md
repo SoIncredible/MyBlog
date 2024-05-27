@@ -11,6 +11,11 @@ cover: "139.224.82.218:90/14.png"
 description: 
 ---
 
+# 背景
+
+笔者大学期间用过一段时间VSCode+Unity的开发方案，工作之后使用了Rider配合Unity开发之后，虽然Rider是一个十分强大的IDE，有强大的补全功能，强大的Debug功能，但是也让我对Rider产生了依赖。另外Rider没有免费的社区版，因此还是想要使用一个更加轻量级的保持自己对代码的熟悉程度
+另外VSCode的插件也让人眼前一亮
+
 ![](VSCode配置UnityC#开发环境/image-20220707015057151.png)
 
 [麦扣的视频链接](https://www.bilibili.com/video/BV19741167zU?spm_id_from=333.999.0.0&vd_source=83f4165825ce9df46cf4fd576ccb1102)

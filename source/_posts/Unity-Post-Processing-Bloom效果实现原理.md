@@ -34,6 +34,9 @@ Render Pipeline中包括三个主要步骤
 
 ## CommandBuffer
 
+Command可以看作是我在C#中定义了一系列的操作指令，然后打包到C++端执行具体的操作
+老的在OnRenderImage方法中进行RT处理的操作都是直接在C#端进行的，开销要比在C++端高
+
 ## CameraEvent
 
 配合CommandBuffer使用，允许我们在UnityRenderLoop的一些节点添加我们自定义的渲染操作
