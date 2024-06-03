@@ -60,6 +60,21 @@ Bloom的实现原理比较简单：首先根据一个阈值提取出图像中较
 
 
 
+对SetGlobalTexture的理解
+CommandBuffer和Shader类中都可以执行一个SetGlobalTexture的方法，这个方法的使用还是要说一下
+
+使用SetGlo
+
+
+
+
+
+
+
+
+
+
+
 
 
 
