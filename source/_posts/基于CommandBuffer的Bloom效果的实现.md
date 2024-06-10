@@ -1,5 +1,6 @@
 ---
 title: 基于CommandBuffer的Bloom效果的实现
+abbrlink: 257b5b2c
 date: 2024-05-13 07:04:40
 tags:
 categories:
