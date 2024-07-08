@@ -155,30 +155,74 @@ $$c_{diffuse} = (c_{light} · m_{diffuse})max(0,\vec{n} · \vec{l})$$
    
 Shader代码如下:
 ```
-Shader "Shader Book/Chapter 6/Diffuse Per Vertex Level"
+Shader "Unity Shader Book/Chapter 6/Diffuse Vertex Level"
 {
-    Properties{
-
+    Properties
+    {
+          _Diffuse ("Diffuse", Color) = (1,1,1,1)
     }
-
-    SubShader{
-        
-        Tags{
-            "LightMode"="ForwardBase"
-        }
-
-        Pass{
+    
+    SubShader
+    {
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"
+            }
+            
             CGPROGRAM
+
             #pragma vertex vert
             #pragma fragment frag
+
             #include "Lighting.cginc"
 
+            fixed4 _Diffuse;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+            };
+            
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                fixed3 color : COLOR;
+            };
+
+            // 漫反射如何计算？
+            // 逐顶点光照需要在顶点着色器中进行光照的计算
+            v2f vert(a2v v)
+            {
+                v2f o;
+
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+                fixed3 worldNormal = normalize(UnityObjectToWorldNormal(v.normal));
+                fixed3 worldLight = normalize(_WorldSpaceLightPos0.xyz);
+                fixed3 diffuse =  _LightColor0.rgb * _Diffuse.rgb * saturate(dot(worldNormal, worldLight));
+                o.color = ambient + diffuse;
+                
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                return fixed4(i.color, 1);
+            }
+            
             ENDCG
+            
         }
     }
 
     Fallback "Diffuse"
+    
 }
+
 ```
 
 
@@ -186,6 +230,81 @@ Shader "Shader Book/Chapter 6/Diffuse Per Vertex Level"
 ## 实践：逐像素光照
 
 准备工作同上
+
+
+我们只需要对Shader进行一点更改就可以得到逐像素的漫反射效果。
+
+
+```
+Shader "Unity Shader Book/Chapter 6/Diffuse Pixel Level"
+{
+    Properties
+    {
+        _Diffuse ("Diffuse", Color) = (1,1,1,1)    
+    }
+    
+    SubShader
+    {
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"
+            }       
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include"Lighting.cginc"
+
+            fixed4 _Diffuse;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float3 worldNormal : TEXCOORD0;
+            };
+
+            // 半兰伯特模型是在逐像素的漫反射光照明模型的基础上实现的。
+            v2f vert(a2v v)
+            {
+                v2f o;
+                
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+                o.worldNormal = normalize(UnityObjectToWorldNormal(v.normal));
+                
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+
+                fixed3 amibient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+                
+                fixed3 worldSpaceLightDir = normalize(_WorldSpaceLightPos0.xyz);
+                fixed3 diffuse = _LightColor0.rgb * _Diffuse.rgb * saturate(dot(i.worldNormal, worldSpaceLightDir));
+                // fixed3 diffuse = _LightColor0.rgb * _Diffuse.rgb * (dot(i.worldNormal, worldSpaceLightDir) * 0.5 + 0.5) ;
+                
+                fixed3 color = amibient + diffuse;
+                return fixed4(color,1.0);
+            }
+            
+            ENDCG
+        }
+    }
+    
+    Fallback "Diffuse"
+}
+
+```
 
 逐像素光照可以达到更加平滑的效果，但是即便是使用了逐像素漫反射光照，有一个问题仍然存在，在光照无法到达的区域，模型的外观通常全是黑色的，没有任何明暗变化，这会使得模型的背光区域看起来就像一个平面一样，失去了模型细节的表现。事实上我们可以通过添加环境光来得到非全黑的效果，但即便这样仍然无法解决背光明暗一样的缺点。为此，有一种改善技术被提出来，这就是`半兰伯特(Half Lambert)光照模型`。
 
@@ -197,26 +316,457 @@ Shader "Shader Book/Chapter 6/Diffuse Per Vertex Level"
 ## 半兰伯特模型
 
 在前面几个小节中我们使用到的漫反射光照模型也被称为兰伯特光照模型，因为它符合兰伯特定律——在平面某点漫反射光的强度与该反射点的法向量和入射光角度的余弦值成正比。
+为了改善在6.4.2小节最后提出的问题，Valve公司在开发游戏《半条命》时提出了一种技术，由于该技术是在原兰伯特光照模型的基础上进行了一个简单的修改，因此被称为半兰伯特光照模型
+
+```
+Shader "Unity Shader Book/Chapter 6/Half Lambert"
+{
+    Properties
+    {
+        _Diffuse ("Diffuse", Color) = (1,1,1,1)    
+    }
+    
+    SubShader
+    {
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"
+            }       
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include"Lighting.cginc"
+
+            fixed4 _Diffuse;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float3 worldNormal : TEXCOORD0;
+            };
+
+            // 半兰伯特模型是在逐像素的漫反射光照明模型的基础上实现的。
+            v2f vert(a2v v)
+            {
+                v2f o;
+                
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+                o.worldNormal = normalize(UnityObjectToWorldNormal(v.normal));
+                
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+
+                fixed3 amibient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+                
+                fixed3 worldSpaceLightDir = normalize(_WorldSpaceLightPos0.xyz);
+                // fixed3 diffuse = _LightColor0.rgb * _Diffuse.rgb * saturate(dot(i.worldNormal, worldSpaceLightDir));
+                fixed3 diffuse = _LightColor0.rgb * _Diffuse.rgb * (dot(i.worldNormal, worldSpaceLightDir) * 0.5 + 0.5) ;
+                
+                fixed3 color = amibient + diffuse;
+                return fixed4(color,1.0);
+            }
+            
+            ENDCG
+        }
+    }
+    
+    Fallback "Diffuse"
+}
+
+```
 
 半兰伯特模型是没有任何物理依据的，它仅仅是一个视觉加强技术。
 
 
 # 在Unity Shader中实现高光反射光照模型
 
+基本光照模型中的高光反射部分的计算公式是：
+$$c_{specular} = (c_{light} \cdot m_{specular})max(0, \vec{v} \cdot \vec{r})^{m_{gloss}}$$
+
+从公式可以看出，要计算高光反射需要知道4个参数：入射光线的颜色和强度$c_{light}$，材质的高光反射系数$m_{specular}$，视角方向$\vec{v}$以及反射方向$\vec{r}$。其中，反射方向$\vec{r}$可以由表面法线$\vec{n}$和光源方向$\vec{l}$计算而得：
+$$\vec{r} = \vec{l} - 2(\vec{n} \cdot \vec{l})\vec{n}$$
+
+上述公式很简单，更幸运的是，Cg提供了计算反射方向的函数reflect。
+> **函数**：reflect(i,n)
+> **参数**：i，入射方向；n法线方向。可以是float、float2、float3等类型
+> **描述**：当给定入射方向i和法线方向n时，reflect函数可以返回反射方向
 
 
 ## 实践：逐顶点光照
 
+逐顶点光照的高光反射是在逐顶点漫反射光照效果的基础上加入逐顶点高光反射的计算实现的。
 
+
+```
+Shader "Unity Shader Book/Chapter 6/Specular Vertex Lvel"
+{
+    Properties
+    {
+        _Specular ("Specular", Color) = (1,1,1,1)
+        _Gloss ("Gloss", Range(8.0, 256)) = 20
+        _Diffuse ("Diffuse", Color) = (1,1,1,1)
+    }
+    
+    SubShader
+    {
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"
+            }
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+            
+            #include"Lighting.cginc"
+
+            fixed4 _Specular;
+            fixed4 _Diffuse;
+            float _Gloss;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                fixed3 color : COLOR;
+            };
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+                
+                // 环境光
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+                
+                // 漫反射部分一样
+                // 计算世界坐标下的归一化的法线方向
+                fixed3 worldNormal = normalize(UnityObjectToWorldNormal(v.normal));
+
+                fixed3 worldLight = normalize(_WorldSpaceLightPos0.xyz);
+                
+                // 知道光照强度
+                fixed3 diffuse =  _LightColor0.rgb * _Diffuse.rgb * saturate(dot(worldNormal, worldLight));
+                
+                // 高光反射部分
+
+                fixed3 viewDir = normalize(_WorldSpaceCameraPos.xyz - mul(unity_ObjectToWorld, v.vertex).xyz);
+
+                fixed3 reflectDir = normalize(reflect(-worldLight,worldNormal));
+                
+                fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(viewDir , reflectDir)), _Gloss);
+                
+                o.color = diffuse + ambient + specular;
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target{
+                return fixed4 (i.color,1);
+            }
+            
+            ENDCG
+        }
+    }
+    Fallback "Specular"
+}
+
+```
+
+对于高光反射部分，我们首先计算了入射光线方向关于表面法线的反射方向reflectDir。由于Cg的relect函数的入射方向要求是由光源指向交点处的，因此我们需要对worldLightDir取反后再传给reflect函数。然后我们通过_WorldSpaceCameraPos得到了世界空间中摄像机的位置，再把顶点位置从模型空间变换到世界空间下，再通过和_WorldSpaceCameraPos相减即可得到世界空间下的视角方向。
+
+由此，我们已经得到了所有的四个参数，代入公式即可得到高光反射的光照部分。最后，再和环境光、漫反射相加存储到最后的颜色中。
 
 ## 实践：逐像素光照
 
 
+```
+Shader "Unity Shader Book/Chapter 6/Specular Pixel Level"
+{
+    Properties
+    {
+        _Diffuse ("Diffuse", Color) = (1,1,1,1)
+        _Specular ("Specular", Color) = (1,1,1,1)
+        _Gloss ("Gloss", Range(8,256))  = 20
+    }
+    
+    SubShader
+    {
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"
+            }       
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include"Lighting.cginc"
+
+            fixed4 _Diffuse;
+            fixed4 _Specular;
+            float _Gloss;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float4 worldPos : TEXCOORD0;
+                float3 worldNormal : TEXCOORD1;
+            };
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+
+                fixed3 lightDir = normalize(_WorldSpaceLightPos0);
+                fixed3 worldNormal = normalize(i.worldNormal);
+                
+                fixed3 diffuse = _LightColor0.rgb * _Diffuse.rgb * saturate(dot(worldNormal, lightDir)); 
+
+                fixed3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.worldPos.xyz);
+                fixed3 reflectDir = normalize(reflect(-lightDir,worldNormal));
+                
+                fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(viewDir, reflectDir)), _Gloss);
+
+                fixed3 color = diffuse + ambient + specular;
+                return fixed4(color,1.0);
+            }
+            
+            ENDCG
+        }
+    }
+    Fallback "Specular"
+}
+```
 
 
 ## Blinn-Phong光照模型
 
+在6.5.2小节中，我们给出了Phong光照模型在Unity中的实现，而在6.2.4小节中，我们还提到了另一种高光反射的实现方法——Blinn光照模型。回忆一下，Blinn模型没有使用反射方向，而是引入了一个新的矢量$\vec{h}$，它是通过对视角方向$\vec{v}$和光照方向$\vec{l}$相加后再归一化得到的。即
+$$\vec{h} = \frac{\vec{v} + \vec{l}}{|\vec{v} + \vec{l}|}$$
 
+而Blinn模型计算高光反射的公式如下：
+$$c_{specular} = (c_{light} \cdot m_{specular}) max(0, \vec{n} \cdot \vec{h})^{m_{gloss}}$$
 
+Blinn-Phong模型的实现和6.5.2节中的代码很类似：
+```
+Shader "Unity Shader Book/Chapter 6/Blinn-Phong"
+{
+    Properties
+    {
+        _Diffuse ("Diffuse", Color) = (1,1,1,1)
+        _Specular ("Specular", Color) = (1,1,1,1)
+        _Gloss ("Gloss", Range(8,256))  = 20
+    }
+    
+    SubShader
+    {
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"
+            }       
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include"Lighting.cginc"
+
+            fixed4 _Diffuse;
+            fixed4 _Specular;
+            float _Gloss;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float4 worldPos : TEXCOORD0;
+                float3 worldNormal : TEXCOORD1;
+            };
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+
+                fixed3 lightDir = normalize(_WorldSpaceLightPos0);
+                fixed3 worldNormal = normalize(i.worldNormal);
+                
+                fixed3 diffuse = _LightColor0.rgb * _Diffuse.rgb * saturate(dot(worldNormal, lightDir)); 
+                
+                fixed3 viewDir = normalize(_WorldSpaceCameraPos.xyz - i.worldPos.xyz);
+
+                fixed3 halfDir = normalize(viewDir+lightDir);
+                
+                fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(worldNormal, halfDir)), _Gloss);
+
+                fixed3 color = diffuse + ambient + specular;
+                return fixed4(color,1.0);
+            }
+            
+            ENDCG
+        }
+    }
+    Fallback "Specular"
+}
+```
 # 召唤神龙——使用Unity内置函数
 
+在计算光照模型的时候，我们往往需要得到光源的方向、视角方向这两个基本的信息，在上面的例子中，我们都是自行在代码中计算的，例如使用normalize(_WorldSpaceLightPos0.xyz)来得到光源的方向（这种方法实际只使用于平行光），使用normalize(_WorldSpacecameraPos.xyz - i.worldPosition.xyz)来得到视角方向。但如果需要处理更复杂的光照类型，如点光源和聚光灯，我们计算光源方向的方法就是错误的。这需要我们在代码中先判断光源的类型，再计算光源的信息。
+
+手动计算这些光源信息的过程比较麻烦，幸运的是，Unity提供了一些内置函数来帮助我们计算这些信息。在之前的章节中，我们给出了unityCG.cginc里面一些非常有用的帮助函数，这里我们再次回顾一下他们：
+| 函数名                                       | 描述                                                                                                                                                    |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| float3 WorldSpaceViewDir(float4 v)           | 输入一个模型空间中的顶点位置，返回世界空间中从该点到摄像机的观察方向。内部实现了使用UnityWorldSpaceViewDir函数                                          |
+| float3 UnityWorldSpaceviewDir(float4 v)      | 输入一个世界空间中的顶点位置，返回世界空间中从该点到摄像机的观察方向                                                                                    |
+| float3 ObjSpaceViewDir(float4 v)             | 输入一个模型空间中的顶点位置，返回模型空间中从该点到摄像机的观察方向                                                                                    |
+| float3 WorldSpaceLightDir(float4 v)          | **仅可以用于前前向渲染中**。输入一个模型空间中的顶点位置，返回世界空间中从该点到光源的光照方向。内部实现使用了UnityWorldSpaceLightDir函数，没有被归一化 |
+| float3 UnityWorldSpaceLightDir(float4 v)     | **仅可以用于前向渲染中**。输入一个世界空间中的顶点位置，返回世界空间中从该点到光源的光照方向。没有被归一化。                                            |
+| float3 ObjSpaceLightDir(float4 v)            | **仅可以用于前向渲染中**。输入一个模型空间中的顶点位置，返回模型空间中从该点到光源的光照方向，没有被归一化。                                            |
+| float3 UnityObjectToWorldNormal(float3 norm) | 把法线方向从模型空间转换到世界空间中                                                                                                                    |
+| float UnityObjectToWorldDir(float3 dir)      | 把方向矢量从模型空间变换到世界空间中                                                                                                                    |
+| float3 unityWorldToObjectDir(float3 dir)     | 把方向矢量从是世界空间变换到模型空间中                                                                                                                  |
+
+
+需要注意的是，这些函数都没有保证得到的方向矢量是单位矢量，因此，我们需要在使用前把它们归一化。
+
+下面我们使用Unity内置的函数修改我们再Blinn-Phong小节的Shader代码
+```
+Shader "Unity Shader Book/Chapter 6/Blinn-Phong"
+{
+    Properties
+    {
+        _Diffuse ("Diffuse", Color) = (1,1,1,1)
+        _Specular ("Specular", Color) = (1,1,1,1)
+        _Gloss ("Gloss", Range(8,256))  = 20
+    }
+    
+    SubShader
+    {
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"
+            }       
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include"Lighting.cginc"
+
+            fixed4 _Diffuse;
+            fixed4 _Specular;
+            float _Gloss;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float4 worldPos : TEXCOORD0;
+                float3 worldNormal : TEXCOORD1;
+            };
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+
+                fixed3 lightDir = normalize(WorldSpaceLightDir(i.worldPos));
+                fixed3 worldNormal = normalize(i.worldNormal);
+                
+                fixed3 diffuse = _LightColor0.rgb * _Diffuse.rgb * saturate(dot(worldNormal, lightDir)); 
+                
+                fixed3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
+
+                fixed3 halfDir = normalize(viewDir+lightDir);
+                
+                fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(worldNormal, halfDir)), _Gloss);
+
+                fixed3 color = diffuse + ambient + specular;
+                return fixed4(color,1.0);
+            }
+            
+            ENDCG
+        }
+    }
+    Fallback "Specular"
+}
+```
