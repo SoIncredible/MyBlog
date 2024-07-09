@@ -266,6 +266,7 @@ Shader "UnityShaderBook/Chapter 7/NormalMapInTangentSpace"
 
 
 2. 在世界空间下计算
+现在我们来实现第二种方法，即在世界空间下计算光照模型。我们需要在片元着色器中把法线方向从切线空间变换到世界空间下。这种方法的基本思想是：在顶点着色器中
 ```
 ```
 
