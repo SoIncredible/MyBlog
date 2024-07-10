@@ -268,10 +268,144 @@ Shader "UnityShaderBook/Chapter 7/NormalMapInTangentSpace"
 2. 在世界空间下计算
 现在我们来实现第二种方法，即在世界空间下计算光照模型。我们需要在片元着色器中把法线方向从切线空间变换到世界空间下。这种方法的基本思想是：在顶点着色器中
 ```
+Shader "Unity Shader Book/Chapter 7/NormalMapWorldSpace"
+{
+    Properties
+    {
+        _MainTex ("MainTex", 2D) = "white" {}
+        _BumpMap ("BumpMap", 2D) = "bump" {}
+        _Specular ("Specular", Color) = (1,1,1,1)
+        _BumpScale ("BumpScale", Float) = 1.0
+        _Gloss ("Gloss", Range(8.0, 256)) = 20
+        _Color ("Color Tint", Color) = (1,1,1,1)
+    }
+    
+    SubShader
+    {
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"
+            }
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "Lighting.cginc"
+
+            sampler2D _MainTex;
+            fixed4 _MainTex_ST;
+            sampler2D _BumpMap;
+            fixed4 _BumpMap_ST;
+            fixed4 _Color;
+            fixed4 _Specular;
+            float _Gloss;
+            float _BumpScale;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+                float4 tangent : TANGENT;
+                float4 texcoord : TEXCOORD0;
+            };
+
+            struct v2f
+            {
+                float4 pos : POSITION;
+                float4 uv : TEXCOORD0;
+                float4 TtoW0 : TEXCOORD1;
+                float4 TtoW1 : TEXCOORD2;
+                float4 TtoW2 : TEXCOORD3;
+            };
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+                o.uv.xy = v.texcoord.xy * _MainTex_ST.xy + _MainTex_ST.zw;
+                o.uv.zw = v.texcoord.xy * _BumpMap_ST.xy + _BumpMap_ST.zw;
+
+                // 求变换矩阵
+                float3 worldPos = mul(unity_ObjectToWorld, v.vertex);
+
+                fixed3 worldNormal = UnityObjectToWorldNormal(v.normal);
+                fixed3 worldTangent = UnityObjectToWorldDir(v.tangent);
+                fixed3 worldBinormal = cross(worldNormal, worldTangent) * v.tangent.w;
+
+                o.TtoW0 = float4(worldTangent.x, worldBinormal.x, worldNormal.x, worldPos.x);
+                o.TtoW1 = float4(worldTangent.y, worldBinormal.y, worldNormal.y, worldPos.y);
+                o.TtoW2 = float4(worldTangent.z, worldBinormal.z, worldNormal.z, worldPos.z);
+                
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+
+                float3 worldPos = float3(i.TtoW0.w, i.TtoW1.w, i.TtoW2.w);
+                fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(worldPos));
+                fixed3 viewDir = normalize(UnityWorldSpaceViewDir(worldPos));
+
+                fixed3 bump = UnpackNormal(tex2D(_BumpMap, i.uv.zw));
+                bump.xy *= _BumpScale;
+                bump.z = sqrt(1.0 - saturate(dot(bump.xy, bump.xy)));
+                bump = normalize(half3(dot(i.TtoW0.xyz, bump), dot(i.TtoW1.xyz, bump), dot(i.TtoW2.xyz, bump)));
+
+                fixed3 albedo = tex2D(_MainTex, i.uv.xy).rgb * _Color.rgb;
+
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo;
+
+                fixed3 diffuse = _LightColor0.rgb * albedo.rgb * saturate(dot(bump, worldLightDir));
+
+                fixed3 halfDir = normalize(bump + worldLightDir);
+                fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(bump, halfDir)), _Gloss);
+                
+                return fixed4(ambient + diffuse + specular, 1.0);
+            }
+            
+            ENDCG
+        }
+        
+        
+    }
+    
+    
+}
 ```
 
+## Unity中的法线纹理类型
+
+将法线纹理的纹理类型标识成Normal map时，可以使用Unity的内置函数UnpackNormal来得到正确的法线方向。
+当我们需要使用那些包含了法线映射的内置的Unity Shader时，必须把使用的法线纹理按照上面的方式标识成Normal map才能得到正确的结果(即使你忘了这么做，Unity也会在材质面板中提醒你修正这个问题)，这是因为这些Unity Shader都使用了内置的unpackNormal函数来采样法线方向。那么，当我们把纹理类型设置成Normal map的时候到底发生了什么呢？为什么要这么做呢？
+简单来说，这么做可以让Unity根据不同平台对纹理进行压缩，例如使用DXT5nm格式，再通过UnpackNormal函数来针对不同的压缩格式对法线纹理进行正确的采样。我们可以再UnityCG.cginc里面找到UnpackNormal函数的内部实现：
+```
+inline fixed3 UnpackNormalDXT5nm(fixed4 packednormal){
+    fixed3 normal;
+    normal.xy = packednormal.wy *2 - 1;
+    normal.z = sqrt(1 - saturate(dot(normal.xy, normal.xy)));
+    return normal; 
+}
+
+inline fixed3 UnpackNormal(fixed4 packnormal){
+#if defined(UNITY_NO_DXT5nm)
+    return packednormal.xyz * 2 - 1;
+#else
+    return UnpackNormalDXT5nm(packednormal);
+#endif
+}
+```
+
+从代码中可以看出，在某些平台上由于使用了DXT5nm的压缩格式，因此需要针对这种格式对法线进行解码。在DXT5nm格式的法线纹理中，纹素的a通道(即w分量)对应了法线的x分量，g通道对应了法线的y分量，而纹理的r和b通道则会被舍弃法线的z分量可以由xy分量推导而得。为什么之前的普通纹理不能按照这种方式压缩，而法线就需要使用DXT5nm格式来进行压缩呢？这是因为，按照我们之前的处理方式，法线纹理被当成一个和普通纹理无异的图，但实际上，它只有两个通道是真正必不可少的，因为第三个通道的值可以用另外两个推导出来(法线是单位向量，并且切线空间下的法线方向的z分量始终为正)。使用这种压缩方法就可以减少法线纹理占用的内存空间。
+
+当我们把纹理类型设置成normal map之后，还有一个复选框是Creat from Grayscale，那么它是做什么用的呢？还记得我们在本节一开始提到的另一种凹凸映射的方法，即使用高度图，而这个复选框就是用于从高度图中生成法线纹理的。高度图本身记录的是相对高度，是一张灰度图，白色部分相对更高，黑色表示相对更低。当我们把一张高度图导入Unity后，除了需要把它的纹理类型设置成Normal map外，还需要勾选Create from Grayscale，这样就可以得到类似下图的结果。然后，我们就可以把它和切线空间下的法线纹理等同对待了。
 
 # 渐变纹理
+
+尽管在一开始，我们在渲染中使用纹理是为了定义一个物体的颜色，但是后来人们发现，纹理其实可以用于存储任何表面属性。一种常见的用法就是使用渐变纹理来控制漫反射的光照结果。
 
 # 遮罩纹理
 
