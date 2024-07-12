@@ -406,6 +406,96 @@ inline fixed3 UnpackNormal(fixed4 packnormal){
 # 渐变纹理
 
 尽管在一开始，我们在渲染中使用纹理是为了定义一个物体的颜色，但是后来人们发现，纹理其实可以用于存储任何表面属性。一种常见的用法就是使用渐变纹理来控制漫反射的光照结果。
+```
+Shader "Unity Shader Book/Chapter 7/Ramp Texture"
+{
+    Properties
+    {
+        _RampTex ("Ramp", 2D) = "white"{}
+        _Color ("Color Tint", Color) = (1,1,1,1)
+        _Specular ("Specular", Color) = (1,1,1,1)
+        _Gloss ("Gloss", Range(8.0, 256)) = 20
+    }
+    
+    SubShader
+    {
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"
+            }
+               
+            CGPROGRAM
+            
+            #include "Lighting.cginc"
+            #pragma vertex vert
+            #pragma fragment frag
+
+            fixed4 _Color;
+            sampler2D _RampTex;
+            fixed4 _Specular;
+            fixed4 _RampTex_ST;
+            float _Gloss;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+                float4 texcoord : TEXCOORD0;
+            };
+            
+            struct v2f
+            {
+                float4 pos : POSITION;
+                float3 worldNormal : TEXCOORD0;
+                float3 worldPos : TEXCOORD1;
+                float2 uv : TEXCOORD2;
+            };
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                // 把UV传过去也不用
+                // 可以把uv这个字段移除掉
+                o.uv = TRANSFORM_TEX(v.texcoord, _RampTex);
+                
+                return o;
+            }
+
+            fixed4 frag(v2f i) :SV_Target{
+
+                fixed3 worldNormal = normalize(i.worldNormal);
+                fixed3 lightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
+
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+
+                fixed halfLambert = 0.5 * dot(worldNormal, lightDir) + 0.5;
+
+                fixed3 diffuseColor = tex2D(_RampTex, fixed2(halfLambert, halfLambert)).rgb * _Color.rgb;
+
+                fixed3 diffuse = _LightColor0.rgb * diffuseColor;
+
+                fixed3 viewDir = UnityWorldSpaceViewDir(i.worldPos);
+
+                fixed3 halfDir = normalize(viewDir + lightDir);
+                fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(worldNormal, halfDir)), _Gloss);
+
+                return fixed4(diffuse + ambient + specular,1.0);
+            }
+            
+            ENDCG
+            
+        }
+    }
+    
+    Fallback "Specular"
+}
+```
 
 # 遮罩纹理
 
