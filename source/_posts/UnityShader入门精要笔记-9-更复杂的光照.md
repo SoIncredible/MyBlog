@@ -813,4 +813,423 @@ Shader "UnityShaderBook/Chapter 9/Shadow"
 
 ## 统一管理光照衰减和阴影
 
+我们已经讲过如何在Unity Shader的前向渲染路径中计算光照衰减——在Base Pass中，平行光的衰减因子总是等于1，而在Additional Pass中，我们需要判断该Pass处理的光源类型，再使用内置变量和宏去计算衰减因子。实际上，光照衰减和阴影对物体最终的渲染结果的影响本质上是相同的——我们都是把光照衰减因子和阴影值及光照结果相乘得到最终的渲染结果。那么，是不是有什么方法可以同时计算两个信息呢？在Unity中这个功能主要是通过内置的**UNITY_LIGHT_ATTENUATION**宏来实现的。
+
+尽管之前的Shader代码已经可以得到正确的阴影效果了，但是在实践中我们通常还是会使用Unity的内置宏和函数在计算衰减和阴影，从而隐藏一些细节。 
+
 ## 透明度物体的阴影
+
+我们从一开始就强调，想要在Unity中让物体能够向其他物体投射阴影，一定要在它使用的UnityShader中提供一个LightMode为ShadowCaster的Pass。在前面的例子中，我们使用内置的VertexLit中提供的ShadowCaster来投射阴影。VertexLit中的ShadowCaster实现很简单，它会正常渲染整个物体，然后把深度结果输出到一张深度图或阴影映射纹理中。
+
+对于大多数不透明的物体来说，把Fallback设为VertexLit就可以得到正确的阴影。但是对于透明物体来说，我们就需要小心处理它的阴影。透明物体的实现通常会使用透明度测试或者透明度混合，我们需要小心设置这些物体的Fallback。
+
+透明度测试的处理比较简单，如果我们仍然直接使用VertexLit、Diffuse、Specular等作为回调，往往无法得到正确的阴影。这是因为透明度测试需要在片元着色器中舍弃某些片元，而VertexLit中的阴影投射纹理没有这样的操作。
+
+```
+Shader "Unity Shader Book/Chapter 9/AlphaTestWithShadow"
+{
+    Properties
+    {
+        _Color ("Main Tint", Color) = (1,1,1,1)
+        _MainTex ("Texture", 2D) = "white" {}
+        _Cutoff ("Alpha Cutoff", Range(0,1)) = 0.5
+    }
+    SubShader
+    {
+       Tags
+       {
+           "Queue"="AlphaTest"
+           "IgnoreProjector"="True"
+           "RenderType"="TransparentCutout"
+       }
+       
+       Pass
+       {
+           Tags
+           {
+               "LightMode"="ForwardBase"
+           }
+           
+           CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "Lighting.cginc"
+            #include "AutoLight.cginc"
+            
+            fixed4 _Color;
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            fixed _Cutoff;
+
+            struct a2v
+            {
+               float4 vertex : POSITION;
+               float3 normal : NORMAL;
+               float4 texcoord : TEXCOORD0;
+            };
+            
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float3 worldNormal : TEXCOORD0;
+                float3 worldPos : TEXCOORD1;
+                float2 uv : TEXCOORD2;
+                SHADOW_COORDS(3)
+            };
+
+            v2f vert(a2v v){
+
+                v2f o;
+                o.pos = mul(unity_MatrixMVP,v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+                TRANSFER_SHADOW(o);
+                return o;                
+            }
+
+            fixed4 frag(v2f i) : SV_Target{
+                fixed3 worldNormal = normalize(i.worldNormal);
+                fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
+
+                fixed4 texColor = tex2D(_MainTex, i.uv);
+
+                clip(texColor.a - _Cutoff);
+
+                // if((texColor.a - _Cutoff) < 0.0)
+                // {
+                //     discard;
+                // }
+
+                fixed3 albedo = texColor.rgb * _Color.rgb;
+
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo;
+
+                fixed3 diffuse = _LightColor0.rgb * albedo * max(0, dot(worldNormal, worldLightDir));
+
+                UNITY_LIGHT_ATTENUATION(atten, i, i.worldPos);
+
+                return fixed4(ambient + diffuse * atten, 1.0);
+            }
+            
+           ENDCG
+       }
+    }
+    Fallback "VertexLit"
+}
+
+```
+
+
+
+为了让使用透明度测试的物体得到正确的阴影效果，我们只需要在Unity Shader中更改一行代码，即把Fallback设置为Transparent/Cutout/VertexLit，在这个Shader代码中的ShadowCaster Pass也计算了透明度测试，因此会把裁剪后的物体深度信息写入深度图和阴影映射纹理中。但是需要注意的是，由于Transparent/Cutout/VertexLit中计算透明度测试时，使用了名为_Cutoff的属性来进行透明度测试，因此，这就要求我们的Shader中也必须提供名为_Cutoff的属性。否则就无法得到正确的阴影结果。
+
+```
+Shader "Unity Shader Book/Chapter 9/AlphaTestWithShadow"
+{
+    Properties
+    {
+        _Color ("Main Tint", Color) = (1,1,1,1)
+        _MainTex ("Texture", 2D) = "white" {}
+        _Cutoff ("Alpha Cutoff", Range(0,1)) = 0.5
+    }
+    SubShader
+    {
+       Tags
+       {
+           "Queue"="AlphaTest"
+           "IgnoreProjector"="True"
+           "RenderType"="TransparentCutout"
+       }
+       
+       Pass
+       {
+           Tags
+           {
+               "LightMode"="ForwardBase"
+           }
+           
+           CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "Lighting.cginc"
+            #include "AutoLight.cginc"
+            
+            fixed4 _Color;
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            fixed _Cutoff;
+
+            struct a2v
+            {
+               float4 vertex : POSITION;
+               float3 normal : NORMAL;
+               float4 texcoord : TEXCOORD0;
+            };
+            
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float3 worldNormal : TEXCOORD0;
+                float3 worldPos : TEXCOORD1;
+                float2 uv : TEXCOORD2;
+                SHADOW_COORDS(3)
+            };
+
+            v2f vert(a2v v){
+
+                v2f o;
+                o.pos = mul(unity_MatrixMVP,v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+                TRANSFER_SHADOW(o);
+                return o;                
+            }
+
+            fixed4 frag(v2f i) : SV_Target{
+                fixed3 worldNormal = normalize(i.worldNormal);
+                fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
+
+                fixed4 texColor = tex2D(_MainTex, i.uv);
+
+                clip(texColor.a - _Cutoff);
+
+                // if((texColor.a - _Cutoff) < 0.0)
+                // {
+                //     discard;
+                // }
+
+                fixed3 albedo = texColor.rgb * _Color.rgb;
+
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo;
+
+                fixed3 diffuse = _LightColor0.rgb * albedo * max(0, dot(worldNormal, worldLightDir));
+
+                UNITY_LIGHT_ATTENUATION(atten, i, i.worldPos);
+
+                return fixed4(ambient + diffuse * atten, 1.0);
+            }
+            
+           ENDCG
+       }
+    }
+    Fallback "Transparent/Cutout/VertexLit"
+}
+
+```
+
+
+但是，这样的结果仍然有些问题，例如出现了一些不应该透过光的问题。出现这种情况的原因是，默认情况下把物体渲染到深度图和阴影映射纹理中仅考虑物体的正面。但对于本例的正方体来说，由于一些面完全背对光源，因此这些面的深度信息并没有加入到阴影映射纹理的计算中。为了得到正确的结果，我们可以将正方体的MeshRenderer组件中的CastShadows属性设置为Two Sided，强制Unity在计算阴影映射纹理时计算所有面的深度信息。
+
+与透明度测试的物体相比，想要为使用透明度混合的物体添加阴影是一件比较复杂的事情。实际上，所有内置的透明度混合的UnityShader，如Transparent/VertexLit等，都没有包含阴影投射的Pass，这意味着，这些半透明物体不会参与深度图和阴影映射纹理计算，也就是说，它们不会向其他物体投射阴影，同样的，它们也不会接收来自其他物体的阴影。
+
+```
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Shader Book/Chapter 9/AlphaBlendWithShadow"
+{
+    
+    Properties
+    {
+        _Color ("ColorTine", Color) = (1,1,1,1)
+        _MainTex ("MainTex", 2D) = "white"{}
+        _AlphaScale ("AlphaScle", Range(0,1)) = 1
+    }
+    
+    SubShader
+    {
+        Tags
+        {
+            "Queue"="Transparent"
+            "IgnoreProjector"="True"
+            "RenderType"="Transparent"
+        }
+        
+        Pass
+        {
+            Tags{
+                "LightMode"="ForwardBase"
+            }
+            
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include"Lighting.cginc"
+            #include"AutoLight.cginc"
+            
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            fixed _AlphaScale;
+            fixed4 _Color;
+
+            struct a2v
+            {
+                // 因为需要做MVP变换 需要一个四维矩阵
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+                float4 texcoord : TEXCOORD0;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float3 worldNormal : TEXCOORD0;
+                float3 worldPos : TEXCOORD1;
+                float2 uv : TEXCOORD2;
+                SHADOW_COORDS(3)
+            };
+            
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+
+                o.pos = UnityObjectToClipPos(v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+                TRANSFER_SHADOW(o)
+                
+                return o; 
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                fixed3 worldNormal = normalize(i.worldNormal);
+                fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
+
+                fixed4 texColor = tex2D(_MainTex, i.uv);
+                fixed3 albedo = texColor.rgb * _Color.rgb;
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo;
+                UNITY_LIGHT_ATTENUATION(atten, i, i.worldPos);
+                fixed3 diffuse = _LightColor0.rgb * albedo * max(0, dot(worldNormal, worldLightDir));
+
+                return fixed4(ambient + diffuse * atten, texColor.a * _AlphaScale);
+            }
+            
+            ENDCG
+        }
+    }
+    
+    Fallback "Transparent/VertexLit"
+    
+}
+```
+
+Unity会这样处理半透明的物体是有它的原因的。由于透明度混合需要关闭深度写入，由此带来的问题也影响了阴影的生成。总台来说，想要为这些半透明的物体产生正确的阴影，需要在每个光源空间下严格按照从后往前的顺序进行渲染，这会让阴影处理变得十分复杂，而且也会影响性能。因此，在Unity中，所有的半透明Shader都是不会产生任何阴影效果的。当然，我们可以使用一些dirty trick来强制为半透明的物体生成阴影，这可以通过把它们的Fallback设置为VertexLit、Diffuse这些不透明物体使用的UnityShader，这样Unity就会在它们的Fallback上找到一个阴影投射的Pass。然后，我们可以通过物体的Mesh Renderer组件上的Cast Shadows和Reveive Shadows选项来控制时候需要向其他物体投射或接收阴影。如下图，可以看出，此时右侧平面的阴影投射到了半透明的立方体上，但是它不会再穿透立方体把阴影投射到下方的平面上，这其实是不对的。同时，立方体也可以把自身的阴影投射在下面的平面上。
+
+```
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Shader Book/Chapter 9/AlphaBlendWithShadow"
+{
+    
+    Properties
+    {
+        _Color ("ColorTine", Color) = (1,1,1,1)
+        _MainTex ("MainTex", 2D) = "white"{}
+        _AlphaScale ("AlphaScle", Range(0,1)) = 1
+    }
+    
+    SubShader
+    {
+        Tags
+        {
+            "Queue"="Transparent"
+            "IgnoreProjector"="True"
+            "RenderType"="Transparent"
+        }
+        
+        Pass
+        {
+            Tags{
+                "LightMode"="ForwardBase"
+            }
+            
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include"Lighting.cginc"
+            #include"AutoLight.cginc"
+            
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            fixed _AlphaScale;
+            fixed4 _Color;
+
+            struct a2v
+            {
+                // 因为需要做MVP变换 需要一个四维矩阵
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+                float4 texcoord : TEXCOORD0;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float3 worldNormal : TEXCOORD0;
+                float3 worldPos : TEXCOORD1;
+                float2 uv : TEXCOORD2;
+                SHADOW_COORDS(3)
+            };
+            
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+
+                o.pos = UnityObjectToClipPos(v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+                TRANSFER_SHADOW(o)
+                
+                return o; 
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                fixed3 worldNormal = normalize(i.worldNormal);
+                fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
+
+                fixed4 texColor = tex2D(_MainTex, i.uv);
+                fixed3 albedo = texColor.rgb * _Color.rgb;
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo;
+                UNITY_LIGHT_ATTENUATION(atten, i, i.worldPos);
+                fixed3 diffuse = _LightColor0.rgb * albedo * max(0, dot(worldNormal, worldLightDir));
+
+                return fixed4(ambient + diffuse * atten, texColor.a * _AlphaScale);
+            }
+            
+            ENDCG
+        }
+    }
+    
+    Fallback "VertexLit"
+    
+}
+```
+
+## 标准的Unity Shader
+
+```
+```
+
+```
+```
