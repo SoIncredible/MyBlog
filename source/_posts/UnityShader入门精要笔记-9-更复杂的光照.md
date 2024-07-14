@@ -541,12 +541,275 @@ Pass{
 
  ![](UnityShader入门精要笔记-9-更复杂的光照/image6.png)
 
-
 在本例中，最下面的平面之所以可以接收阴影是因为它使用了内置的Standard Shader，而这个内置的Shader进行了接受阴影的相关操作。但是由于正方体使用了我们自己实现的Shader并没有对阴影进行任何处理，因此它不会显示出右侧平面投射来的阴影，在下一小节中，我们将学习如何让正方体也可以接收阴影。
    
 2. 让物体接收阴影
 
+
+
+
+
+
+为了让正方体可以接收阴影，我们首先新建一个UnityShader，
+
+```
+// Upgrade NOTE: replaced '_LightMatrix0' with 'unity_WorldToLight'
+
+// Upgrade NOTE: replaced '_LightMatrix0' with 'unity_WorldToLight'
+
+Shader "UnityShaderBook/Chapter 9/Shadow"
+{
+   // 使用Blinn-Phong光照模型
+   
+   Properties
+   {
+      _Specular ("Specular", Color) = (1,1,1,1)
+      _Diffuse ("Diffuse", Color) = (1,1,1,1)
+      _Gloss ("Gloss", Range(8.0, 256)) = 20      
+   }
+   
+   SubShader
+   {
+      Pass
+      {
+         Tags
+         {
+            "LightMode"="ForwardBase"
+         }     
+         
+         CGPROGRAM
+
+         #include "Lighting.cginc"
+         #include "AutoLight.cginc"
+         #pragma multi_compile_fwdbase
+         #pragma vertex vert
+         #pragma fragment frag
+         
+         fixed4 _Specular;
+         fixed4 _Diffuse;
+         float _Gloss;
+         
+         struct a2v
+         {
+            float4 vertex : POSITION;
+            float3 normal : NORMAL;
+         };
+         
+         struct v2f
+         {
+            float4 pos : SV_POSITION;
+            float3 worldNormal : TEXCOORD0;
+            float3 worldPos : TEXCOORD1;
+            SHADOW_COORDS(2)
+         };
+
+         v2f vert(a2v v)
+         {
+            v2f o;
+
+            o.pos = mul(unity_MatrixMVP, v.vertex);
+            o.worldNormal = UnityObjectToWorldNormal(v.normal);
+            o.worldPos = mul(unity_ObjectToWorld, v.vertex);
+
+            TRANSFER_SHADOW(o);
+            
+            return o;
+         }
+
+         fixed4 frag(v2f i) : SV_Target{
+            
+            fixed3 worldViewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
+            fixed3 lightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
+            fixed3 worldNormal = normalize(i.worldNormal);
+            
+            fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+
+            fixed shadow = SHADOW_ATTENUATION(i);
+
+            fixed3 diffuse = _LightColor0.rgb * _Diffuse.rgb * saturate(dot(worldNormal,lightDir)) * shadow;
+            
+            fixed3 halfDir = normalize(worldViewDir + lightDir);      
+            
+            fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(i.worldNormal, halfDir)),_Gloss) * shadow;
+            
+            return fixed4(ambient + diffuse + specular, 1.0);
+         }
+         
+         ENDCG
+      }
+      
+      Pass
+      {
+         Tags
+         {
+            "LightMode"="ForwardAdd"  
+         }
+         
+         Blend One One
+         
+         CGPROGRAM
+
+         #pragma multi_compile_fwdadd
+         
+         #include "Lighting.cginc"
+         #include "AutoLight.cginc"
+         
+         #pragma vertex vert
+         #pragma fragment frag
+         
+         fixed4 _Specular;
+         fixed4 _Diffuse;
+         float _Gloss;
+         
+         struct a2v
+         {
+            float4 vertex : POSITION;
+            float3 normal : NORMAL;
+         };
+         
+         struct v2f
+         {
+            float4 pos : SV_POSITION;
+            float3 worldNormal : TEXCOORD0;
+            float3 worldPos : TEXCOORD1;
+         };
+
+         v2f vert(a2v v)
+         {
+            v2f o;
+
+            o.pos = mul(unity_MatrixMVP, v.vertex);
+            o.worldNormal = UnityObjectToWorldNormal(v.normal);
+            o.worldPos = mul(unity_ObjectToWorld, v.vertex);
+            
+            return o;
+         }
+
+         fixed4 frag(v2f i) : SV_Target{
+            
+            fixed3 worldViewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
+
+#ifdef USING_DIRECTIONAL_LIGHT
+            fixed3 lightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
+#else
+            fixed3 lightDir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos.xyz);
+#endif
+            
+            fixed3 worldNormal = normalize(i.worldNormal);
+
+            fixed3 diffuse = _LightColor0.rgb * _Diffuse.rgb * saturate(dot(worldNormal,lightDir));
+            
+            fixed3 halfDir = normalize(worldViewDir + lightDir);      
+
+
+#ifdef USING_DIRECTIONAL_LIGHT
+            fixed atten = 1.0;
+#else
+            float3 lightCoord = mul(unity_WorldToLight, float4(i.worldPos, 1)).xyz;
+            fixed atten = tex2D(_LightTexture0, dot(lightCoord, lightCoord).rr).UNITY_ATTEN_CHANNEL;
+#endif
+            
+            
+            fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(i.worldNormal, halfDir)),_Gloss);
+
+            return fixed4( diffuse + specular, 1.0);
+         }
+         ENDCG
+      }
+   }
+   
+   Fallback "Specular"
+}
+
+```
+
+上面这段代码中，我们在顶点着色器的输出结构体中添加了一个内置宏**SHADOW_COORDS**，这个宏的作用很简单，就是声明一个用于对阴影纹理采样的坐标。需要注意的是，这个宏的参数需要是下一个可用的插值寄存器的索引值，在本例中，**TEXCOORD0**和**TEXCOORD1**插值寄存器被用作存储worldPos和worldNormal，因此需要向该宏中传递的参数是2。
+然后我们在顶点着色器返回之前添加另一个内置宏**TRANSFER_SHADOW**，这个宏用于在顶点着色器中计算上一步中声明的阴影纹理坐标。
+
+接着，我们在片元着色器中计算阴影值，这同样使用了一个内置宏**SHADOW_ATTENUATION**。
+
+**SHADOW_COORDS**、**TRANSFER_SHADOW**、**SHADOW_ATTENUATION**是计算阴影时的三剑客。这些内置宏帮助我们在必要时计算光源的阴影。我们可以在`AutoLight.cginc`中找到它们的声明。
+
+```
+// ----------------
+//  Shadow helpers
+// ----------------
+
+// If none of the keywords are defined, assume directional?
+#if !defined(POINT) && !defined(SPOT) && !defined(DIRECTIONAL) && !defined(POINT_COOKIE) && !defined(DIRECTIONAL_COOKIE)
+    #define DIRECTIONAL 1
+#endif
+
+// ---- Screen space direction light shadows helpers (any version)
+#if defined (SHADOWS_SCREEN)
+
+    #if defined(UNITY_NO_SCREENSPACE_SHADOWS)
+        UNITY_DECLARE_SHADOWMAP(_ShadowMapTexture);
+        #define TRANSFER_SHADOW(a) a._ShadowCoord = mul( unity_WorldToShadow[0], mul( unity_ObjectToWorld, v.vertex ) );
+        #define TRANSFER_SHADOW_WPOS(a, wpos) a._ShadowCoord = mul( unity_WorldToShadow[0], float4(wpos.xyz, 1.0f) );
+        inline fixed unitySampleShadow (unityShadowCoord4 shadowCoord)
+        {
+            #if defined(SHADOWS_NATIVE)
+                fixed shadow = UNITY_SAMPLE_SHADOW(_ShadowMapTexture, shadowCoord.xyz);
+                shadow = _LightShadowData.r + shadow * (1-_LightShadowData.r);
+                return shadow;
+            #else
+                unityShadowCoord dist = SAMPLE_DEPTH_TEXTURE(_ShadowMapTexture, shadowCoord.xy);
+                // tegra is confused if we use _LightShadowData.x directly
+                // with "ambiguous overloaded function reference max(mediump float, float)"
+                unityShadowCoord lightShadowDataX = _LightShadowData.x;
+                unityShadowCoord threshold = shadowCoord.z;
+                return max(dist > threshold, lightShadowDataX);
+            #endif
+        }
+
+    #else // UNITY_NO_SCREENSPACE_SHADOWS
+        UNITY_DECLARE_SCREENSPACE_SHADOWMAP(_ShadowMapTexture);
+        #define TRANSFER_SHADOW(a) a._ShadowCoord = ComputeScreenPos(a.pos);
+        #define TRANSFER_SHADOW_WPOS(a, wpos) a._ShadowCoord = ComputeScreenPos(a.pos);
+        inline fixed unitySampleShadow (unityShadowCoord4 shadowCoord)
+        {
+            fixed shadow = UNITY_SAMPLE_SCREEN_SHADOW(_ShadowMapTexture, shadowCoord);
+            return shadow;
+        }
+
+    #endif
+
+    #define SHADOW_COORDS(idx1) unityShadowCoord4 _ShadowCoord : TEXCOORD##idx1;
+    #define SHADOW_ATTENUATION(a) unitySampleShadow(a._ShadowCoord)
+#endif
+
+
+// ---- Shadows off
+#if !defined (SHADOWS_SCREEN) && !defined (SHADOWS_DEPTH) && !defined (SHADOWS_CUBE)
+#define SHADOW_COORDS(idx1)
+#define TRANSFER_SHADOW(a)
+#define TRANSFER_SHADOW_WPOS(a, wpos)
+#define SHADOW_ATTENUATION(a) 1.0
+#define READ_SHADOW_COORDS(a) 0
+#else
+#ifndef READ_SHADOW_COORDS
+#define READ_SHADOW_COORDS(a) a._ShadowCoord
+#endif
+#endif
+```
+
+上面的代码实际上只是Unity为了处理不同的光源类型、不同平台而定义了多个版本的宏。在前向渲染中，宏**SHADOW_COORDS**实际上就是声明了一个名为_ShadowCoord的阴影纹理坐标变量。而**TRANSFER_SHADOW**的实现会根据平台不同而有所差异。如果当前平台可以使用屏幕空间的阴影映射技术(通过判断是否定义了**UNITY_NO_SCREENSPACE_SHADOWS**来得到)，**TRANSFER_SHADOW**会调用内置的ComputeScreenPos函数来计算_ShadowCoord；如果该平台不支持屏幕空间的阴影映射技术，就会使用传统的阴影映射技术，**TRANSFER_SHADOW**会把顶点坐标从模型空间变换到光源空间后存储到_ShadowCoord中。然后**SHADOW_ATTENUATION**负责使用_ShadowCoord对相关的纹理进行采样，得到阴影信息。
+
+注意到，上面的内置代码的最后定义了在关闭阴影的时候的处理代码。可以看出，当关闭了阴影后，**SHADOW_COORDS**和**TRANSFER_SHADOW**实际没有任何作用，而**SHADOW_ATTENUATION**的值会直接等于数值1。
+
+需要注意的是，由于这些宏会使用上下文变量来进行相关计算，例如TRANSFER_SHADOW会使用v.vertex或a.pos来计算坐标，因此为了能够让这些宏工作，我们需要保证自定义的变量名和这些宏中使用的变量名相匹配。**我们需要保证：a2v结构体的顶点坐标变量名必须是vertex，顶点着色器的输入结构体a2v必须命名为v，且v2f中的顶点位置变量必须命名为pos。**
+
+在完成了上面的所有操作之后，我们只需要把阴影值shadow和漫反射以及高光反射颜色相乘即可。
+
+需要注意的是，我们在代码中只更改了Base Pass中的代码，使其可以得到阴影效果，而没有对Additional Pass进行任何更改。大体上，Additional Pass的阴影处理和Base Pass是一样的。本小节实现的代码只是为了解释如何让物体接收阴影，不可以直接用于项目中。我们在本篇文章的最后会给出完整的包含光照处理的Unity Shader
+
+
 ## 使用Frame Debugger查看阴影的绘制过程
+
+通过FrameDebugger，我们可以看到，绘制上面的场景的渲染事件可以被分成四个部分：UpdateDepthTexture，即更新摄像机的深度纹理；RenderShadowmap，即渲染得到平行光的阴影映射纹理；CollectShadows，即根据深度纹理和阴影映射纹理得到屏幕空间的阴影图；最后绘制渲染结果。
+
+ ![](UnityShader入门精要笔记-9-更复杂的光照/image7.png)
 
 ## 统一管理光照衰减和阴影
 
