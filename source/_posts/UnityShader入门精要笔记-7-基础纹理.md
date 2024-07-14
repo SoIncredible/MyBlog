@@ -405,7 +405,7 @@ Shader "Unity Shader Book/Chapter 7/Ramp Texture"
     Properties
     {
         _RampTex ("Ramp", 2D) = "white"{}
-        _Color ("Color Tint", Color) = (1,1,1,1)
+        _Color ("Color Tint", Color) = (1,1,1,1)git
         _Specular ("Specular", Color) = (1,1,1,1)
         _Gloss ("Gloss", Range(8.0, 256)) = 20
     }
