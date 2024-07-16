@@ -32,14 +32,285 @@ sticky:
 
 除了天空盒子，立方体纹理最常见的用处就是用于环境映射。通过这种方法，我们可以模拟出具有金属质感的材质。
 
-在Unity中创建用于环境映射的立方体纹理的方法有三种：第一种方法是直接由一些特殊布局的纹理创建；第二种方法是手动创建一个Cubmap资源，再把6张图赋给它；第三种方法是由脚本生成。
+在Unity中创建用于环境映射的立方体纹理的方法有三种：第一种方法是直接由一些特殊布局的纹理创建；第二种方法是手动创建一个Cubemap资源，再把6张图赋给它；第三种方法是由脚本生成。
+
+我们先来使用第三种方法，
 
 ## 反射
 
 使用了反射效果的物体通常看起来就像是镀了一层金属。想要模拟反射效果十分简单，我们只需要通过入射光线的方向和表面法线方向来计算反射方向，再利用反射方向对立方体纹理进行采样即可。
 
+我们需要两个C#脚本
+```
+using UnityEngine;
+
+[ExecuteInEditMode]
+public class ProceduralTextureGeneration : MonoBehaviour {
+
+	public Material material = null;
+
+	#region Material properties
+	[SerializeField]
+	private int m_textureWidth = 512;
+	public int textureWidth {
+		get {
+			return m_textureWidth;
+		}
+		set {
+			m_textureWidth = value;
+			_UpdateMaterial();
+		}
+	}
+
+	[SerializeField]
+	private Color m_backgroundColor = Color.white;
+	public Color backgroundColor {
+		get {
+			return m_backgroundColor;
+		}
+		set {
+			m_backgroundColor = value;
+			_UpdateMaterial();
+		}
+	}
+
+	[SerializeField]
+	private Color m_circleColor = Color.yellow;
+	public Color circleColor {
+		get {
+			return m_circleColor;
+		}
+		set {
+			m_circleColor = value;
+			_UpdateMaterial();
+		}
+	}
+
+	[SerializeField]
+	private float m_blurFactor = 2.0f;
+	public float blurFactor {
+		get {
+			return m_blurFactor;
+		}
+		set {
+			m_blurFactor = value;
+			_UpdateMaterial();
+		}
+	}
+	#endregion
+
+	private Texture2D m_generatedTexture = null;
+
+	// Use this for initialization
+	void Start () {
+		if (material == null) {
+			Renderer renderer = gameObject.GetComponent<Renderer>();
+			if (renderer == null) {
+				Debug.LogWarning("Cannot find a renderer.");
+				return;
+			}
+
+			material = renderer.sharedMaterial;
+		}
+
+		_UpdateMaterial();
+	}
+
+	private void _UpdateMaterial() {
+		if (material != null) {
+			m_generatedTexture = _GenerateProceduralTexture();
+			material.SetTexture("_MainTex", m_generatedTexture);
+		}
+	}
+
+	private Color _MixColor(Color color0, Color color1, float mixFactor) {
+		Color mixColor = Color.white;
+		mixColor.r = Mathf.Lerp(color0.r, color1.r, mixFactor);
+		mixColor.g = Mathf.Lerp(color0.g, color1.g, mixFactor);
+		mixColor.b = Mathf.Lerp(color0.b, color1.b, mixFactor);
+		mixColor.a = Mathf.Lerp(color0.a, color1.a, mixFactor);
+		return mixColor;
+	}
+
+	private Texture2D _GenerateProceduralTexture() {
+		Texture2D proceduralTexture = new Texture2D(textureWidth, textureWidth);
+
+		// The interval between circles
+		float circleInterval = textureWidth / 4.0f;
+		// The radius of circles
+		float radius = textureWidth / 10.0f;
+		// The blur factor
+		float edgeBlur = 1.0f / blurFactor;
+
+		for (int w = 0; w < textureWidth; w++) {
+			for (int h = 0; h < textureWidth; h++) {
+				// Initalize the pixel with background color
+				Color pixel = backgroundColor;
+
+				// Draw nine circles one by one
+				for (int i = 0; i < 3; i++) {
+					for (int j = 0; j < 3; j++) {
+						// Compute the center of current circle
+						Vector2 circleCenter = new Vector2(circleInterval * (i + 1), circleInterval * (j + 1));
+
+						// Compute the distance between the pixel and the center
+						float dist = Vector2.Distance(new Vector2(w, h), circleCenter) - radius;
+
+						// Blur the edge of the circle
+						Color color = _MixColor(circleColor, new Color(pixel.r, pixel.g, pixel.b, 0.0f), Mathf.SmoothStep(0f, 1.0f, dist * edgeBlur));
+
+						// Mix the current color with the previous color
+						pixel = _MixColor(pixel, color, color.a);
+					}
+				}
+
+				proceduralTexture.SetPixel(w, h, pixel);
+			}
+		}
+
+		proceduralTexture.Apply();
+
+		return proceduralTexture;
+	}
+}
+```
+
+```
+using UnityEngine;
+using UnityEditor;
+using System.Collections;
+
+public class RenderCubemapWizard : ScriptableWizard {
+	
+	public Transform renderFromPosition;
+	public Cubemap cubemap;
+	
+	void OnWizardUpdate () {
+		helpString = "Select transform to render from and cubemap to render into";
+		isValid = (renderFromPosition != null) && (cubemap != null);
+	}
+	
+	void OnWizardCreate () {
+		// create temporary camera for rendering
+		GameObject go = new GameObject( "CubemapCamera");
+		go.AddComponent<Camera>();
+		// place it on the object
+		go.transform.position = renderFromPosition.position;
+		// render into cubemap		
+		go.GetComponent<Camera>().RenderToCubemap(cubemap);
+		
+		// destroy temporary camera
+		DestroyImmediate( go );
+	}
+	
+	[MenuItem("GameObject/Render into Cubemap")]
+	static void RenderCubemap () {
+		ScriptableWizard.DisplayWizard<RenderCubemapWizard>(
+			"Render cubemap", "Render!");
+	}
+}
+```
+
 物体反射到摄像机中的光线方向，可以由光路可逆的原则来反向求得。也就是说，我们可以计算视角方向关于顶点法线的反射方向来求得入射光线的方向。
 
+
+```
+Shader "Unity Shader Book/Chapter 10/Reflection"
+{
+    
+    Properties
+    {
+        _Color ("Color Tint", Color) = (1,1,1,1)
+        _ReflectColor ("Reflect Color", Color) = (1,1,1,1)
+        _ReflectAmount ("Relect Amount", Range(0,1)) = 1
+        _Cubemap ("Reflecttion Cubmap", Cube)  = "_Skybox" {}
+    }
+    
+    SubShader
+    {
+        Tags
+        {
+            "RenderType"="Opaque"
+            "Queue"="Geometry"
+        }
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"    
+            }
+            
+            CGPROGRAM
+
+            #pragma multi_compile_fwdbase
+            
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "Lighting.cginc"
+            #include "AutoLight.cginc"
+            
+            fixed4 _Color;
+            fixed4 _ReflectColor;
+            fixed _ReflectAmount;
+            samplerCUBE _Cubemap;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float3 worldNormal : TEXCOORD0;
+                float3 worldPos : TEXCOORD1;
+                float3 worldViewDir : TEXCOORD2;
+                float3 worldRefl : TEXCPPRD3;
+                SHADOW_COORDS(4)
+            };
+
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
+                o.worldViewDir = UnityWorldSpaceViewDir(o.worldPos);
+                o.worldRefl = reflect(-o.worldViewDir, o.worldNormal);
+                
+                TRANSFER_SHADOW(o);
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                fixed3 worldNormal = normalize(i.worldNormal);
+                fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
+                fixed3 worldViewDir = normalize(i.worldNormal);
+
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+
+                fixed3 diffuse = _LightColor0.rgb * _Color.rgb * saturate(dot(worldNormal, worldLightDir));
+
+                fixed3 reflection = texCUBE(_Cubemap, i.worldRefl).rgb * _ReflectColor.rgb;
+
+                UNITY_LIGHT_ATTENUATION(atten, i,i.worldPos)
+
+                fixed3 color = ambient + lerp(diffuse, reflection, _ReflectAmount) * atten;
+
+                
+                return fixed4(color, 1.0);
+            }
+            
+            ENDCG
+        }
+    }
+    Fallback "Reflective/VertexLit"
+}
+```
 
 ## 折射
 
