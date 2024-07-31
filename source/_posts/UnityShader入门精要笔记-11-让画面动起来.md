@@ -148,4 +148,110 @@ Fallback "Transparent/VertexLit"
 
 ## 广告牌
 
+另一种常见的顶点动画就是广告牌技术(Billboarding)。广告牌技术会根据视角方向来旋转一个被纹理着色的多边形(通常就是简单的四边形，这个多边形就是广告牌)，使得多边形看起来好像总是面对着摄像机。广告牌技术被用于很多应用，比如渲染烟雾、云朵、闪光效果等。
+
+广告牌技术的本质就是构建旋转矩阵，而我们知道一个变换矩阵需要3个基向量。广告牌技术使用的基向量通常就是表面法线(normal)、指向上的方向(up)以及指向右的方向。除此之外，我们还需要一个锚点，这个锚点在旋转过程中是固定不变的，以此来确定多边形在空间中的位置。
+
+广告牌技术的难点在于如何根据需求来构建3个相互正交的基向量。计算过程通常是，我们首先会通过初始计算得到目标的表面法线(例如就是视角方向)和指向上的方向，而两者往往是不垂直的。但是，两者其中之一是固定的，例如当模拟草丛时，我们希望广告牌指向上的方向永远是(0,1,0)，而法线方向应该随视角变化；而当模拟粒子效果时，我们希望广告牌的法线方向是固定的，即总是指向视角方向，指向上的方向则可以发生变化。我们假设法线方向是固定的，首先我们根据初始的表面法线和指向上的方向来计算出目标方向的指向右的方向(通过叉积操作):
+$$right = up \times normal$$
+
+对其归一化后，再由法线方向和指向右的方向计算出正交的指向上的方向即可
+
+$$up' = normal \times right$$
+
+至此，我们就可以得到用于旋转的3个正交基了。
+
+```
+Shader "UnityShaderBook/Chapter11/BillBoard"
+{
+    Properties
+    {
+        _MainTex ("MainTex", 2D) = "white" {}
+        _Color ("Color", Color) = (1,1,1,1)
+        _VerticalBillboarding ("Vertical Restraints", Range(0,1)) = 1
+    }
+    
+    SubShader
+    {
+        Tags
+        {
+            "Queue"="Transparent"
+            "IgnoreProjector"="True"
+            "RenderType"="Transparent"
+            "DisableBatching"="True"
+        }
+        Pass
+        {
+            Tags
+            {
+                "LightMode"="ForwardBase"
+            }
+            
+            ZWrite Off
+            Blend SrcAlpha OneMinusSrcAlpha
+            Cull Off
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "UnityCG.cginc"
+            
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            float4 _Color;
+            float _VerticalBillboarding;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float4 texcoord : TEXCOORD0;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float2 uv : TEXCOORD0;
+            };
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+
+                float3 center = float3(0,0,0);
+                float3 viewer = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1));
+
+                float3 normalDir = viewer - center;
+                normalDir.y = normalDir.y * _VerticalBillboarding;
+                normalDir = normalize(normalDir);
+
+                float3 upDir = abs(normalDir.y) > 0.999 ? float3(0,0,1) : float3(0,1,0);
+                float3 rightDir = normalize(cross(upDir, normalDir));
+                upDir = normalize(cross(normalDir, rightDir));
+
+                float3 centerOffs = v.vertex.xyz - center;
+                float3 localPos = center + rightDir * centerOffs.x + upDir * centerOffs.y + normalDir * centerOffs.z;
+
+                o.pos = mul(unity_MatrixMVP, float4(localPos,1));
+
+                o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                fixed4 c = tex2D(_MainTex, i.uv);
+                c.rgb *= _Color.rgb;
+                return c;
+            }
+            
+            ENDCG
+        }
+    }   
+    
+    Fallback "Transparent/VertexLit"
+}
+```
+
 ## 注意事项
