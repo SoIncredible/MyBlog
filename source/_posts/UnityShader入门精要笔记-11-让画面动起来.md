@@ -139,6 +139,89 @@ Fallback "Transparent/VertexLit"
 很多2D游戏都使用了不断滚动的背景来模拟游戏角色在场景中的穿梭，这些背景往往包含了多个层(layer)来模拟一种视差效果。而这些背景的实现往往就是利用了纹理动画。在本节中，我们将实现一个包含了两层的无限滚动的2D游戏背景。
 
 
+```
+Shader "UnityShaderBook/Chapter11/ScrollingBackground"{
+
+    Properties{
+        _MainTex ("Base Layer (RGB)", 2D) = "white" {}
+        _DetailTex ("2nd Layer (RGB)", 2D) = "white" {} 
+        _ScrollX ("Base Layer Scroll Speed", Float) = 1.0
+        _Scroll2X ("2nd Layer Scroll Speed", Float) = 1.0
+        _Multiplier ("Layer Multiplier", Float) = 1.0
+    }
+    
+    SubShader{
+        
+        Tags
+        {
+            "RenderType"="Opaque"
+            "Queue"="Geometry"   
+        }
+        
+        Pass
+        {
+                
+            Tags
+            {
+                "LightMode"="ForwardBase" 
+            }
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "UnityCG.cginc"
+
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            sampler2D _DetailTex;
+            float4 _DetailTex_ST;
+            float _ScrollX;
+            float _Scroll2X;
+            float _Multiplier;
+            
+            struct a2v
+            {
+                float4 vertex : POSITION;
+                float4 texcoord : TEXCOORD0;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                float4 uv : TEXCOORD0;
+            };
+
+            v2f vert(a2v v)
+            {
+                v2f o;
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+                o.uv.xy = TRANSFORM_TEX(v.texcoord, _MainTex) + frac(float2(_ScrollX, 0.0) * _Time.y);
+                o.uv.zw = TRANSFORM_TEX(v.texcoord, _DetailTex) + frac(float2(_Scroll2X, 0.0) * _Time.y);
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target
+            {
+                fixed4 firstLayer = tex2D(_MainTex, i.uv.xy);
+                fixed4 secondLayer = tex2D(_DetailTex, i.uv.zw);
+
+                fixed4 c = lerp(firstLayer, secondLayer, secondLayer.a);
+
+                c.rgb *= _Multiplier;
+
+                return c;
+            }
+         
+            ENDCG
+        }
+    }
+}
+```
+
+> lerp是干啥的？已经看到过好多次了，在这个例子中，我们使用lerp函数来混合两张纹理。frac方法用于计算并返回一个数值的小数部分。并不是很理解为什么这里要用一个frac方法，猜测是只取小数部分来避免大量的计算。
+
 # 顶点动画
 
 如果一个游戏中所有的物体都是静止的，这样枯燥的世界恐怕很难引起玩家的兴趣。顶点动画可以让我们的场景变得更加生动有趣。在游戏中，我们常常使用顶点动画来模拟飘动的旗帜、湍流的小溪等效果。本节中，我们将学习两种常见的顶点动画的应用——流动的河流以及广告牌技术。在本节的最后，我们还将给出一些顶点动画中的注意事项以及解决方法。

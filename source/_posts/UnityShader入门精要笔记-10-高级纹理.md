@@ -168,7 +168,6 @@ Shader "Unity Shader Book/Chapter 10/Reflection"
 
                 fixed3 color = ambient + lerp(diffuse, reflection, _ReflectAmount) * atten;
 
-                
                 return fixed4(color, 1.0);
             }
             

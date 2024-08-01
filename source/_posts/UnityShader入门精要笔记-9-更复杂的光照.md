@@ -712,10 +712,9 @@ Shader "UnityShaderBook/Chapter 9/Shadow"
             fixed atten = tex2D(_LightTexture0, dot(lightCoord, lightCoord).rr).UNITY_ATTEN_CHANNEL;
 #endif
             
-            
             fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(i.worldNormal, halfDir)),_Gloss);
 
-            return fixed4( diffuse + specular, 1.0);
+            return fixed4( (diffuse + specular) * atten, 1.0);
          }
          ENDCG
       }
