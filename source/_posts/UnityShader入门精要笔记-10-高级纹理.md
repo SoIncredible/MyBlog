@@ -9,7 +9,6 @@ swiper_index:
 sticky:
 ---
 
-
 # 立方体纹理
 
 在图形学中，立方体纹理(Cubemap)是**环境映射(Environment Mapping)**的一种实现方法。环境映射可以模拟物体周围的环境，而使用了环境映射的物体可以看起来像是镀了一层金属一样反射处周围的环境。
@@ -21,7 +20,6 @@ sticky:
 立方体纹理在实时渲染中有很多应用，最常见的是用于天空盒子以及环境映射。
 
 ## 天空盒子
-
 
 需要说明的是，在Window -> Lighting -> Skybox中设置的天空盒子会应用于该场景中所有的摄像机。如果我们希望某些摄像机可以使用不同的天空盒子，可以通过向该摄像机添加Skybox组件来覆盖掉之前的设置。也就是说，在挂载有摄像机组件的物体上点击Component -> Rendering -> Skybox来完成对场景默认天空盒子的覆盖。
 
@@ -38,148 +36,6 @@ sticky:
 第二种方法是Unity5之前的方法，我们首先需要在项目资源中创建一个Cubemap，然后把6张纹理拖拽到它的面板中。在Unity5中，官方推荐使用第一种方法来创建立方体纹理，这是因为第一种方法可以对纹理数据进行压缩，而且可以支持边缘修正、光滑反射(Glossy Reflection)和HDR等功能。
 
 前面两种方法都需要我们提前准备好立方体纹理的图像，它们得到的立方体纹理往往是被场景中的物体所共用的。但在理想情况下，我们希望根据物体所在场景中位置的不同，生成它们各自不同的立方体纹理。这时我们就可以在Unity中通过脚本来创建。这是通过利用Unity提供的`Camera.RenderToCubemap`函数来实现的。这个函数可以把从任意位置观察到的场景图像存储在6张图片中，从而创建出该位置上对应的立方体纹理。
-
-
-我们先来使用第三种方法，
-
-## 反射
-
-使用了反射效果的物体通常看起来就像是镀了一层金属。想要模拟反射效果十分简单，我们只需要通过入射光线的方向和表面法线方向来计算反射方向，再利用反射方向对立方体纹理进行采样即可。
-
-我们需要两个C#脚本
-```
-using UnityEngine;
-
-[ExecuteInEditMode]
-public class ProceduralTextureGeneration : MonoBehaviour {
-
-	public Material material = null;
-
-	#region Material properties
-	[SerializeField]
-	private int m_textureWidth = 512;
-	public int textureWidth {
-		get {
-			return m_textureWidth;
-		}
-		set {
-			m_textureWidth = value;
-			_UpdateMaterial();
-		}
-	}
-
-	[SerializeField]
-	private Color m_backgroundColor = Color.white;
-	public Color backgroundColor {
-		get {
-			return m_backgroundColor;
-		}
-		set {
-			m_backgroundColor = value;
-			_UpdateMaterial();
-		}
-	}
-
-	[SerializeField]
-	private Color m_circleColor = Color.yellow;
-	public Color circleColor {
-		get {
-			return m_circleColor;
-		}
-		set {
-			m_circleColor = value;
-			_UpdateMaterial();
-		}
-	}
-
-	[SerializeField]
-	private float m_blurFactor = 2.0f;
-	public float blurFactor {
-		get {
-			return m_blurFactor;
-		}
-		set {
-			m_blurFactor = value;
-			_UpdateMaterial();
-		}
-	}
-	#endregion
-
-	private Texture2D m_generatedTexture = null;
-
-	// Use this for initialization
-	void Start () {
-		if (material == null) {
-			Renderer renderer = gameObject.GetComponent<Renderer>();
-			if (renderer == null) {
-				Debug.LogWarning("Cannot find a renderer.");
-				return;
-			}
-
-			material = renderer.sharedMaterial;
-		}
-
-		_UpdateMaterial();
-	}
-
-	private void _UpdateMaterial() {
-		if (material != null) {
-			m_generatedTexture = _GenerateProceduralTexture();
-			material.SetTexture("_MainTex", m_generatedTexture);
-		}
-	}
-
-	private Color _MixColor(Color color0, Color color1, float mixFactor) {
-		Color mixColor = Color.white;
-		mixColor.r = Mathf.Lerp(color0.r, color1.r, mixFactor);
-		mixColor.g = Mathf.Lerp(color0.g, color1.g, mixFactor);
-		mixColor.b = Mathf.Lerp(color0.b, color1.b, mixFactor);
-		mixColor.a = Mathf.Lerp(color0.a, color1.a, mixFactor);
-		return mixColor;
-	}
-
-	private Texture2D _GenerateProceduralTexture() {
-		Texture2D proceduralTexture = new Texture2D(textureWidth, textureWidth);
-
-		// The interval between circles
-		float circleInterval = textureWidth / 4.0f;
-		// The radius of circles
-		float radius = textureWidth / 10.0f;
-		// The blur factor
-		float edgeBlur = 1.0f / blurFactor;
-
-		for (int w = 0; w < textureWidth; w++) {
-			for (int h = 0; h < textureWidth; h++) {
-				// Initalize the pixel with background color
-				Color pixel = backgroundColor;
-
-				// Draw nine circles one by one
-				for (int i = 0; i < 3; i++) {
-					for (int j = 0; j < 3; j++) {
-						// Compute the center of current circle
-						Vector2 circleCenter = new Vector2(circleInterval * (i + 1), circleInterval * (j + 1));
-
-						// Compute the distance between the pixel and the center
-						float dist = Vector2.Distance(new Vector2(w, h), circleCenter) - radius;
-
-						// Blur the edge of the circle
-						Color color = _MixColor(circleColor, new Color(pixel.r, pixel.g, pixel.b, 0.0f), Mathf.SmoothStep(0f, 1.0f, dist * edgeBlur));
-
-						// Mix the current color with the previous color
-						pixel = _MixColor(pixel, color, color.a);
-					}
-				}
-
-				proceduralTexture.SetPixel(w, h, pixel);
-			}
-		}
-
-		proceduralTexture.Apply();
-
-		return proceduralTexture;
-	}
-}
-```
 
 ```
 using UnityEngine;
@@ -217,13 +73,19 @@ public class RenderCubemapWizard : ScriptableWizard {
 }
 ```
 
+## 反射
+
+使用了反射效果的物体通常看起来就像是镀了一层金属。想要模拟反射效果十分简单，我们只需要通过入射光线的方向和表面法线方向来计算反射方向，再利用反射方向对立方体纹理进行采样即可。
+
 物体反射到摄像机中的光线方向，可以由光路可逆的原则来反向求得。也就是说，我们可以计算视角方向关于顶点法线的反射方向来求得入射光线的方向。
 
+>**疑问** 看到这里的时候我是很懵的，因为如果按照上述光路可逆的方式来计算**入射光线**的方向，那么对一个凹凸不平的Mesh来说，每一个顶点或者片元处的入射方向可以都是不一样的，也就是说光线的方向是可以任意变化的，怎么会这样？
+
+> **2024-8-1更新** 这里是书中的描述并不准确，原文是“我们只需要通过入射光线的方向和表面法线方向来计算反射方向”，此处入射光线表述有误，应该是从Camera出发射向当前操作的这一顶点或者片元方向的向量。另外我觉得书中对反射的表现描述也不够形象，反射其实就是镜面反射，但这面镜子不是平整的，不过我们可以把单个顶点或者片元看成是一个平整的镜面，我们的视线从摄像机处出发，看向这面平整的镜子，然后我们就看到了经过反射后的画面了。
 
 ```
 Shader "Unity Shader Book/Chapter 10/Reflection"
 {
-    
     Properties
     {
         _Color ("Color Tint", Color) = (1,1,1,1)
@@ -276,7 +138,6 @@ Shader "Unity Shader Book/Chapter 10/Reflection"
                 SHADOW_COORDS(4)
             };
 
-
             v2f vert(a2v v)
             {
                 v2f o;
@@ -318,9 +179,16 @@ Shader "Unity Shader Book/Chapter 10/Reflection"
 }
 ```
 
+我们使用了`reflect`方法来计算光线的入射方向，这个方法在第六章学习标准光照模型中使用过。上面这段Shader代码中我们还计算了阴影，但在随书附带的这一节的示例场景里计算阴影的Shader代码根本就没有起作用。对于反射效果的表现没有任何影响。
+
+> 看完这小节的代码，我当时有很多疑问？为什么这段代码跟第六章中计算标准光照模型的代码不一样？问过GPT之后，我得到了能够说服我自己的说法：标准光照模型并不是适用于像这种需要有金属光泽的材质材质中，因此可以认为这一小节的代码是一种类似标准光照模型的“金属光泽模型”，世界上还有很多很多其他的“光照模型”。当然这个称谓是我瞎编的。
+
 ## 折射
 
 在这一节中，我们将学习如何在Unity中模拟另一种环境映射常见的应用——折射。
+
+好吧，我承认在看到这一小节的时候，我的思绪还停留在上一节的反射小结中，并且我并没有完全理解折射的含义，而且这一小节对折射的介绍也有误导性（至少对我来说）。现在我按照我自己的理解说一下Unity中的折射：场景中有一个半透明的物体，光线从物体的一面射入，光线的方向会发生变化，但是光线最终是会射出这个半透明的物体，然后我们就能看到这个半透明物体后面的一些物体，想象一下在一个倒满水的透明玻璃杯中插入一根筷子，我们是在玻璃被的外面看到光线穿过杯子、又穿过一部分水然后看到了发生形变的躲在杯子和水“后面”的筷子。这一小节我们要实现的就是这种效果。
+
 折射的物理原理比反射更复杂一些。我们在初中物理就已经接触过折射的定义：当光线从一种介质（比如空气）斜射进入另一种介质（比如玻璃）时，传播方向一般会发生变化。当给定入射角时，我们可以用斯涅耳定律(Snell'a Law)来计算反射角。公式如下：
 
 $$\eta_1\sin\theta_1 =\eta_2\sin\theta_2 $$
@@ -428,14 +296,14 @@ Shader "UnityShaderBook/Chapter10/Refraction"
 }
 ```
 
-我们使用了CG的refract函数来计算折射方向。它的第一个参数即为入射光线的方向，它必须是归一化之后的矢量；第二个参数是表面法线，法线方向童谣需要是归一化之后的；第三个参数是入射光线所在介质的折射率和折射光线所在介质的折射率之间的比值，例如如果光是从空气射到玻璃表面，那么这个参数应该是空气的折射率和玻璃的折射率之间的比值，即1/1.5.它的返回值就是计算而得的折射方向，它的模则对应入射光线的模。
+我们使用了CG的refract函数来计算折射方向。它的第一个参数即为入射光线的方向，它必须是归一化之后的矢量；第二个参数是表面法线，法线方向同样需要是归一化之后的；第三个参数是入射光线所在介质的折射率和折射光线所在介质的折射率之间的比值，例如如果光是从空气射到玻璃表面，那么这个参数应该是空气的折射率和玻璃的折射率之间的比值，即1/1.5.它的返回值就是计算而得的折射方向，它的模则对应入射光线的模。
 
 然后我们在片元着色器中使用折射方向对立方体纹理进行采样。同样，我们也没有对i.worldRefr进行归一化操作，因为对立方体纹理的采样只需要提供方向即可。最后，我们使用_RefractAmount来混合漫反射颜色和折射颜色，并和环境光照相加后返回。
 
 
 ## 菲涅尔反射
 
-在实时渲染中，我们经常会使用菲涅尔反射(Fresnel reflection)来根据视角方向控制反射程度。通俗来讲，菲涅尔反射描述了一种光学现象，即当光线照射到物体表面上时，一部分发生反射，一部分进入物体内部发生折射或散射。被反射的光和入射光之间存在一定的比率关系，这个比率关系可以通过菲涅尔等式进行计算。一个常用的例子就是，当你站在湖边，直接低头看脚边的水面时，你会发现水几乎是透明的，你可以直接看到水底下的小鱼和石子；但是，当你抬头看向远处的水面时，会发现几乎看不到水下的情景，只能看到水表面反射的环境。这就是所谓的菲涅尔效果，事实上，不只是水、玻璃这样的反光物体具有菲涅尔效果，几乎任何物体都或多或少地包含了菲涅尔效果，这是基于物理的渲染中非常重要的一项高光反射计算因子。
+在实时渲染中，我们经常会使用菲涅尔反射(`Fresnel reflection`)来根据视角方向控制反射程度。通俗来讲，菲涅尔反射描述了一种光学现象，即当光线照射到物体表面上时，一部分发生反射，一部分进入物体内部发生折射或散射。被反射的光和入射光之间存在一定的比率关系，这个比率关系可以通过菲涅尔等式进行计算。一个常用的例子就是，当你站在湖边，直接低头看脚边的水面时，你会发现水几乎是透明的，你可以直接看到水底下的小鱼和石子；但是，当你抬头看向远处的水面时，会发现几乎看不到水下的情景，只能看到水表面反射的环境。这就是所谓的菲涅尔效果，事实上，不只是水、玻璃这样的反光物体具有菲涅尔效果，几乎任何物体都或多或少地包含了菲涅尔效果，这是基于物理的渲染中非常重要的一项高光反射计算因子。
 
 那么，我们如何计算菲涅尔反射呢？这就需要使用菲涅尔等式进行计算。真实世界的菲涅尔等式是十分复杂的，但在实时渲染中，我们通常会使用一些近似的公式来计算。其中一个著名的近似公式就是Schlick菲涅尔近似等式：
 
@@ -754,7 +622,7 @@ Fallback "Diffuse"
 
 之后，我们把法线方向从切线空间变换到了世界空间下(使用变换矩阵的每一行，即TtoW0、TtoW1和TtoW2，分别和法线方向点乘，构成新的法线方向)，并据此得到视角方向相对于法线方向的反射方向。随后使用反射方向对Cubemap进行采样，并把结果和主纹理颜色相乘后得到反射颜色。
 
-最后，我们使用_RefratAmount属性对反射和折射颜色进行混合，作为最终的输出颜色。
+最后，我们使用_RefractAmount属性对反射和折射颜色进行混合，作为最终的输出颜色。
 
 在前面的实现中，我们在GrabPass中使用一个字符串指明了被抓取的屏幕图像将会被存储在哪个名称的纹理中。实际上，GrabPass支持两种形式。
 - 直接使用GrabPass{}，虽然后在后续的Pass中直接使用_GrabTexture来访问屏幕图像。但是，当场景中有多个物体都使用了这样的形式来抓取屏幕时，这种方法的性能消耗比较大，因为对于每一个使用它的物体，Unity都会为它单独进行一次昂贵的屏幕抓取操作。但这种方法可以让每个物体得到不同的瓶木图像，这取决于它们的渲染队列以渲染它们时当前的屏幕缓冲中的颜色。
@@ -771,6 +639,7 @@ Fallback "Diffuse"
 # 程序纹理
 
 程序纹理是指那些用由计算机生成的图像，我们通常使用一些特定的算法来创建个性化图案或者非常真实的自然元素，例如木头、石子等。使用程序纹理的好处在于我们可以使用各种参数来控制纹理的外观，而这些属性不仅仅是那些颜色属性，甚至可以是完全不同类属性的图案属性，这使得我们可以得到更加丰富的动画和视觉效果。在本节中，我们会首先尝试使用算法来实现一个非常简单的程序材质，然后我们会介绍Unity中一类专门使用程序纹理的材质——程序材质。
+
 ## 在Unity中实现简单的程序纹理
 
 首先，我们新建一个材质，使用一个第7章中我们编写的SingleTexture的Shader，我们不会给这个材质添加纹理，这是因为我们希望使用脚本来创建程序纹理。为此，我们要再创建一个脚本ProceduralTextureGeneration.cs，并把这个脚本添加得到我们在场景中创建的一个Cube的模型上。
