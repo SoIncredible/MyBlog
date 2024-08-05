@@ -1,5 +1,6 @@
 ---
 title: AssetBundle库开发记录
+abbrlink: 96c99d7a
 date: 2024-06-21 16:41:59
 tags:
 categories:

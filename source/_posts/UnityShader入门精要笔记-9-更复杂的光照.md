@@ -1,5 +1,6 @@
 ---
 title: UnityShader入门精要笔记-9-更复杂的光照
+abbrlink: e52a9ff3
 date: 2024-07-13 12:09:27
 tags:
 categories:

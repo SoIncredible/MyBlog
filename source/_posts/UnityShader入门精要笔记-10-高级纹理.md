@@ -1,5 +1,6 @@
 ---
 title: UnityShader入门精要笔记_10_高级纹理
+abbrlink: f8400f04
 date: 2024-07-15 12:35:28
 tags:
 categories:
