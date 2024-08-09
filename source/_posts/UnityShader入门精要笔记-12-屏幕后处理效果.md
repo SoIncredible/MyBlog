@@ -76,6 +76,119 @@ public class PostEffectsBase : MonoBehaviour {
 # 调整屏幕的亮度、饱和度和对比度
 
 
+```
+using System;
+using UnityEngine;
+
+public class BrightnessSaturationAndContrast : PostEffectsBase
+{
+    public Shader briSatConShader;
+    public Material briSatConMat;
+    
+    private Material _material
+    {
+        get
+        {
+            briSatConMat = CheckShaderAndCreateMaterial(briSatConShader, briSatConMat);
+            return briSatConMat;
+        }
+    }
+    
+    [Range(0.0f, 3.0f)] public float brightness = 1.0f;
+    [Range(0.0f, 3.0f)] public float saturation = 1.0f;
+    [Range(0.0f, 3.0f)] public float contrast = 1.0f;
+
+
+    private void OnRenderImage(RenderTexture source, RenderTexture destination)
+    {
+        if (_material != null)
+        {
+            _material.SetFloat("_Brightness", brightness);
+            _material.SetFloat("_Saturation", saturation);
+            _material.SetFloat("_Contrast", contrast);
+            
+            Graphics.Blit(source, destination, _material);
+        }
+        else
+        {
+            Graphics.Blit(source, destination);
+        }
+    }
+}
+```
+
+```
+Shader "UnityShaderBook/Chapter 12/BrightnessSaturationAndContrast"
+{
+    Properties
+    {
+        _MainTex ("MainTex", 2D) = "white" {}
+        _Brightness ("Brightness", Float) = 1
+        _Saturation ("Saturation", Float) = 1
+        _Contrast ("Contrast", Float) = 1
+    }
+    
+    SubShader
+    {
+        Tags
+        {
+            
+        }
+        
+        Pass
+        {
+            ZTest Always
+            Cull Off
+            ZWrite Off
+
+            CGPROGRAM
+
+            #pragma vertex vert;
+            #pragma fragment frag;
+
+            #include "UnityCG.cginc"
+            
+            sampler2D _MainTex;
+            half _Brightness;
+            half _Saturation;
+            half _Contrast;
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                half2 uv : TEXCOORD0;
+            };
+
+            v2f vert(appdata_img v)
+            {
+                v2f o;
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+                o.uv = v.texcoord;
+                return o;
+            }
+
+            fixed4 frag(v2f i) : SV_Target{
+                fixed4 renderTex = tex2D(_MainTex, i.uv);
+
+                fixed3 finalColor = renderTex.rgb * _Brightness;
+
+                fixed luminance = 0.2125 * renderTex.r + 0.7154 * renderTex.g + 0.0721 * renderTex.b;
+                fixed3 luminanceColor = fixed3(luminance, luminance, luminance);
+                finalColor = lerp(luminanceColor, finalColor, _Saturation);
+
+                fixed3 avgColor = fixed3(0.5, 0.5, 0.5);
+                finalColor = lerp(avgColor, finalColor, _Contrast);
+
+                return fixed4(finalColor, renderTex.a);
+            }
+            
+            ENDCG
+        }   
+    }
+}
+```
+
+首先，我们得到对原屏幕图像（存储在_MainTex）中的采样结果renderTex。然后，利用_Brightness属性来计算来调整亮度。亮度的调整非常简单，我们只需要把原颜色乘以亮度系数_Brightness即可。然后，我们计算该像素值对应的亮度值（luminance），这是通过对每个颜色分量乘以一个特定的系数
 # 边缘检测
 
 # 高斯模糊
