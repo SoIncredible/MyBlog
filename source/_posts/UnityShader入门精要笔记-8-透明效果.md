@@ -1,5 +1,5 @@
 ---
-title: UnityShader入门精要笔记-8-透明效果
+title: UnityShader入门精要笔记（八）——透明效果
 abbrlink: b4321fd8
 date: 2024-07-07 10:24:49
 tags:

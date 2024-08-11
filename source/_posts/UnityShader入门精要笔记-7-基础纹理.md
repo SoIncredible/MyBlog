@@ -1,5 +1,5 @@
 ---
-title: UnityShader入门精要笔记_7_基础纹理
+title: UnityShader入门精要笔记（七）——基础纹理
 abbrlink: 5fb55013
 date: 2024-07-05 21:41:19
 tags:
