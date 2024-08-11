@@ -148,6 +148,16 @@ Markdown Preview Enhanced
 
 Markdown All in One
 
+> 2024.8.11更新
+> 在VSCode中使用像Typora那样将图片复制到指定路径的方法如下：
+> - 首先下载好上面的两个插件
+> - 在VSCode的设置中搜索`Markdown › Copy Files: Destination`
+> - 添加一对KeyValue如下： Key: `**/*` Value: `${documentBaseName}/`
+> ![](MacOS与WindowsOpenGL开发环境搭建/image-1.png)
+> 但是我还没有搞懂KeyValue是如何做路径映射的
+> [VSCode官网上的参考](https://code.visualstudio.com/docs/languages/markdown)
+
+
 **代码截图工具** CodeSnap
 
 **图标主题** Material Icon Theme
