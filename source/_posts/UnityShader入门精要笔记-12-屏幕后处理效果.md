@@ -203,6 +203,8 @@ Shader "UnityShaderBook/Chapter 12/BrightnessSaturationAndContrast"
 
 卷积操作的神奇之处在于选择的卷积。那么，用于边缘检测的卷积核应该长什么样呢？在回答这个问题前，我们可以先回想一下边到底是如何形成的。如果相邻像素之间存在差别明显的颜色、亮度、纹理等属性，我们就会认为它们之间应该有一条边界。这种相邻像素之间的差值可以用梯度(gradient)来表示，可以想象到，边缘处的梯度绝对值会比较大。
 
+![](UnityShader入门精要笔记-12-屏幕后处理效果/image.png)
+
 3种常见的边缘算子如图所示，它们都包含了两个方向的卷积核，分别用于检测水平方向和竖直方向上的边缘信息。在进行边缘检测时，我们需要对每个像素分别进行一次卷积计算，得到两个方向上的梯度值$G_{x}$和$G_{y}$ ，而整体的梯度公式可以按照下面的公式计算而得：
 $$G=\sqrt{G^2_{x} + G^2_{y}}$$
 
@@ -211,7 +213,166 @@ $$G = |G_{x}| + |G_{y}|$$
 
 当我们得到梯度G后，我们就可以据此来判断哪些像素对应了边缘（梯度值越大越有可能是边缘点）。
 
+## 实现
+
+本节会使用Sobel算子进行边缘检测，实现描边效果。
+
+
+
+```
+using System;
+using UnityEngine;
+
+public class EdgeDetection : PostEffectsBase
+{
+    public Shader edgeDetectShader;
+    private Material edgeDetectMaterial = null;
+
+    public Material material
+    {
+        get
+        {
+            edgeDetectMaterial = CheckShaderAndCreateMaterial(edgeDetectShader, edgeDetectMaterial);
+            return edgeDetectMaterial;
+        }
+    }
+
+    [Range(0.0f, 1.0f)] public float edgesOnly = 0.0f;
+    
+    public Color edgeColor = Color.black;
+    
+    public Color backgroundColor = Color.white;
+    private static readonly int EdgeColor = Shader.PropertyToID("_EdgeColor");
+    private static readonly int EdgeOnly = Shader.PropertyToID("_EdgeOnly");
+    private static readonly int BackgroundColor = Shader.PropertyToID("_BackgroundColor");
+
+    private void OnRenderImage(RenderTexture source, RenderTexture destination)
+    {
+        if (material != null)
+        {
+            material.SetFloat(EdgeOnly, edgesOnly);
+            material.SetColor(EdgeColor, edgeColor);
+            material.SetColor(BackgroundColor, backgroundColor);
+            Graphics.Blit(source, destination, material);
+        }
+        else
+        {
+            Graphics.Blit(source, destination);
+        }
+    }
+}
+```
+
+
+```
+Shader "Unity Shader Book/Chapter 12/Edge Detection"
+{
+    Properties
+    {
+        _MainTex ("Base (RGB)", 2D) = "white"{}
+        _EdgeOnly ("Edge Only", Float) = 1.0
+        _EdgeColor ("Edge Color", Color) = (0,0,0,1)
+        _BackgroundColor ("Background Color", Color) = (1,1,1,1)
+    }
+    
+    SubShader
+    {
+        Pass
+        {
+            ZTest Always
+            Cull Off
+            ZWrite Off
+            
+            CGPROGRAM
+
+            #pragma vertex vert;
+            #pragma fragment frag;
+
+            #include "UnityCG.cginc"
+            
+            sampler2D _MainTex;
+            half4 _MainTex_TexelSize;
+            fixed4 _EdgeOnly;
+            fixed4 _EdgeColor;
+            fixed4 _BackgroundColor;
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+                half2 uv[9] : TEXCOORD0;
+            };
+
+            v2f vert(appdata_img v)
+            {
+                v2f o;
+                o.pos = mul(unity_MatrixMVP, v.vertex);
+
+                half2 uv = v.texcoord;
+                o.uv[0] = uv + _MainTex_TexelSize.xy * half2(-1, -1);
+                o.uv[1] = uv + _MainTex_TexelSize.xy * half2(0, -1);
+                o.uv[2] = uv + _MainTex_TexelSize.xy * half2(1, -1);
+                o.uv[3] = uv + _MainTex_TexelSize.xy * half2(-1, 0);
+                o.uv[4] = uv + _MainTex_TexelSize.xy * half2(0, 0);
+                o.uv[5] = uv + _MainTex_TexelSize.xy * half2(1, 0);
+                o.uv[6] = uv + _MainTex_TexelSize.xy * half2(-1, 1);
+                o.uv[7] = uv + _MainTex_TexelSize.xy * half2(0, 1);
+                o.uv[8] = uv + _MainTex_TexelSize.xy * half2(1, 1);
+                return o;
+            }
+
+   fixed luminance(fixed4 color)
+            {
+                return 0.2125 * color.r + 0.7154 * color.g + 0.0721 * color.b;
+            }
+
+            half Sobel(v2f i)
+            {
+                const half Gx[9] = {
+                    -1, -2, -1,
+                    0, 0, 0,
+                    1, 2, 1
+                };
+
+                const half Gy[9] = {
+                    -1, 0, 1,
+                    -2, 0, 2,
+                    -1, 0, 1
+                };
+
+                half texColor;
+                half edgeX = 0;
+                half edgeY = 0;
+                for(int it = 0; it < 9; it++)
+                {
+                    texColor = luminance(tex2D(_MainTex, i.uv[it]));
+                    edgeX += texColor * Gx[it];
+                    edgeY += texColor * Gy[it];
+                }
+
+                half edge = 1 - abs(edgeX) - abs(edgeY);
+
+                return edge;
+            }
+            
+            fixed4 frag(v2f i) : SV_Target{
+
+                half edge = Sobel(i);
+
+                fixed4 withEdgeColor = lerp(_EdgeColor, tex2D(_MainTex, i.uv[4]), edge);
+                fixed4 onlyEdgeColor = lerp(_EdgeColor, _BackgroundColor, edge);
+                return lerp(withEdgeColor, onlyEdgeColor, _EdgeOnly);
+            }
+            ENDCG
+        }
+    }
+
+    Fallback Off
+}
+```
+
 # 高斯模糊
+
+
 
 # Bloom效果
 
