@@ -292,7 +292,7 @@ Shader "Unity Shader Book/Chapter 12/Edge Detection"
             
             sampler2D _MainTex;
             half4 _MainTex_TexelSize;
-            fixed4 _EdgeOnly;
+            fixed _EdgeOnly;
             fixed4 _EdgeColor;
             fixed4 _BackgroundColor;
 
@@ -320,7 +320,7 @@ Shader "Unity Shader Book/Chapter 12/Edge Detection"
                 return o;
             }
 
-   fixed luminance(fixed4 color)
+            fixed luminance(fixed4 color)
             {
                 return 0.2125 * color.r + 0.7154 * color.g + 0.0721 * color.b;
             }
@@ -373,6 +373,19 @@ Shader "Unity Shader Book/Chapter 12/Edge Detection"
 # 高斯模糊
 
 
+## 高斯滤波
+
+高斯模糊同样利用了卷积计算，它使用的卷积核名为高斯核。高斯核是一个正方形大小的滤波核，其中每个元素的计算都是基于下面的高斯方程：
+
+$$G(x,y) = \frac{1}{2\pi\sigma^2}e^{\frac{x^2 + y^2}{2\sigma^2}}$$
+
+其中$\sigma$是标准方差，一般取值为1，x和y分别对应了当前位置到卷积核中心的整数距离。要构建一个高斯核，我们只需要计算高斯核中各个位置对应的高斯值。为了保证滤波后的图像不会变暗，我们需要对高斯核中的权重进行归一化，即让每个权重除以所有权重的和，这样可以保证所有权重的和为1.因此，高斯函数e前面的系数实际不会对结果产生任何影响。下图显示了一个标准方差为1的5$\times$5大小的高斯核。
+
+![](UnityShader入门精要笔记-12-屏幕后处理效果/image-1.png)
+
+高斯方程很好地模拟了邻域每个像素对当前处理像素的影响程度——距离越近，影响越大。高斯核的维数越高，模糊程度就越大。使用一个NxN的高斯核对图像进行卷积滤波，就需要N$\times$N$\times$W$\times$H(W和H分别是图像的宽和高)次纹理采样。当N的大小不断增加时，采样的次数就会变得非常巨大。幸运的是，我们可以把这个二维的高斯函数拆分成两个一维函数。也就是说，我们可以使用两个一维的高斯核先后对图像进行滤波，它们得到的结果和直接使用二维高斯核是一样的，但采样次数只需要2$\times$N$\times$W$\times$H。我们可以进一步观察到，两个一维高斯核中包含了很多重复的权重，对于一个大小为5的一维高斯核，我们实际上只需要记录3个权重值就可以了。
+
+在本节中，我们会使用上述的5$\times$5的高斯核对原图像进行高斯模糊。我们将先后调用两个Pass，第一个Pass将会使用竖直方向的一维高斯核对图像进行滤波，第二个Pass使用水平方向的一维高斯核对图像进行滤波，得到最终的目标图像。在实现中我们还会利用图像缩放来进一步提高性能，并通过调整高斯滤波的应用次数来控制模糊程度（次数越多，图像越模糊）。
 
 # Bloom效果
 
