@@ -596,9 +596,326 @@ Bloom效果是游戏中常见的一种效果。这种特效可以模拟真实摄
 
 Bloom效果的实现原理非常简单：我们首先根据一个阈值提取出图像中较亮的区域，把它们存储到一张渲染纹理中，再利用高斯模糊对这样渲染纹理进行模糊处理，模拟光线扩散的效果，最后再将其和原图像混合，得到最终的效果。
 
+尽管在大多数情况下，图像的亮度值不会超过1.但是如果我们开启了HDR，硬件就会允许我们把颜色值存储在一个更高精度范围的缓冲中，此时像素的亮度值可能会超过1。因此，在这里我们把luminanceThreashold的值规定在[0,4]范围内。
+
+
+```
+using System;
+using UnityEngine;
+
+public class Bloom : PostEffectsBase
+{
+    public Shader bloomShader;
+    private Material bloomMaterial = null;
+
+    public Material material
+    {
+        get
+        {
+            bloomMaterial = CheckShaderAndCreateMaterial(bloomShader, bloomMaterial);
+            return bloomMaterial;
+        }
+    }
+
+    [Range(0, 4)] public int iterations = 3;
+    [Range(0.2f, 3.0f)] public float blurSpread = 0.6f;
+    [Range(1, 8)] public int downSample = 2;
+    [Range(0.0f, 4.0f)] public float luminanceThreshold = 0.6f;
+    private static readonly int LuminanceThreshold = Shader.PropertyToID("_LuminanceThreshold");
+    private static readonly int Bloom1 = Shader.PropertyToID("_Bloom");
+    private static readonly int BlurSize = Shader.PropertyToID("_BlurSize");
+
+    private void OnRenderImage(RenderTexture source, RenderTexture destination)
+    {
+        if (material != null)
+        {
+            material.SetFloat(LuminanceThreshold, luminanceThreshold);
+
+            int rtW = source.width / downSample;
+            int rtH = source.height / downSample;
+
+            RenderTexture buffer0 = RenderTexture.GetTemporary(rtW, rtH, 0);
+            buffer0.filterMode = FilterMode.Bilinear;
+
+            Graphics.Blit(source, buffer0, material, 0);
+
+            for (int i = 0; i < iterations; i++)
+            {
+                material.SetFloat(BlurSize, 1.0f + i * blurSpread);
+
+                RenderTexture buffer1 = RenderTexture.GetTemporary(rtW, rtH, 0);
+                
+                Graphics.Blit(buffer0, buffer1, material, 1);
+                
+                RenderTexture.ReleaseTemporary(buffer0);
+
+                buffer0 = buffer1;
+                buffer1 = RenderTexture.GetTemporary(rtW, rtH, 0);
+                
+                Graphics.Blit(buffer0, buffer1, material, 2);
+                
+                RenderTexture.ReleaseTemporary(buffer0);
+                buffer0 = buffer1;
+            }
+            
+            material.SetTexture(Bloom1, buffer0);
+            Graphics.Blit(source,destination, material, 3);
+            
+            RenderTexture.ReleaseTemporary(buffer0);
+        }
+        else
+        {
+            Graphics.Blit(source, destination);
+        }
+    }
+}
+```
+
+
+```
+Shader "Unity Shader Book/Chapter 12/Bloom"
+{
+    
+    Properties
+    {
+        _MainTex ("Base (RGB)", 2D) = "white" {}
+        _Bloom ("Bloom (RGB)", 2D) = "black" {}
+        _LuminanceThreshold ("Luminance Threshold", Float) = 0.5
+        _BlurSize ("Blur Size", Float) = 1.0
+    }
+    
+    SubShader
+    {
+        CGINCLUDE
+
+        #include "UnityCG.cginc"
+        sampler2D _MainTex;
+        half4 _MainTex_TexelSize;
+        sampler2D _Bloom;
+        float _LuminanceThreshold;
+        float _BlurSize;
+
+        struct v2f
+        {
+            float4 pos : SV_POSITION;
+            half2 uv : TEXCOORD0;
+        };
+
+        v2f vertExtractBright(appdata_img v)
+        {
+            v2f o;
+
+            o.pos = mul(unity_MatrixMVP, v.vertex);
+
+            o.uv = v.texcoord;
+
+            return o;
+        }
+
+        fixed luminance(fixed4 color)
+        {
+            return 0.2125 * color.r + 0.7154 * color.g + 0.0721 * color.b;
+        }
+
+        fixed4 fragExtractBright(v2f i) : SV_Target{
+            fixed4 c = tex2D(_MainTex, i.uv);
+            fixed val = clamp(luminance(c) - _LuminanceThreshold, 0.0, 1.0);
+            return c * val;
+        }
+
+        struct v2fBloom
+        {
+            float4 pos : SV_POSITION;
+            half4 uv : TEXCOORD0;
+        };
+
+        v2fBloom vertBloom(appdata_img v)
+        {
+            v2fBloom o;
+            o.pos = mul(unity_MatrixMVP, v.vertex);
+
+            o.uv.xy = v.texcoord;
+            o.uv.zw = v.texcoord;
+
+            #if UNITY_UV_STARTS_AT_TOP
+            if(_MainTex_TexelSize.y < 0.0)
+            {
+                o.uv.w = 1.0 - o.uv.w;
+            }
+            #endif
+
+            return o;
+        }
+
+        fixed4 fragBloom(v2fBloom i) : SV_Target{
+            return tex2D(_MainTex, i.uv.xy) + tex2D(_Bloom, i.uv.zw);
+        }
+        
+        ENDCG
+        
+        Pass
+        {
+            CGPROGRAM
+
+            #pragma vertex vertExtractBright
+            #pragma fragment fragExtractBright
+            
+            ENDCG
+        }   
+        
+        UsePass "Unity Shader Book/Chapter 12/GaussianBlur/GAUSSIAN_BLUR_VERTICAL"
+        UsePass "Unity Shader Book/Chapter 12/GaussianBlur/GAUSSIAN_BLUR_HORIZONTAL"
+        
+        Pass
+        {
+            CGPROGRAM
+
+            #pragma vertex vertBloom
+            #pragma fragment fragBloom
+            
+            ENDCG
+        }
+    } 
+    Fallback Off
+}
+```
+
 
 # 运动模糊
 
 运动模糊是真实世界中的摄像机的一种效果。如果在摄像机曝光时，拍摄场景发生了变化，就会产生模糊的画面。运动模糊在我们的日常生活中是非常常见的，只要留心观察，就可以发现无论是体育报道还是各个电影中，都有运动模糊的身影。运动模糊的效果可以让物体运动起来更加真实平滑，但在计算机产生图像的过程中，由于不存在曝光这一物理现象，渲染出来的图像往往都是棱角分明，缺少运动模糊。在一些注入赛车类型的游戏中，为画面添加运动模糊是一种常见的处理方法。在这一节中，我们将学习如何在屏幕后处理中实现运动模糊的效果。
 
-运动模糊的实现有很多种方法。一种实现方法是利用一块累计缓存(accumulation buffer)来混合多张连续的图像。当物体快速移动产生多张图向后，我们取它们之间的平均值作为最后的运动模糊图像。然而这种暴力的方法对性能的消耗很大，因为想要获得多张帧图像往往意味着我们要在同一帧内渲染多次场景。另一种应用广泛的方法是创建和使用速度缓存(velocity buffer)，这个缓存种存储了各个像素当前的运动速度，然后利用该值来决定模糊的方向和大小
+运动模糊的实现有很多种方法。一种实现方法是利用一块累计缓存(accumulation buffer)来混合多张连续的图像。当物体快速移动产生多张图向后，我们取它们之间的平均值作为最后的运动模糊图像。然而这种暴力的方法对性能的消耗很大，因为想要获得多张帧图像往往意味着我们要在同一帧内渲染多次场景。另一种应用广泛的方法是创建和使用速度缓存(velocity buffer)，这个缓存种存储了各个像素当前的运动速度，然后利用该值来决定模糊的方向和大小。
+
+
+```
+using UnityEngine;
+
+public class MotionBlur : PostEffectsBase
+{
+    public Shader motionBlurShader;
+    private Material motionBlurMaterial = null;
+
+    public Material material
+    {
+        get
+        {
+            motionBlurMaterial = CheckShaderAndCreateMaterial(motionBlurShader, motionBlurMaterial);
+            return motionBlurMaterial;
+        }
+    }
+
+    [Range(0.0f, 0.9f)] public float blurAmount = 0.5f;
+
+    private RenderTexture accumulationTexture;
+    private static readonly int BlurAmount = Shader.PropertyToID("_BlurAmount");
+
+    private void OnDisable()
+    {
+        DestroyImmediate(accumulationTexture);
+    }
+    
+    private void OnRenderImage(RenderTexture source, RenderTexture destination)
+    {
+        if (material != null)
+        {
+            if (accumulationTexture == null || accumulationTexture.width != source.width ||
+                accumulationTexture.height != source.height)
+            {
+                DestroyImmediate(accumulationTexture);
+                accumulationTexture = new RenderTexture(source.width, source.height, 0);
+
+                accumulationTexture.hideFlags = HideFlags.HideAndDontSave;
+                Graphics.Blit(source, accumulationTexture);
+            }
+            
+            material.SetFloat(BlurAmount, 1.0f - blurAmount);
+            Graphics.Blit(source, accumulationTexture, material);
+            Graphics.Blit(accumulationTexture, destination);
+        }
+        else
+        {
+            Graphics.Blit(source, destination);
+        }
+    }
+}
+
+```
+
+
+```
+Shader "Unity Shader Book/Chapter 12/Motion Blur"
+{
+    
+    Properties
+    {
+        _MainTex ("Base(RGB)", 2D) = "white"{}
+        _BlurAmount ("Blur Amount", Float) = 1.0
+    }
+    
+    SubShader
+    {
+        CGINCLUDE
+
+        #include "UnityCG.cginc"
+        fixed _BlurAmount;
+        sampler2D _MainTex;
+
+        struct v2f
+        {
+            float4 pos : SV_POSITION;
+            half2 uv : TEXCOORD0;
+        };
+
+        v2f vert(appdata_img v)
+        {
+            v2f o;
+
+            o.pos = mul(unity_MatrixMVP, v.vertex);
+
+            o.uv = v.texcoord;
+
+            return o;
+        }
+
+        fixed4 fragRGB(v2f i) : SV_Target{
+            return fixed4(tex2D(_MainTex, i.uv).rgb, _BlurAmount);
+        }
+
+        fixed4 fragA(v2f i) : SV_Target{
+            return tex2D(_MainTex, i.uv);
+        }
+        
+        ENDCG
+        
+        ZTest Always Cull Off ZWrite Off
+        Pass
+        {
+            Blend  SrcAlpha OneMinusSrcAlpha
+            ColorMask RGB
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment fragRGB
+            
+            ENDCG
+        }
+
+        Pass
+        {
+            Blend One Zero
+            ColorMask A
+            
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment fragA
+                
+            ENDCG
+        }
+    }
+
+    Fallback Off
+}
+```
