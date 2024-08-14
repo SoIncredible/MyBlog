@@ -387,6 +387,182 @@ $$G(x,y) = \frac{1}{2\pi\sigma^2}e^{\frac{x^2 + y^2}{2\sigma^2}}$$
 
 在本节中，我们会使用上述的5$\times$5的高斯核对原图像进行高斯模糊。我们将先后调用两个Pass，第一个Pass将会使用竖直方向的一维高斯核对图像进行滤波，第二个Pass使用水平方向的一维高斯核对图像进行滤波，得到最终的目标图像。在实现中我们还会利用图像缩放来进一步提高性能，并通过调整高斯滤波的应用次数来控制模糊程度（次数越多，图像越模糊）。
 
+```
+using UnityEngine;
+using System.Collections;
+
+public class GaussianBlur : PostEffectsBase {
+
+	public Shader gaussianBlurShader;
+	private Material gaussianBlurMaterial = null;
+
+	public Material material {  
+		get {
+			gaussianBlurMaterial = CheckShaderAndCreateMaterial(gaussianBlurShader, gaussianBlurMaterial);
+			return gaussianBlurMaterial;
+		}  
+	}
+
+	// Blur iterations - larger number means more blur.
+	[Range(0, 4)]
+	public int iterations = 3;
+	
+	// Blur spread for each iteration - larger value means more blur
+	[Range(0.2f, 3.0f)]
+	public float blurSpread = 0.6f;
+	
+	[Range(1, 8)]
+	public int downSample = 2;
+	
+	void OnRenderImage (RenderTexture src, RenderTexture dest) {
+		if (material != null) {
+			int rtW = src.width/downSample;
+			int rtH = src.height/downSample;
+
+			RenderTexture buffer0 = RenderTexture.GetTemporary(rtW, rtH, 0);
+			buffer0.filterMode = FilterMode.Bilinear;
+
+			Graphics.Blit(src, buffer0);
+
+			for (int i = 0; i < iterations; i++) {
+				material.SetFloat("_BlurSize", 1.0f + i * blurSpread);
+
+				RenderTexture buffer1 = RenderTexture.GetTemporary(rtW, rtH, 0);
+
+				// Render the vertical pass
+				Graphics.Blit(buffer0, buffer1, material, 0);
+
+				RenderTexture.ReleaseTemporary(buffer0);
+				buffer0 = buffer1;
+				buffer1 = RenderTexture.GetTemporary(rtW, rtH, 0);
+
+				// Render the horizontal pass
+				Graphics.Blit(buffer0, buffer1, material, 1);
+
+				RenderTexture.ReleaseTemporary(buffer0);
+				buffer0 = buffer1;
+			}
+
+			Graphics.Blit(buffer0, dest);
+			RenderTexture.ReleaseTemporary(buffer0);
+		} else {
+			Graphics.Blit(src, dest);
+		}
+	}
+}
+```
+上面的代码显示了如何利用两个临时缓存在迭代之间进行交替的过程。在迭代开始前，我们首先定义了第一个缓存buffer0，并把src中的图像缩放后存储到buffer0中。在迭代过程中，我们又定义了第二个缓存buffer1。在执行第一个Pass时，输入是buffer0，输出是buffer1，完毕后首先把buffer0释放，再把结果值buffer1存储到buffer0中，重新分配buffer1，然后再调用第二个Pass重复上面的过程。迭代完成后，buffer0将存储最终的图像，我们再利用Graphic.Blit(buffer0, dest)把结果显示到屏幕上，并释放缓存。
+
+下面是Shader实现部分
+
+```
+Shader "Unity Shader Book/Chapter 12/GaussianBlur"
+{
+	Properties {
+		_MainTex ("Base (RGB)", 2D) = "white" {}
+		_BlurSize ("Blur Size", Float) = 1.0
+	}
+    SubShader
+    {
+        CGINCLUDE
+
+        #include "UnityCG.cginc"
+        
+        sampler2D _MainTex;
+        half4 _MainTex_TexelSize;
+        float _BlurSize;
+
+        struct v2f
+        {
+            float4 pos : SV_POSITION;
+            half2 uv[5] : TEXCOORD0;
+        };
+
+        v2f vertexBlurVertical(appdata_img v)
+        {
+			v2f o;
+			o.pos = UnityObjectToClipPos(v.vertex);
+			
+			half2 uv = v.texcoord;
+			
+			o.uv[0] = uv;
+			o.uv[1] = uv + float2(0.0, _MainTex_TexelSize.y * 1.0) * _BlurSize;
+			o.uv[2] = uv - float2(0.0, _MainTex_TexelSize.y * 1.0) * _BlurSize;
+			o.uv[3] = uv + float2(0.0, _MainTex_TexelSize.y * 2.0) * _BlurSize;
+			o.uv[4] = uv - float2(0.0, _MainTex_TexelSize.y * 2.0) * _BlurSize;
+					 
+			return o;
+        }
+
+        v2f vertexBlurHorizontal(appdata_img v)
+        {
+           	v2f o;
+			o.pos = UnityObjectToClipPos(v.vertex);
+			
+			half2 uv = v.texcoord;
+			
+			o.uv[0] = uv;
+			o.uv[1] = uv + float2(_MainTex_TexelSize.x * 1.0, 0.0) * _BlurSize;
+			o.uv[2] = uv - float2(_MainTex_TexelSize.x * 1.0, 0.0) * _BlurSize;
+			o.uv[3] = uv + float2(_MainTex_TexelSize.x * 2.0, 0.0) * _BlurSize;
+			o.uv[4] = uv - float2(_MainTex_TexelSize.x * 2.0, 0.0) * _BlurSize;
+
+            return o;
+        }
+
+        fixed4 fragBlur(v2f i) : SV_Target{
+            float weight[3] = {0.4026, 0.2442, 0.0545};
+
+            fixed3 sum = tex2D(_MainTex, i.uv[0]).rgb * weight[0];
+
+            for(int it = 1; it < 3; it++)
+            {
+                sum += tex2D(_MainTex, i.uv[it*2 - 1]).rgb * weight[it];
+                sum += tex2D(_MainTex, i.uv[it*2]).rgb * weight[it];
+            }
+
+            return fixed4(sum, 1.0);
+        }
+
+        
+        ENDCG
+        
+        ZTest Always
+        Cull Off
+        ZWrite Off
+        
+        Pass
+        {
+            Name "GAUSSIAN_BLUR_VERTICAL"
+            
+            CGPROGRAM
+
+            #pragma vertex vertexBlurVertical
+            #pragma fragment fragBlur
+            
+            ENDCG
+        }
+
+        Pass
+        {
+            Name "GAUSSIAN_BLUR_HORIZONTAL"
+            
+            CGPROGRAM
+
+            #pragma vertex vertexBlurHorizontal
+            #pragma fragment fragBlur
+            
+            ENDCG
+        }        
+
+    }
+    
+    Fallback "Diffuse"
+}
+```
+
+注意，我们仍然首先设置了渲染状态。和之前不同的是，我们为两个Pass使用NAME语义定义了它们的名字。这是因为，高斯模糊是非常常见的图像处理操作，很多屏幕特效都是建立在它的基础上的，例如Bloom效果。为Pass定义名字，可以在其他Shader中直接通过它们的名字来使用该Pas，而不需要再重复编写代码。
+
 # Bloom效果
 
 Bloom效果是游戏中常见的一种效果。这种特效可以模拟真实摄像机的一种图像效果，它让画面中较亮的区域“扩散”到周围区域中，造成一种朦胧的效果。
