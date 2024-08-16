@@ -39,6 +39,50 @@ $$d = 0.5z_{ndc} + 0.5$$
 
 在Unity中，我们可以选择让一个摄像机生成一张深度纹理或是一张深度+法线纹理。当选择前者，即只需要一张单独的深度纹理时，Unity会直接获取深度缓存或是按之前讲到的着色器替换技术，选取需要的不透明物体，并使用它投射阴影时使用的Pass(即LightMode被设置为ShadowCaster的Pass)来得到深度纹理。如果Shader中不包括这样一个Pass，那么这个物体就不会出现在深度纹理中（当然也不能像其他物体投射阴影。深度纹理的精度通常是24位或者16位，这取决于使用的深度缓存的精度，如果选择生成一张深度+法线纹理。Unity会创建一张和屏幕分辨率相同、精度为32位（每个通道为8位）的纹理，其中观察空间下的法线信息会被编码进纹理的R和G通道，而深度信息会被编码进B和A通道。法线信息的获取在延迟渲染中是可以非常容易就得到的，Unity只需要合并深度和法线缓存即可。而在前向渲染中，默认情况下是不会创建法线缓存的，因此Unity底层使用了一个单独的Pass把整个场景再渲染一遍来完成。这个Pass被包含在Unity内置的一个Unity Shader中，我们可以在内置的builtin_shaders-xxx/DefaultResources/Camera-DepthNormalTexture.shader文件中找到这个用于渲染深度和法线信息的Pass。
 
+## 如何获取
+
+
+在Unity中，获取深度纹理是非常简单的，我们只需要告诉Unity：“嘿！把深度纹理给我！”然后在Shader中直接访问特定的纹理属性即可。这个与Unity沟通的过程是通过在脚本中设置摄像机的depthTextureMode来完成的，例如我们可以通过下面的代码来获取深度纹理：
+
+```
+camera.depthTextureMode = DepthTextureMode.Depth;
+```
+一旦设置好了上面的摄像机模式后，我们就可以在Sahder中通过声明_CameraDepthTexture变量来访问它。这个过程非常简单，但我们需要知道这两行代码的背后，Unity为我们做了很多工作。
+
+同理，如果想要获得深度+法线纹理，我们只需要在代码中这样设置：
+
+```
+camera.depthTextureMode = DepthTextureMode.DepthNormals;
+```
+
+然后在Shader中通过声明_CameraDepthNormalsTexture变量来访问它。
+我们还可以组合这些模式，让一个摄像机同时产生一张深度和深度+法线纹理:
+
+```
+camera.depthTextureMode |= DepthTextureMode.Depth;
+camera.depthTextureMode |= DepthTextureMode.DepthNormals;
+```
+
+在Unity中我们还可以在摄像机的Camera组件上看到当前摄像机是否需要渲染深度或深度+法线纹理。当在Shader中访问深度纹理_CameraDepthTexture后，我们就可以使用当前像素的纹理坐标对它进行采样。绝大多数情况下，我们直接使用tex2D函数采样即可，但是在某一些平台上，我们需要一些特殊处理。Unity为我们提供了一个统一的宏SAMPLE_DEPTH_TEXTURE，用来处理这些由于平台差异造成的问题。而我们只需要在Shader中使用SAMPLE_DEPTH_TEXTURE宏对深度纹理进行采样。如：
+```
+float d = SAMPLE_DEPTH_TEXTURE(_CameraDdepthTexture, i.uv);
+```
+
+其中，i.uv是一个float2类型的变量，对应了当前像素的纹理坐标。类似的宏还有SAMPLE_DEPTH_TEXTURE_PROJ和SAMPLE_DEPTH_TEXTURE_LOD。SAMPLE_DEPTH_TEXTURE_PROJ宏同样接受两个参数——深度纹理和一个float3或float4类型的纹理坐标，它的内部使用了tex2Dproj这样的函数进行投影纹理采样，纹理坐标的前两个分量首先会除以最后一个分量，再进行纹理采样。如果提供了第四个分量，还会进行一次比较，通常用于阴影的实现中。SAMPLE_DEPTH_TEXTURE_PROJ的第二个参数通常是由顶点着色器输出的插值而得的屏幕坐标。例如:
+```
+float d = SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(i.scrPos))
+```
+
+其中, i.scrPos是再顶点着色器中通过调用ComputeScreenPos(o.pos)得到的屏幕坐标。上述这些宏的定义，我们可以在Unity内置的HLSLSupport.cginc文件中找到。
+
+当通过纹理采样得到深度值后，这些深度值往往是非线性的，这种非线性来自于透视投影使用的裁剪矩阵。然而，在我们计算过程中通常是需要线性的深度值，也就是说，我们需要把投影后的深度值变换到线性空间下，例如视角空间下的深度值。那么，我们应该如何进行这个转换呢？实际上，我们只需要倒推顶点变换的过程即可。下面我们以透视投影为例，推导如何由深度纹理中的深度信息计算得到视角空间下的深度值。
+
+由4.6.7节可知，当我们使用透视投影的裁剪矩阵$P_{clip}$对视角空间下的一个顶点进行变换后，裁剪空间下顶点的z和w分量为：
+
+$$z_{clip} = -z_{view}\frac{Far + Near}{Far - Near} - \frac{2\cdot Near \cdot Far}{Far - Near}$$
+$$w_{clip} = -z_{view}$$
+
+
 # 再谈运动模糊
 
 # 全局雾效
