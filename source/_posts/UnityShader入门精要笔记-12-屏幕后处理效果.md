@@ -15,9 +15,6 @@ sticky:
 
 # 建立一个基本的屏幕后处理脚本系统
 
-
-
-
 ```
 using UnityEngine;
 
@@ -74,7 +71,6 @@ public class PostEffectsBase : MonoBehaviour {
 
 
 # 调整屏幕的亮度、饱和度和对比度
-
 
 ```
 using System;
@@ -189,6 +185,7 @@ Shader "UnityShaderBook/Chapter 12/BrightnessSaturationAndContrast"
 ```
 
 首先，我们得到对原屏幕图像（存储在_MainTex）中的采样结果renderTex。然后，利用_Brightness属性来计算来调整亮度。亮度的调整非常简单，我们只需要把原颜色乘以亮度系数_Brightness即可。然后，我们计算该像素值对应的亮度值（luminance），这是通过对每个颜色分量乘以一个特定的系数
+
 # 边缘检测
 
 边缘检测的原理是利用一些边缘检测算子对图像进行`卷积(convolution)`操作，我们首先来了解一下什么是卷积。
@@ -368,6 +365,7 @@ Shader "Unity Shader Book/Chapter 12/Edge Detection"
     Fallback Off
 }
 ```
+
 在上面的代码中，我们还声明了一个新的变量_MainTex_TexelSize。xxx_TexelSize是unity为我们提供的访问xxx纹理对应的每个纹素的大小。例如一张512x512大小的纹理，该值大约是0.001953。由于卷积需要对相邻区域内的纹理进行采样，因此我们需要利用_MainTex_TexelSize来计算各个相邻区域的纹理坐标。
 
 我们在v2f结构体中定义了一个维数为9的纹理数组，对应了使用Sobel算子采样时需要的9哥邻域纹理坐标。通过把计算采样纹理坐标的代码从片元着色器中转移到顶点着色器中，可以减少运算，提高性能。由于从顶点着色器到片元着色器的插值是线性的，因此这样的转移并不会影响纹理坐标的计算结果
@@ -379,7 +377,6 @@ Shader "Unity Shader Book/Chapter 12/Edge Detection"
 需要注意的是，本节实现的边缘检测仅仅利用了屏幕颜色信息，而在实际应用中，物体的纹理、阴影等信息均会影响边缘检测的结果，使得结果包含许多非预期的描边，为了得到更加准确的边缘信息，我们往往会在屏幕的深度纹理和法线纹理上进行边缘检测。我们将会在13.4节中实现这种方法。
 
 # 高斯模糊
-
 
 ## 高斯滤波
 
@@ -535,7 +532,6 @@ Shader "Unity Shader Book/Chapter 12/GaussianBlur"
             return fixed4(sum, 1.0);
         }
 
-        
         ENDCG
         
         ZTest Always
@@ -585,7 +581,18 @@ Shader "Unity Shader Book/Chapter 12/GaussianBlur"
 
 同样的，由于高斯核的对称性，我们只需要记录3个高斯权重，也就是代码中的weight变量。我们首先声明了各个邻域像素对应的权重weight，然后将结果值sum初始化为当前的像素值乘以它的权重值。根据对称性，我们进行了两次迭代，每次迭代包含了两次纹理采样，并把像素值和权重相乘后的结果叠加到sum中。最后，函数返回滤波结果sum。
 
-> 关于Pass的疑问？
+> 关于多Pass的一些疑问
+> 在这本书的第二章，将GPU流水线的时候，什么应用阶段 几何阶段 光栅化阶段 
+> 然后又说到了 一个Shader中最常用的就是顶点着色器和片元着色器，因此，在一个Shader中其实只有一个Pass就够了，这一个Pass中即包含了Vertex又包含了FragmentShader，那为什么还要用两个Pass呢？先按照这个思路来，首先每个Pass中的输入肯定是一样的，也就是说如果我现在给一个立方体添加一个包含有两个Pass的Shader的材质，那么Unity会按照从上到下的顺序依次渲染Pass，而且这两个Pass的渲染效果也不会互相影响，最终你看到的效果是两种效果的重叠
+> 真不会影响吗？ 如果Pass1中改变了顶点的坐标，不会对Pass2中的顶点位置的计算有影响吗？
+> 
+
+
+
+
+
+
+
 > Pass的执行是在GPU上进行的，OnRenderImage方法的调用是在CPU上的，
 > 在一帧中OnRenderImage和其他Shader的处理顺序是怎样的？
 > Shader是作用于一个3D物体上的，屏幕后处理的对象是RenderTexture
