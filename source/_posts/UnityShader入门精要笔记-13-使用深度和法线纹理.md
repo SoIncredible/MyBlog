@@ -82,6 +82,61 @@ float d = SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(i.scrP
 $$z_{clip} = -z_{view}\frac{Far + Near}{Far - Near} - \frac{2\cdot Near \cdot Far}{Far - Near}$$
 $$w_{clip} = -z_{view}$$
 
+其中，Far和Near分别是远近裁切平面的距离。然后，我们通过齐次除法就可以得到NDC下的z分量：
+
+$$z_{ndc} = \frac{z_{clip}}{w_{clip}} = \frac{Far + Near}{Far - Near} + \frac{2Near \cdot Far}{(Far - Near) \cdot z_{view}}$$
+
+在13.1.1节中我们知道，深度纹理中的深度值是通过下面的公式由NDC计算而得的：
+$$d = 0.5 \cdot z_{ndc} + 0.5$$
+
+由上面的这些式子，我们可以推导出d表示而得的$z_{view}$的表达式：
+
+$$z_{view} = \frac{1}{\frac{Far - Near}{Near \cdot Far}d - \frac{1}{Near}}$$
+
+由于在Unity使用的视角空间中，摄像机正向对应的z值均为负值，因此为了得到深度值的正数表示，我们需要对上面的结果取反，最后得到的结果如下：
+
+$$z_{view} = \frac{1}{\frac{Near - Far}{Near \cdot Far}d + \frac{1}{Near}}$$
+
+它的取值范围就是视锥体的深度范围，即[Near, Far]。如果我们想要得到范围在[0,1]之前的深度值，只需要把上面得到的结果除以Far即可。这样，0就表示该点与摄像机处于同一位置，1表示该点位于视锥体的远裁剪平面上。结果如下：
+$$z_{01} = \frac{1}{\frac{Near - Far}{Near }d + \frac{Far}{Near}}$$
+
+幸运的是，Unity提供了两个辅助函数来为我们进行上述的计算过程——LinearEyeDepth和Linear01Depth。LinearEyeDepth负责把深度纹理的采样结果转换到视角空间下的深度值，也就是我们上面得到的。而Linear01Depth则会返回一个范围在[0,1]的线性深度值，也就是我们上面得到的$z_{01}$。这两个函数内部使用了内置的_ZBufferParams变量来得到远近裁剪平面的距离。
+
+如果我们需要获取深度+法线纹理，可以直接使用tex2D函数对_CameraDepthNormalsTexture进行采样，得到里面存储的深度和法线信息。Unity提供了辅助函数来为我们对这个采样结果进行解码，从而得到深度值和法线方向。这个函数是DecodeDepthNormal，它在UnityCG.cginc里被定义:
+
+```
+inline void DecodeDepthNormal(float4 enc, out float depth, out float3 normal){
+    depth = DecodeFloatRG(enc.zw);
+    normal = DecodeViewNormalStereo(enc);
+}
+
+```
+DecodeDepthNormal的第一个参数是对深度+法线纹理的采样结果，这个采样结果是Unity对深度和法线信息编码后的结果，它的xy分量存储的是视角空间下的法线信息，而深度信息被编码进了zw分量。通过调用DecodeDepthNormal函数对采样结果编码后，我们就可以得到解码后的深度值和法线。这个深度值范围在[0,1]的线性深度值（这与单独的深度纹理中存储的深度值不同），而得到的法线则是视角空间下的法线方向。同样，我们也可以通过调用DecodeFloatRG和DecodeViewNormalStereo来解码深度+发现纹理中的深度和法线信息。
+
+至此，我们已经学会了如何在Unity里获得及使用深度和法线纹理。下面，我们会学习如何使用它们实现各种屏幕特效。
+
+## 查看深度和法线纹理
+
+很多时候，我们希望可以查看生成的深度和法线纹理，以便对Shader进行调试。Unity中可以使用Frame Debugger来查看摄像机生成的深度和法线纹理。如下图：
+
+![](UnityShader入门精要笔记-13-使用深度和法线纹理/image-2.png)
+
+使用帧调试器查看到的深度纹理是非线性空间的深度值，而深度和法线纹理都是由Unity编码后的结果。有时，显示出线性空间下的深度信息或解码后的法线方向会更加有用。此时，我们可以自行在片元着色器中输出转换或解码后的深度和法线值，如下图所示。输出代码非常简单，我们可以使用类似下面的代码来输出线性深度值：
+
+```
+float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
+float linearDepth = Linear01Depth(depth);
+return fixed4(linearDepth, linearDepth, linearDepth, 1.0);
+```
+或是输出法线方向：
+
+```
+fixed3 normal = DecodeViewNormalStereo(tex2D(_CameraDepthNormalsTexture, i.uv).xy);
+return fixed4(normal * 0.5 + 0.5, 1.0);
+```
+![](UnityShader入门精要笔记-13-使用深度和法线纹理/image-3.png)
+
+在查看深度纹理时，我们得到的画面有可能几乎是全黑或者全白的。这时我们可以把摄像机的远裁剪平面的距离调小，使视锥体的范围刚好覆盖从近裁剪平面到远裁剪平面的所有深度区域，当远裁剪平面的距离过大时，会导致距离摄像机较近的距离映射到非常小的深度值，如果场景是一个封闭的区域，那么这就会导致画面看起来几乎是全黑的。相反，如果场景是一个开放区域，并且物体离摄像机的距离较远，就会导致画面几乎是全白的。
 
 # 再谈运动模糊
 
