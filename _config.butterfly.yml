@@ -43,7 +43,7 @@ copy:
 social:
   Github: https://github.com/SoIncredible || icon-github || faa-tada
   Email: https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=2636060652@qq.com || icon-youjian || faa-tada
-#  RSS: atom.xml || icon-rss || faa-tada
+  #  RSS: atom.xml || icon-rss || faa-tada
   BiliBili: https://space.bilibili.com/434655900 || icon-bilibili || faa-tada
 #  QQ: tencent://Message/?Uin=2636060652&amp;websiteName=local.edu.com:8888=&amp;Menu=yes || icon-QQ1 || faa-tada
 
@@ -95,7 +95,7 @@ disable_top_img: false
 index_img: /img/bg.jpg
 
 # If the banner of page not setting, it will show the top_img
-default_top_img: 
+default_top_img:
 
 # The banner image of archive page
 archive_img:
@@ -138,7 +138,7 @@ error_img:
 # A simple 404 page
 error_404:
   enable: false
-  subtitle: 'Page Not Found'
+  subtitle: "Page Not Found"
   background: bg.jpg # https://i.loli.net/2020/05/19/aKOcLiyPl2JQdFD.png
 
 post_meta:
@@ -209,12 +209,6 @@ reward:
     - img: /img/alipay.png
       link:
       text: 支付宝
-
-
-
-
-
-
 
 # Post edit
 # Easily browse and edit blog source code online.
@@ -563,7 +557,7 @@ canvas_fluttering_ribbon:
 # https://github.com/hustcc/canvas-nest.js
 canvas_nest:
   enable: false
-  color: '0,0,255' #color of lines, default: '0,0,0'; RGB values: (R,G,B).(note: use ',' to separate.)
+  color: "0,0,255" #color of lines, default: '0,0,0'; RGB values: (R,G,B).(note: use ',' to separate.)
   opacity: 0.7 # the opacity of line (0~1), default: 0.5.
   zIndex: -1 # z-index property of the background, default: -1.
   count: 99 # the number of lines, default: 99.
@@ -687,7 +681,7 @@ aside:
       link: https://github.com/xxxxxx
   card_announcement:
     enable: true
-    content: Hi,这里是诺倾城丶的博客！👏👏👏
+    content: Hi,这里是EddieLee的博客！👏👏👏
   card_recent_post:
     enable: true
     limit: 5 # if set 0 will show all
@@ -750,9 +744,9 @@ translate:
   # Time delay
   translateDelay: 0
   # The text of the button when the language is Simplified Chinese
-  msgToTraditionalChinese: '繁'
+  msgToTraditionalChinese: "繁"
   # The text of the button when the language is Traditional Chinese
-  msgToSimplifiedChinese: '簡'
+  msgToSimplifiedChinese: "簡"
 
 # Read Mode (閲讀模式)
 readmode: true
@@ -838,8 +832,8 @@ aplayerInject:
 snackbar:
   enable: false
   position: bottom-left
-  bg_light: '#49b1f5' # The background color of Toast Notification in light mode
-  bg_dark: '#1f1f1f' # The background color of Toast Notification in dark mode
+  bg_light: "#49b1f5" # The background color of Toast Notification in light mode
+  bg_dark: "#1f1f1f" # The background color of Toast Notification in dark mode
 
 # https://instant.page/
 # prefetch (預加載)
@@ -886,7 +880,6 @@ Open_Graph_meta:
 # Add the vendor prefixes to ensure compatibility
 css_prefix: true
 
-
 # CDN
 # Don't modify the following settings unless you know how they work
 # 非必要請不要修改
@@ -901,7 +894,7 @@ CDN:
   # when set it to local, you need to install hexo-butterfly-extjs
   third_party_provider: jsdelivr
 
-  # Add version number to CDN, true or false  
+  # Add version number to CDN, true or false
   version: false
 
   # Custom format
@@ -915,7 +908,7 @@ CDN:
     # main:
     # utils:
     # translate:
-    # local_search: 
+    # local_search:
     # algolia_js:
     # algolia_search_v4:
     # instantsearch_v4:
@@ -975,7 +968,7 @@ footer_beautify:
     bdage: true # 徽标开关
   priority: 5 #过滤器优先权
   enable_page: all # 应用页面
-  exclude: #屏蔽页面
+  exclude:#屏蔽页面
     # - /posts/
     # - /about/
   layout: # 挂载容器类型
@@ -983,7 +976,7 @@ footer_beautify:
     name: footer-wrap
     index: 0
   # 计时器部分配置项
-  runtime_js:  /js/runtime/runtime.min.js
+  runtime_js: /js/runtime/runtime.min.js
   runtime_css: /css/runtime/runtime.min.css
   # 徽标部分配置项
   swiperpara: 4 #若非0，则开启轮播功能，每行徽标个数
@@ -1012,15 +1005,11 @@ footer_beautify:
     - link: http://creativecommons.org/licenses/by-nc-sa/4.0/
       shields: https://img.shields.io/badge/Copyright-BY--NC--SA%204.0-d42328?style=flat&logo=Claris
       message: 本站采用知识共享署名-非商业性使用-相同方式共享4.0国际许可协议进行许可
-    
+
   swiper_css: https://unpkg.zhimg.com/hexo-butterfly-swiper/lib/swiper.min.css
   swiper_js: https://unpkg.zhimg.com/hexo-butterfly-swiper/lib/swiper.min.js
   swiperbdage_init_js: https://unpkg.zhimg.com/hexo-butterfly-footer-beautify/lib/swiperbdage_init.min.js
 # see https://akilar.top/posts/8e1264d1/
-
-
-
-
 
 # 侧边栏电子时钟
 # electric_clock
@@ -1044,8 +1033,6 @@ electric_clock:
   gaud_map_key: 48b8ec303cfe1fc03178b065f1d333e1
   default_rectangle: false # 开启后将一直显示rectangle位置的天气，否则将获取访问者的地理位置与天气
   rectangle: 112.6534116,27.96920845 # 获取访问者位置失败时会显示该位置的天气，同时该位置为开启default_rectangle后的位置
-
-
 
 # hexo-filter-gitcalendar
 # see https://akilar.top/posts/1f9c68c9/
@@ -1071,7 +1058,6 @@ gitcalendar:
   gitcalendar_css: https://cdn.cbd.int/hexo-filter-gitcalendar/lib/gitcalendar.css
   gitcalendar_js: https://cdn.cbd.int/hexo-filter-gitcalendar/lib/gitcalendar.js
 
-
   # tag-plugins-plus
 # see https://akilar.top/posts/615e2dec/
 tag_plugins:
@@ -1087,8 +1073,6 @@ tag_plugins:
     iconfont: /js/ali_font.js #参看https://akilar.top/posts/d2ebecef/
     carousel: https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js
     tag_plugins_css: https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css
-
-
 
 # wowjs
 # see https://www.npmjs.com/package/hexo-butterfly-wowjs
@@ -1127,8 +1111,6 @@ wowjs:
   wow_js: https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow.min.js
   wow_init_js: https://cdn.cbd.int/hexo-butterfly-wowjs/lib/wow_init.js
 
-
-
 # hexo-butterfly-swiper-anzhiyu
 # see https://akilar.top/posts/8e1264d1/
 swiper:
@@ -1149,8 +1131,6 @@ swiper:
   gsap_js: https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/gsap/3.9.1/gsap.min.js
   people_js: https://npm.elemecdn.com/hexo-butterfly-swiper-anzhiyu@1.0.4/lib/people.min.js
 
-  
-
 # Inject
 # Insert the code to head (before '</head>' tag) and the bottom (before '</body>' tag)
 # 插入代码到头部 </head> 之前 和 底部 </body> 之前
@@ -1168,4 +1148,3 @@ inject:
     - <script>new LingQue.Monitor().init({id:"JuTksFi0ZWLV2TvA",sendSuspicious:true});</script>
     # aplayer音乐
     - <div class="aplayer no-destroy" data-id="1377075453" data-server="tencent" data-type="playlist"   data-order="list" data-fixed="true" data-preload="auto" data-autoplay="false" data-mutex="true" ></div>
-

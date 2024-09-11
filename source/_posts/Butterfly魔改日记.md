@@ -843,7 +843,7 @@ button:not(:disabled) {
 3.把base64链接作为logo填进徽标链接，比如这样：
 
 ```url
-https://img.shields.io/badge/诺倾城丶-下班啦-d021d6?style=&logo=<生成的base64编码>
+https://img.shields.io/badge/EddieLee-下班啦-d021d6?style=&logo=<生成的base64编码>
 ```
 
 将上面生成的链接使用Chrome浏览器打开，用Safari打开有时会抽风显示不出来。将打开的页面下载下来，下载下来的是一个<code>svg</code>文件，将这个文件放到<code>/img</code>目录下，方便索引。
@@ -929,8 +929,8 @@ function createtime() {
   let g = "";
   (g =
     r < 18 && r >= 9
-      ? `<img class='boardsign' src='/img/诺倾城摸鱼中.svg'><span class='textTip'> <br> 本站居然运行了 ${a} 天</span><span id='runtime'> ${r} 小时 ${i} 分 ${l} 秒 </span> <i class='fas fa-heartbeat' style='color:red'></i>`
-      : `<img class='boardsign' src='/img/诺倾城下班啦.svg'><span class='textTip'> <br> 本站居然运行了 ${a} 天</span><span id='runtime'> ${r} 小时 ${i} 分 ${l} 秒 </span> <i class='fas fa-heartbeat' style='color:red'></i>`),
+      ? `<img class='boardsign' src='/img/EddieLee摸鱼中.svg'><span class='textTip'> <br> 本站居然运行了 ${a} 天</span><span id='runtime'> ${r} 小时 ${i} 分 ${l} 秒 </span> <i class='fas fa-heartbeat' style='color:red'></i>`
+      : `<img class='boardsign' src='/img/EddieLee下班啦.svg'><span class='textTip'> <br> 本站居然运行了 ${a} 天</span><span id='runtime'> ${r} 小时 ${i} 分 ${l} 秒 </span> <i class='fas fa-heartbeat' style='color:red'></i>`),
     document.getElementById("workboard") &&
       (document.getElementById("workboard").innerHTML = g);
 }
