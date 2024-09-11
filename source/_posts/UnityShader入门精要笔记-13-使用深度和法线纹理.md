@@ -1,5 +1,6 @@
 ---
 title: UnityShader入门精要笔记（十三）——使用深度和法线纹理
+abbrlink: b2c547d7
 date: 2024-08-15 08:29:34
 tags:
 categories:
