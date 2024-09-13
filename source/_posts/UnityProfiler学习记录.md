@@ -1,5 +1,5 @@
 ---
-title: Unity 性能优化杂记
+title: Unity Profiler学习记录
 abbrlink: 6e973c22
 date: 2024-06-26 11:06:17
 tags:
@@ -9,7 +9,6 @@ description:
 swiper_index:
 sticky:
 ---
-
 
 本文是笔者近期开展性能优化工作的知识点记录，性能优化涉及渲染、内存代码逻辑等方方面面，内容特别繁杂。以笔者目前的能力没有办法将这些知识系统梳理，因此本文每小节之间并无关联性，是一个个独立的知识点。
 
@@ -31,6 +30,12 @@ Unity官方提供的性能分析工具有 'Profiler' 'Frame Debugger' 'Memory Pr
 
 在Unity Profiler中才看到的CPU Usage Module中 会看到一个Main Thread和Render Thread他们两个的关系是什么？
 [Unity Forum的解答](https://forum.unity.com/threads/what-exactly-is-happening-in-the-renderthread.1011172/)
+
+### CPUUsage TimeLine视图中常见的Marker
+
+- Gfx.WaitForGfxCommandsFromMainThread : 此Marker会出现在RenderThread上，
+
+![](UnityProfiler学习记录/image.png)
 
 ## Memory Profiler
 
