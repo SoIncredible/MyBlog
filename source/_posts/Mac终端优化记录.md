@@ -48,9 +48,15 @@ source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighti
 
 # 安装主题
 
-一个开源主题:https://github.com/romkatv/powerlevel10k/tree/master
+执行下面的命令
+```
+wget https://github.com/sindresorhus/terminal-snazzy/raw/main/Snazzy.terminal
+```
+如果上面没有使用第二种解决方案的话，这里就会下载失败。这个主题的作用是设置终端的背景颜色。找到下载到本地的`Snazzy.terminal`文件，双击它打开终端，然后在终端中将它设置为Default。
 
-在终端中输入`p10k configure`可以重新设置配置，跟着配置指引走就好了。
+
+下面这个主题的作用是设置终端里显示的文本和图标，该主题的git链接:https://github.com/romkatv/powerlevel10k/tree/master
+进入这个开源主题的主页按照指引安装，安装完成后会有配置引导，引导设置完成后如果对效果不满意则在终端中输入`p10k configure`可以重新设置配置。
 
 # 安装字体
 
