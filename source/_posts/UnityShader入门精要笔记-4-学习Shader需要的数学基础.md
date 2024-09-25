@@ -1,5 +1,5 @@
 ---
-title: UnityShader入门精要笔记-4-学习Shader需要的数学基础
+title: UnityShader入门精要笔记-（四）-学习Shader需要的数学基础
 abbrlink: 9e2eb769
 date: 2024-09-22 09:46:31
 tags:

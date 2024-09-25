@@ -1,5 +1,5 @@
 ---
-title: Unity Profiler学习记录
+title: Unity性能优化
 abbrlink: 6e973c22
 date: 2024-06-26 11:06:17
 tags:
@@ -35,7 +35,7 @@ Unity官方提供的性能分析工具有 'Profiler' 'Frame Debugger' 'Memory Pr
 
 - Gfx.WaitForGfxCommandsFromMainThread : 此Marker会出现在RenderThread上，
 
-![](UnityProfiler学习记录/image.png)
+![](Unity性能优化/image.png)
 
 ## Memory Profiler
 

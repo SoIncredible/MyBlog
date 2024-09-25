@@ -1,5 +1,5 @@
 ---
-title: UnityShader入门精要笔记-15-使用噪声
+title: UnityShader入门精要笔记-（十五）-使用噪声
 abbrlink: 200401f7
 date: 2024-09-11 00:36:49
 tags:
