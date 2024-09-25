@@ -12,63 +12,96 @@ sticky:
 
 # 下载oh-my-zsh
 
-使用官网的下载命令下载oh-my-zsh
+在终端中输入下面的命令安装oh-my-zsh
 ```
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
-如果有如下报错提示`curl: (7) Failed to connect to raw.githubusercontent.com port 443 after 14 ms: Couldn't connect to server`，解决方法是将这个sh脚本拷贝到本地，在本地执行该脚本。
+如果有如下报错提示`curl: (7) Failed to connect to raw.githubusercontent.com port 443 after 14 ms: Couldn't connect to server`，有两种解决方法:
 
-但是笔者更推荐另外一种解决方案，因为下文中安装终端主题的时候大概率也会遇到这个报错。
-进入这个网址`https://www.ipaddress.com/`，在网页右上角输入`raw.githubusercontent.com`查看对应的IP地址，在终端中执行`vim ~/etc/hosts`，在最后添加类似下面的字符串：
+- 第一种解决方法是在本地创建一个.sh脚本，将下载链接指向的脚本中的内容拷贝到本地创建的脚本中，并执行该脚本。
+- 笔者更推荐第二种解决方案，因为接下来安装终端主题的时候大概率也会遇到这个报错。
+进入这个网址`https://www.ipaddress.com/`，在网页右上角输入`raw.githubusercontent.com`查看并复制对应的IP地址
+![](Mac终端优化记录/image.png)
+在终端中执行`vim ~/etc/hosts`，在最后添加类似下面一行：
+
 ```
-185.199.111.133 raw.githubusercontent.com
+*替换为上面获得的IP地址* raw.githubusercontent.com
 ```
-新开一个终端重新执行下载指令就可以了
+重新进入终端执行安装命令就可以在本地安装好`oh-my-zsh`了
 
 # 安装命令补全和命令高亮插件
 
-**命令补全插件**👇👇👇
+**命令补全插件**
+终端中执行下面命令👇👇👇
 ```
 cd ~/.oh-my-zsh/custom/plugins
 git clone https://github.com/zsh-users/zsh-autosuggestions.git
 ```
 
-**高亮插件**👇👇👇
+**高亮插件**
+终端中执行下面命令👇👇👇
 ```
 cd ~/.oh-my-zsh/custom/plugins
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 ```
-在 ~/.zshrc 中修改 plugins=(git) 为：
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
-安装完之后命令高亮和命令补全插件，如果发现在终端中没有生效，则需要在`~/.zshrc`中添加以下内容
+执行`vim ~/.zshrc`，在打开的文件中找到 `plugins=(git)` 一行，替换成这一行:
+`plugins=(git zsh-autosuggestions zsh-syntax-highlighting)`，如果没有找到则直接添加到文件中就好了。
+
+保存并退出`~/.zshrc`，执行`source ~/.zshrc`，完成安装。
+
+> 安装完之后，如果发现这两个插件在终端中没有生效，则需要在`~/.zshrc`中添加以下内容
+> ```
+> source ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+> source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+> ```
+> 保存并退出`~/.zshrc`，执行`source ~/.zshrc`，重开终端，问题解决。
+
+# 安装字体
+
+字体使用的是`powerlevel10k`主题推荐的字体[nerd-fonts](https://github.com/ryanoasis/nerd-fonts)
+
+终端中执行下面命令👇👇👇
 ```
-source ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+brew install font-hack-nerd-font
 ```
+
+下载完之后在终端的字体设置中搜索一下`Hack Nerd Font Mono`字体并应用。
 
 # 安装主题
+
+我们安装两个主题，一个主题是终端的主题，另一个主题是`oh-my-zsh`的主题。
+
+## 安装终端主题
 
 执行下面的命令
 ```
 wget https://github.com/sindresorhus/terminal-snazzy/raw/main/Snazzy.terminal
 ```
-如果上面没有使用第二种解决方案的话，这里就会下载失败。这个主题的作用是设置终端的背景颜色。找到下载到本地的`Snazzy.terminal`文件，双击它打开终端，然后在终端中将它设置为Default。
+如果上面没有使用第二种解决方案的话，这里就会下载失败。这个主题的作用是设置终端的背景颜色。找到下载到本地的`Snazzy.terminal`文件，双击它打开终端，然后在终端的设置中将`Snazzy`设置为Default主题。
 
+## 安装oh-my-zsh主题
 
-下面这个主题的作用是设置终端里显示的文本和图标，该主题的git链接:https://github.com/romkatv/powerlevel10k/tree/master
-进入这个开源主题的主页按照指引安装，安装完成后会有配置引导，引导设置完成后如果对效果不满意则在终端中输入`p10k configure`可以重新设置配置。
+笔者选择的主题是[powerlevel10k](https://github.com/romkatv/powerlevel10k/tree/master)
 
-# 安装字体
-
-使用的是`powerlevel10k`主题推荐的字体[nerd-fonts](https://github.com/ryanoasis/nerd-fonts)
-
+终端中执行下面命令👇👇👇
 ```
-brew install font-hack-nerd-font
+git clone --depth=1 https://gitee.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 ```
 
-下载完之后在终端的字体设置中搜索一下`Hack Nerd Font Mono`字体并应用
+执行`vim ~/.zshrc`,找到`ZSH_THEME="anytheme"`那一行替换为`ZSH_THEME="powerlevel10k/powerlevel10k"`
 
+保存并退出`~/.zshrc`，执行`source ~/.zshrc`。执行完毕之后会弹出该主题的配置引导，按照自己的喜好配置即可，如果对效果不满意则在终端中输入`p10k configure`可以重新进行配置。
+
+![](Mac终端优化记录/image-1.png)
+
+## 问题记录
+
+- [[oh-my-zsh] theme 'powerlevel10k' not found](https://github.com/romkatv/powerlevel10k/issues/1942)
+  不知道怎么搞的这个主题被安装在了笔者电脑的根目录下，正确的目录应该是`${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k`，只有在这个目录下主题才能被正确识别，另外注意`~/.zshrc`中添加一行`source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k/powerlevel10k.zsh-theme`代码，注释掉之前source该主题的命令。
+- [[WARNING]: Console output during zsh initialization detected](https://github.com/romkatv/powerlevel10k/issues/1023)
+  直接在引导配置的最后一项中选择`Quite`，而不是选择推荐的`Verbose`。
+  ![](Mac终端优化记录/image-2.png)
 
 # 参考资料
 - [MAC 终端美化教程（来个全套）](https://blog.csdn.net/weixin_42326144/article/details/121957795?spm=1001.2101.3001.6650.7&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-121957795-blog-135977657.235%5Ev43%5Econtrol&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-121957795-blog-135977657.235%5Ev43%5Econtrol&utm_relevant_index=12)
