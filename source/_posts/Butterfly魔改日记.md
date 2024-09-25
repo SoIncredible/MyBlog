@@ -843,7 +843,7 @@ button:not(:disabled) {
 3.把base64链接作为logo填进徽标链接，比如这样：
 
 ```url
-https://img.shields.io/badge/诺倾城丶-下班啦-d021d6?style=&logo=<生成的base64编码>
+https://img.shields.io/badge/EddieLee-下班啦-d021d6?style=&logo=<生成的base64编码>
 ```
 
 将上面生成的链接使用Chrome浏览器打开，用Safari打开有时会抽风显示不出来。将打开的页面下载下来，下载下来的是一个<code>svg</code>文件，将这个文件放到<code>/img</code>目录下，方便索引。
@@ -1009,15 +1009,15 @@ var titleTime;
 document.addEventListener("visibilitychange", function () {
   if (document.hidden) {
     //离开当前页面时标签显示内容
-    document.title = "w(ﾟДﾟ)w 不要走！再看看嘛！";
-    clearTimeout(titleTime);
+    //document.title = "w(ﾟДﾟ)w 不要走！再看看嘛！";
+    // clearTimeout(titleTime);
   } else {
     //返回当前页面时标签显示内容
-    document.title = "♪(^∇^*)欢迎肥来！" + OriginTitile;
+    //document.title = "♪(^∇^*)欢迎肥来！" + OriginTitile;
     //两秒后变回正常标题
-    titleTime = setTimeout(function () {
-      document.title = OriginTitile;
-    }, 2000);
+    // titleTime = setTimeout(function () {
+    //   document.title = OriginTitile;
+    // }, 2000);
   }
 });
 ```
