@@ -3,7 +3,9 @@ title: UnityShader入门精要笔记-14-非真实感渲染
 abbrlink: 8d920ebf
 date: 2024-08-27 12:32:21
 tags:
-categories:
+ - Unity
+ - Shader
+categories: UnityShader入门精要笔记
 cover: https://www.notion.so/images/page-cover/rijksmuseum_mignons_1660.jpg
 description:
 swiper_index:

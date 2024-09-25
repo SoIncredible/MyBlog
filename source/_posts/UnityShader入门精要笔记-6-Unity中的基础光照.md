@@ -3,7 +3,9 @@ title: UnityShader入门精要笔记（六）——Unity中的基础光照
 abbrlink: eb885af0
 date: 2024-05-26 09:15:52
 tags:
-categories:
+ - Unity
+ - Shader
+categories: UnityShader入门精要笔记
 cover: https://www.notion.so/images/page-cover/woodcuts_5.jpg
 description:
 swiper_index:

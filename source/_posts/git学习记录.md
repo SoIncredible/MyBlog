@@ -10,6 +10,22 @@ description:
 sticky: 1
 swiper_index: 3
 ---
+
+# 问题记录
+
+- 在终端中使用`git status`命令时，结果显示为乱码
+  解决方法是在终端中输入以下两行命令
+  ```
+   git config --global core.quotepath true
+   git config --global core.quotepath false
+  ```
+  重启终端，如果仍然显示乱码，执行下面两行命令
+  ```
+   git config --global core.quotepath true
+   git config --global core.quotepath false
+  ```
+  再次重启终端
+
 # Git实践
 
 本章节编写于我在工作中使用过一段时间的`git`和`SourceTree`之后，如果正在阅读本文的你已经对git有一个初步的了解了，那么你可以从这里继续看下去，我会在这一小节分享两方面内容：1.Git在开发中的使用流程，2.`git`与`SourceTree`使用心得；如果你还不了解git，那么你可以往后翻一翻，先阅读本文后面的[Git基础](#git基础)小结。

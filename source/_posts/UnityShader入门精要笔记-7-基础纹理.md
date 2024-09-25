@@ -3,7 +3,9 @@ title: UnityShader入门精要笔记（七）——基础纹理
 abbrlink: 5fb55013
 date: 2024-07-05 21:41:19
 tags:
-categories:
+ - Unity
+ - Shader
+categories: UnityShader入门精要笔记
 cover: https://www.notion.so/images/page-cover/woodcuts_4.jpg
 description:
 swiper_index:

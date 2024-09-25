@@ -3,7 +3,9 @@ title: UnityShader入门精要笔记（十一）——让画面动起来
 abbrlink: e01b0f68
 date: 2024-07-28 12:36:13
 tags:
-categories:
+ - Unity
+ - Shader
+categories: UnityShader入门精要笔记
 cover: https://www.notion.so/images/page-cover/rijksmuseum_claesz_1628.jpg
 description:
 swiper_index:

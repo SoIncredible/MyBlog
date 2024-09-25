@@ -3,7 +3,9 @@ title: UnityShader入门精要笔记（九）——更复杂的光照
 abbrlink: e52a9ff3
 date: 2024-07-13 12:09:27
 tags:
-categories:
+ - Unity
+ - Shader
+categories: UnityShader入门精要笔记
 cover: https://www.notion.so/images/page-cover/woodcuts_2.jpg
 description:
 swiper_index:

@@ -3,7 +3,9 @@ title: UnityShader入门精要笔记-0-疑惑汇总
 abbrlink: bc50bf5f
 date: 2024-09-13 20:09:52
 tags:
-categories:
+ - Unity
+ - Shader
+categories: UnityShader入门精要笔记
 cover: https://www.notion.so/images/page-cover/woodcuts_7.jpg
 description:
 swiper_index:

@@ -3,7 +3,9 @@ title: UnityShader入门精要笔记（八）——透明效果
 abbrlink: b4321fd8
 date: 2024-07-07 10:24:49
 tags:
-categories:
+ - Unity
+ - Shader
+categories: UnityShader入门精要笔记
 cover: https://www.notion.so/images/page-cover/woodcuts_3.jpg
 description:
 swiper_index:

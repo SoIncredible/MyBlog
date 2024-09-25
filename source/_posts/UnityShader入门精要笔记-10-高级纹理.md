@@ -3,7 +3,9 @@ title: UnityShader入门精要笔记（十）——高级纹理
 abbrlink: f8400f04
 date: 2024-07-15 12:35:28
 tags:
-categories:
+ - Unity
+ - Shader
+categories: UnityShader入门精要笔记
 cover: https://www.notion.so/images/page-cover/woodcuts_1.jpg
 description:
 swiper_index:
