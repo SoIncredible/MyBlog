@@ -94,13 +94,12 @@
   --anzhiyu-card-border: #42444a;
 }
 
-
-
 .loading-img {
-    background: url(/img/avatar.jpg) no-repeat center center;
-    background-size: cover;
-  }
-  /* @font-face {
+  background: url(https://avatars.githubusercontent.com/u/72688179?v=2)
+    no-repeat center center;
+  background-size: cover;
+}
+/* @font-face {
   font-family: Candyhome;
   src: url(https://npm.elemecdn.com/anzhiyu-blog@1.1.6/fonts/Candyhome.ttf);
   font-display: swap;
