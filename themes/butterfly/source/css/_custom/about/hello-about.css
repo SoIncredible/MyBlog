@@ -16,7 +16,6 @@
 
   /*别动*/
   background: #0a108d;
-  
 }
 
 .shape {
@@ -104,8 +103,7 @@
   z-index: 3;
 }
 
-
 ::selection {
-  color: #c00b0b;
-  background: #82c616;
+  color: #ffffff s;
+  background: #117dff;
 }
