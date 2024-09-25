@@ -13,7 +13,8 @@ timezone: "Asia/Shanghai"
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://soincredible777.com.cn
+# url: https://soincredible777.com.cn
+url: https://soincredible.github.io/
 permalink: posts/:abbrlink/
 # abbrlink config
 abbrlink:
@@ -142,7 +143,7 @@ symbols_count_time:
 
 deploy:
   - type: git
-    repo: git@github.com:SoIncredible/SoIncredible.git
+    repo: git@github.com:SoIncredible/SoIncredible.github.io.git
     branch: master
   - type:
 
