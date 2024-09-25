@@ -4,7 +4,7 @@ abbrlink: b2035145
 date: 2024-09-11 08:45:45
 tags:
 categories:
-cover:
+cover: https://www.notion.so/images/page-cover/rijksmuseum_jansz_1641.jpg
 description:
 swiper_index:
 sticky:

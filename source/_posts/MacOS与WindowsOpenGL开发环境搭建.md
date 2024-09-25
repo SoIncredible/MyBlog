@@ -4,7 +4,7 @@ abbrlink: fd5f8e8b
 date: 2024-04-02 19:10:32
 tags:
 categories:
-cover:
+cover: https://www.notion.so/images/page-cover/woodcuts_sekka_2.jpg
 description:
 swiper_index:
 sticky:

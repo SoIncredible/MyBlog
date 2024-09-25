@@ -5,7 +5,7 @@ tags:
   - 随笔
 abbrlink: qwerqwer
 categories: 技术文档
-cover: "139.224.82.218:90/5.png"
+cover: https://www.notion.so/images/page-cover/met_horace_pippin.jpg
 description: 
 ---
 

@@ -6,7 +6,7 @@ tags:
 categories: 技术文档
 abbrlink: f57878ea
 date: 2023-03-08 18:00:38
-cover: "139.224.82.218:90/9.png"
+cover: https://www.notion.so/images/page-cover/met_john_singer_sargent_morocco.jpg
 description:
 swiper_index:
 sticky:

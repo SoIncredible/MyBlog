@@ -4,7 +4,7 @@ abbrlink: e01b0f68
 date: 2024-07-28 12:36:13
 tags:
 categories:
-cover:
+cover: https://www.notion.so/images/page-cover/rijksmuseum_claesz_1628.jpg
 description:
 swiper_index:
 sticky:

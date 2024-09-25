@@ -4,7 +4,7 @@ abbrlink: 257b5b2c
 date: 2024-05-13 07:04:40
 tags:
 categories:
-cover:
+cover: https://www.notion.so/images/page-cover/met_edgar_degas_1874.jpg
 description:
 swiper_index:
 sticky:

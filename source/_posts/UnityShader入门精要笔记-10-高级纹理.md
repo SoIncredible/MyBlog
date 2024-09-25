@@ -4,7 +4,7 @@ abbrlink: f8400f04
 date: 2024-07-15 12:35:28
 tags:
 categories:
-cover:
+cover: https://www.notion.so/images/page-cover/woodcuts_1.jpg
 description:
 swiper_index:
 sticky:

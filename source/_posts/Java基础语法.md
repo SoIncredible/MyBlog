@@ -3,7 +3,7 @@ title: Java基础语法
 tags:
   - Java
 categories: 学习笔记
-cover: '139.224.82.218:90/23.png'
+cover: https://www.notion.so/images/page-cover/met_vincent_van_gogh_ginoux.jpg
 abbrlink: ea538f2a
 date: 2023-03-14 19:56:33
 description:

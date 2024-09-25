@@ -4,7 +4,7 @@ tags:
   - C#
 categories:
   - 学习笔记
-cover: '139.224.82.218:90/29.png'
+cover: https://www.notion.so/images/page-cover/met_jules_tavernier_1878.jpg
 abbrlink: '34114324'
 date: 2023-04-04 15:09:52
 description:

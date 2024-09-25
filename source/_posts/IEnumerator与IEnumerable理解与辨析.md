@@ -5,7 +5,7 @@ tags:
 categories: 学习笔记
 abbrlink: 133a9667
 date: 2023-03-13 15:49:55
-cover: "139.224.82.218:90/13.png"
+cover: https://www.notion.so/images/page-cover/met_winslow_homer_maine_coast.jpg
 description:
 swiper_index:
 sticky:

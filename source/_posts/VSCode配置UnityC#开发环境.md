@@ -7,7 +7,7 @@ tags:
 abbrlink: e57f243c
 categories: 技术文档
 date: 2022-07-06 00:07:34
-cover: "139.224.82.218:90/14.png"
+cover: https://www.notion.so/images/page-cover/rijksmuseum_jansz_1636.jpg
 description: 
 ---
 

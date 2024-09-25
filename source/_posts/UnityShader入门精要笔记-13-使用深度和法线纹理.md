@@ -1,9 +1,9 @@
-****---
+---
 title: UnityShader入门精要笔记（十三）——使用深度和法线纹理
 date: 2024-08-15 08:29:34
 tags:
 categories:
-cover:
+cover: https://www.notion.so/images/page-cover/rijksmuseum_avercamp_1608.jpg
 description:
 swiper_index:
 sticky:

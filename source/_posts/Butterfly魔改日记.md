@@ -5,7 +5,7 @@ date: 2022-12-14 20:15:23
 tags: 
   - Hexo博客
 categories: 技术文档
-cover: "139.224.82.218:90/1.png"
+cover: https://www.notion.so/images/page-cover/met_georges_seurat_1884.jpg
 swiper_index: 1
 description: Butterfly美化记录
 sticky: 1

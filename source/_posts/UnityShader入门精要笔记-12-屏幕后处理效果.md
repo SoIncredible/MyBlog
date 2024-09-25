@@ -4,7 +4,7 @@ abbrlink: a07e7969
 date: 2024-07-31 23:13:20
 tags:
 categories:
-cover:
+cover: https://www.notion.so/images/page-cover/rijksmuseum_avercamp_1608.jpg
 description:
 swiper_index:
 sticky:

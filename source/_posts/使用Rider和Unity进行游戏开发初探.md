@@ -7,7 +7,7 @@ tags:
 categories: 技术文档
 abbrlink: 61a4721e
 date: 2023-03-07 10:35:39
-cover: "139.224.82.218:90/16.png"
+cover: https://www.notion.so/images/page-cover/met_arnold_bocklin_1880.jpg
 description: 熟悉Rider搭配Unity开发
 ---
 

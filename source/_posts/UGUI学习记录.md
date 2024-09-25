@@ -5,7 +5,7 @@ tags:
 abbrlink: 723d2ba
 date: 2023-08-17 14:41:01
 categories:
-cover:
+cover: https://www.notion.so/images/page-cover/woodcuts_15.jpg
 description:
 swiper_index:
 sticky:

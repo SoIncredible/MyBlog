@@ -5,7 +5,7 @@ tags:
 categories: 学习笔记
 abbrlink: 83d7c4e7
 date: 2023-04-17 15:04:49
-cover: "139.224.82.218:90/30.png"
+cover: https://www.notion.so/images/page-cover/met_henri_rousseau_1907.jpg
 description:
 swiper_index:
 sticky:
