@@ -27,3 +27,7 @@ public class PlayerEntityProperty : CharacterProperty
 }
 
 ```
+
+# Unity项目代码正常运行但是在Rider中大量报红
+
+Rider的`solution wide analysis`组件有问题，在Unity的`Settings -> External Tools -> Regenerate project files`解决。
