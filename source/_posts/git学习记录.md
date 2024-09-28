@@ -3,7 +3,7 @@ title: git学习记录
 tags: 
   - Git
 abbrlink: a72e4bb6
-categories: 学习笔记
+categories: 零碎问题记录
 date: 2022-07-10 11:11:26
 cover: https://www.notion.so/images/page-cover/met_frederic_edwin_church_1871.jpg
 description: 
