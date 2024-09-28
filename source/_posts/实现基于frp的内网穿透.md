@@ -1,20 +1,21 @@
 ---
 title: 实现基于frp的内网穿透
-tags: 内网穿透
+tags: 
+  - 云服务器
 abbrlink: 1408599b
-categories: 云服务器
+categories: 技术文档
 date: 2022-06-27 00:00:00
+cover: https://www.notion.so/images/page-cover/met_jean_beraud.jpg
+description: 
 ---
 
 
 
 今天花了一天的时间，才把内网穿透给搞好了，这次把步骤好好记下来，下次再需要重新配置可以有个参照。
 
-<!-- more -->
-
 ## 我需要用内网穿透做什么？
 
-我寝室里有一台iMac，还有一台macbook。我在两台设备上都有编辑博客的需求，但如果在两台设备上都部署博客会比较混乱，比如iMac上存有博客a、b、c，macbook上存有d、e、f。所以我想只用iMac来打包部署，平时带着笔记本在外面写好了博客之后，用内网穿透把编辑好的博客发到iMac上，然后在iMac上打包部署到云服务器上，这样就不会乱了。
+我寝室里有一台iMac，还有一台MacBook。我在两台设备上都有编辑博客的需求，但如果在两台设备上都部署博客会比较混乱，比如iMac上存有博客a、b、c，MacBook上存有d、e、f。所以我想只用iMac来打包部署，平时带着笔记本在外面写好了博客之后，用内网穿透把编辑好的博客发到iMac上，然后在iMac上打包部署到云服务器上，这样就不会乱了。
 
 ## 搭建步骤
 

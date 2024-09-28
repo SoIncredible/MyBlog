@@ -1,24 +1,21 @@
 .hello-about {
   margin: 20px auto;
   border-radius: 24px;
-  background: var(--anzhiyu-card-bg);
+  background: #2129bd;
   border: var(--style-border-always);
   box-shadow: var(--anzhiyu-shadow-border);
   position: relative;
   overflow: hidden;
   user-select: none;
 }
-body {
-  font-family: Montserrat, sans-serif;
-  font-weight: 900;
-}
 
 .shapes {
   position: relative;
   height: 315px;
   width: 100%;
-  background: #2128bd;
-  overflow: hidden;
+
+  /*别动*/
+  background: #0a108d;
 }
 
 .shape {
@@ -28,6 +25,7 @@ body {
 }
 
 .shape.shape-1 {
+  /*别动*/
   background: #005ffe;
   width: 650px;
   height: 650px;
@@ -35,6 +33,7 @@ body {
 }
 
 .shape.shape-2 {
+  /*别动*/
   background: #ffe5e3;
   width: 440px;
   height: 440px;
@@ -42,6 +41,7 @@ body {
 }
 
 .shape.shape-3 {
+  /*别动*/
   background: #ffcc57;
   width: 270px;
   height: 270px;
@@ -57,7 +57,8 @@ body {
   align-items: center;
   height: 315px;
   width: 100%;
-  background: #fff;
+  /*别动*/
+  background: #ffffff00;
   mix-blend-mode: screen;
 }
 [data-theme="dark"] .hello-about .content {
@@ -69,7 +70,8 @@ body {
 
 .hello-about h1 {
   font-size: 200px;
-  color: #000;
+  /*别动*/
+  color: #fff;
   margin: 0;
   text-align: center;
   font: inherit;
@@ -102,6 +104,6 @@ body {
 }
 
 ::selection {
-  color: #fff;
-  background: #2128bd;
+  color: #ffffff s;
+  background: #117dff;
 }

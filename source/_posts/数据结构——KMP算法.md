@@ -1,9 +1,13 @@
 ---
 title: 数据结构——KMP算法
-tags: 数据结构
+tags: 
+  - 算法
+  - 数据结构
 abbrlink: 5e0804b8
 date: 2022-08-23 21:39:03
-categories:
+categories: 学习笔记
+cover: https://www.notion.so/images/page-cover/met_gerome_1890.jpg
+description: 
 ---
 
 # 串的模式匹配算法——KMP
@@ -15,8 +19,6 @@ categories:
 - 部分匹配值指的是字符串的前缀和后缀的最长相等前后缀的长度
 
 现给一主串S，一模式串T，他们的值分别是S<code>"ababcabcacbab"</code>，T<code>"abcac"</code>
-
-<!--more-->
 
 根据上面给出的概念，我们可以算出子串T中每一个字符的<code>部分匹配值</code>如下表：
 

@@ -6,18 +6,18 @@ menu:
   首页: / || fas fa-home || faa-tada
   时间轴: /archives/ || fas fa-archive
   # 闲言碎语: /artitalk/ || fas fa-comment-dots
-  音乐馆: /music/ || fas fa-music
+  # 音乐馆: /music/ || fas fa-music
   分类: /categories/ || fas fa-folder-open
   # List||fas fa-list:
   #   Music: /music/ || fas fa-music
   #   Movie: /movies/ || fas fa-video
 
-  朋友圈: /fcircle/ || fab fa-artstation
+  # 朋友圈: /fcircle/ || fab fa-artstation
   # 留言板: /comments/ || fas fa-envelope
   # 友人帐: /link/ || fas fa-link
   # 闲言碎语: /hpptalk/ || fas fa-comment-dots
   # 追番: /bangumis/ || icon-bilibili1
-  关于: /about/ || icon-zhifeiji
+  # 关于: /about/ || icon-paper-full
 
 # Code Blocks (代碼相關)
 # --------------------------------------
@@ -25,8 +25,8 @@ menu:
 highlight_theme: mac light #  darker / pale night / light / ocean / mac / mac light / false
 highlight_copy: true # copy button
 highlight_lang: true # show the code language
-highlight_shrink: true # true: shrink the code blocks / false: expand the code blocks | none: expand code blocks and hide the button
-highlight_height_limit: false # unit: px
+highlight_shrink: false # true: shrink the code blocks / false: expand the code blocks | none: expand code blocks and hide the button
+highlight_height_limit: 200 # unit: px
 code_word_wrap: false
 
 # copy settings
@@ -43,9 +43,9 @@ copy:
 social:
   Github: https://github.com/SoIncredible || icon-github || faa-tada
   Email: https://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=2636060652@qq.com || icon-youjian || faa-tada
-  RSS: atom.xml || icon-rss || faa-tada
+#  RSS: atom.xml || icon-rss || faa-tada
   BiliBili: https://space.bilibili.com/434655900 || icon-bilibili || faa-tada
-  QQ: tencent://Message/?Uin=2636060652&amp;websiteName=local.edu.com:8888=&amp;Menu=yes || icon-QQ1 || faa-tada
+#  QQ: tencent://Message/?Uin=2636060652&amp;websiteName=local.edu.com:8888=&amp;Menu=yes || icon-QQ1 || faa-tada
 
 # Algolia search
 algolia_search:
@@ -188,7 +188,7 @@ toc:
   post: true
   page: false
   number: true
-  expand: false
+  expand: true
   style_simple: false # for post
 
 post_copyright:
@@ -446,7 +446,7 @@ footer:
 
 # Baidu Analytics
 # https://tongji.baidu.com/web/welcome/login
-baidu_analytics:
+# baidu_analytics:
 
 # Google Analytics
 # https://analytics.google.com/analytics/web/
@@ -633,7 +633,7 @@ hr_icon:
 
 # the subtitle on homepage (主頁subtitle)
 subtitle:
-  enable: false
+  enable: true
   # Typewriter Effect (打字效果)
   effect: true
   # Effect Speed Options (打字效果速度參數)
@@ -651,10 +651,11 @@ subtitle:
   source: false
   # 如果關閉打字效果，subtitle 只會顯示 sub 的第一行文字
   sub:
+    - 我的肩上是风，风上是闪耀的星辰✨
 
 # Loading Animation (加载动画)
 preloader:
-  enable: true
+  enable: false
   # source
   # 1. fullpage-loading
   # 2. pace (progress bar)
@@ -686,7 +687,7 @@ aside:
       link: https://github.com/xxxxxx
   card_announcement:
     enable: true
-    content: Hi,欢迎来到我的博客
+    content: Hi,这里是EddieLee的博客！👏👏👏
   card_recent_post:
     enable: true
     limit: 5 # if set 0 will show all
@@ -718,9 +719,9 @@ aside:
 # busuanzi count for PV / UV in site
 # 訪問人數
 busuanzi:
-  site_uv: true
-  site_pv: true
-  page_pv: true
+  site_uv: false
+  site_pv: false
+  page_pv: false
 
 # Time difference between publish date and now (網頁運行時間)
 # Formal: Month/Day/Year Time or Year/Month/Day Time
@@ -827,8 +828,8 @@ pjax:
 
 # Inject the css and script (aplayer/meting)
 aplayerInject:
-  enable: true
-  per_page: true
+  enable: false
+  per_page: false
 
 # Snackbar (Toast Notification 彈窗)
 # https://github.com/polonel/SnackBar
@@ -1049,7 +1050,7 @@ electric_clock:
 # hexo-filter-gitcalendar
 # see https://akilar.top/posts/1f9c68c9/
 gitcalendar:
-  enable: true # 开关
+  enable: false # 开关
   priority: 5 #过滤器优先权
   enable_page: / # 应用页面
   # butterfly挂载容器
@@ -1058,7 +1059,7 @@ gitcalendar:
     name: recent-posts
     index: 0
   user: SoIncredible #git用户名
-  apiurl: "https://gitcalendar.soincredible777.com.cn"
+  apiurl: "gitcalendar-eight.vercel.app"
   minheight:
     pc: 280px #桌面端最小高度
     mibile: 0px #移动端最小高度
@@ -1087,12 +1088,10 @@ tag_plugins:
     carousel: https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js
     tag_plugins_css: https://cdn.cbd.int/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css
 
-
-
 # wowjs
 # see https://www.npmjs.com/package/hexo-butterfly-wowjs
 wowjs:
-  enable: true #控制动画开关。true是打开，false是关闭
+  enable: false #控制动画开关。true是打开，false是关闭
   priority: 10 #过滤器优先级
   mobile: false #移动端是否启用，默认移动端禁用
   animateitem:
@@ -1131,8 +1130,8 @@ wowjs:
 # hexo-butterfly-swiper-anzhiyu
 # see https://akilar.top/posts/8e1264d1/
 swiper:
-  enable: true # 开关
-  randomenable: true # 人潮汹涌开关
+  enable: false # 开关
+  randomenable: false # 人潮汹涌开关
   priority: 5 #过滤器优先权
   enable_page: / # 应用页面
   timemode: date #date/updated
@@ -1140,7 +1139,7 @@ swiper:
     type: id
     name: recent-posts
     index: 1
-  default_descr: 再怎么看我也不知道怎么描述它的啦！
+  default_descr:
   swiper_css: https://cdn.cbd.int/hexo-butterfly-swiper-anzhiyu@1.0.4/lib/swiper.min.css #swiper css依赖
   swiper_js: https://npm.elemecdn.com/anzhiyu-blog@1.1.6/js/swiper.min.js #swiper js依赖 #swiper js依赖
   custom_css: https://cdn.cbd.int/hexo-butterfly-swiper-anzhiyu@1.0.4/lib/swiperstyle.css # 适配主题样式补丁

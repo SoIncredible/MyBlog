@@ -1,10 +1,10 @@
 ---
 title: {{ title }}
 date: {{ date }}
-tags:
-updated: 
-top_img:
+tags: 
 categories:
 cover: 
-description: 
+description:
+swiper_index: 
+sticky:  
 ---
