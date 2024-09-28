@@ -1,5 +1,5 @@
 ---
-title: UnityShader入门精要笔记-（零）-疑惑汇总
+title: UnityShader问题杂记
 abbrlink: bc50bf5f
 date: 2024-09-13 20:09:52
 tags:
@@ -147,7 +147,10 @@ OnRenderImage接口的官方描述如下：Unity在相机完成渲染后调用�
 
 这张图反映了`OnRenderImage`方法调用和CPU GPU通信之间的时间间隔。按照Unity官方的描述说，OnRenderImage方法的第一个source参数是当前帧这个Camera的渲染结果，也就是说GPU在这么短的时间里面就完成了这一帧中大部分场景的渲染。**笔者之前一直有误区，以为当前帧中GPU渲染的是上一帧CPU提交给GPU的命令，但其实不是，当前帧GPU渲染的就是当前帧的画面**。
 
-2024.9.13更新
-笔者还是觉得难以置信，要求GPU在这么短的时间里把这一帧的主要内容都渲染出来可能吗？笔者上面的测试场景中包含的东西很少，对GPU渲染来说没什么压力。还是需要在正式的环境下验证一条假设：如果有脚本调用了OnRenderImage，即使在OnRenderImage中没有做什么，会不会导致Camera.Render的执行时间变长，就是为了等GPU渲染完成把渲染结果传递给OnRenderImage的SourceRenderTexture。笔者决定等明天来公司了之后在公司的项目中调用一下OnRenderImage接口，然后在Profiler中看一下表现。
+## `OnRenderImage` 和 GPU 执行时机
+
+`OnRenderImage`确实是在CPU端调用的，它是Unity渲染流程中的一个回调方法，用于处理渲染图像（通常在渲染到屏幕之前）。当你在`OnRenderImage`中调用`Graphics.Blit`时，你实际上是在创建一个命令，告诉GPU：“请按照这个材质（和它的Shader）处理这个纹理，然后输出到另一个纹理上。”
+
+这些命令会被Unity渲染引擎收集起来，然后在适当的时候一起发送给GPU。GPU收到这些命令后，会按照指令执行渲染操作。这个过程确实不是立即发生的，而是在CPU端的所有渲染相关命令都提交给GPU之后，GPU才开始执行这些命令。这意味着，`Graphics.Blit`调用发生时，并不会立即执行Shader效果，而是稍后在GPU的渲染队列中执行。
 
 另外，当前实现屏幕后处理的效果使用的都是CommandBuffer了，比如Unity官方的屏幕后处理的库。OnRenderImage已经很少使用了。
