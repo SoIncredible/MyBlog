@@ -16,6 +16,8 @@ sticky:
 相机的运动可以被拆分成相机跟随、水平转向、俯仰(竖直)转向三个分运动。
 因此，在笔者设计的相机跟随的方案中，相机组件会被设计成一个具有三层嵌套关系的结构——最外层负责跟随角色移动、中间层负责相机水平方向上的转向、最内层负责相机竖直方向的转向。
 
+巫师3中的相机是锁头的，如果Player的头和摄像机之间有遮挡就会位移 
+
 # 用到的接口
 
 - [Transform.InverseTransformDirection(Vector3 direction);](https://docs.unity3d.com/ScriptReference/Transform.InverseTransformDirection.html)
