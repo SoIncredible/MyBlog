@@ -3,9 +3,9 @@ title: RPG开发记录(零)：场景搭建
 abbrlink: eb0ca922
 date: 2024-09-13 00:38:54
 tags:
-    - 设计模式
+    - RPG
 categories:
-    - 游戏开发中的设计模式
+    - RPG游戏开发
 cover: https://www.notion.so/images/page-cover/met_vincent_van_gogh_oleanders.jpg
 description:
 swiper_index:

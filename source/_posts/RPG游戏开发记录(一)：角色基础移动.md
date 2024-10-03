@@ -2,8 +2,8 @@
 title: RPG游戏开发记录(一)：角色基础移动
 abbrlink: 1987e04c
 date: 2024-09-14 00:38:54
-tags:
-categories:
+tags: RPG
+categories: RPG游戏开发
 cover: https://www.notion.so/images/page-cover/met_bruegel_1565.jpg
 description:
 swiper_index:
