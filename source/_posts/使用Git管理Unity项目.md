@@ -8,8 +8,8 @@ tags:
 categories: 技术文档
 cover: https://www.notion.so/images/page-cover/met_horace_pippin.jpg
 description: 
-sticky: 2
-swiper_index: 4
+sticky: 
+swiper_index: 
 ---
 
 # 了解Unity的目录结构

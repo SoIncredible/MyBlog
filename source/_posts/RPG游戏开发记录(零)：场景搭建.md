@@ -2,10 +2,8 @@
 title: RPG开发记录(零)：场景搭建
 abbrlink: eb0ca922
 date: 2024-09-13 00:38:54
-tags:
-    - RPG
-categories:
-    - RPG游戏开发
+tags: RPG
+categories: Unity
 cover: https://www.notion.so/images/page-cover/met_vincent_van_gogh_oleanders.jpg
 description:
 swiper_index:

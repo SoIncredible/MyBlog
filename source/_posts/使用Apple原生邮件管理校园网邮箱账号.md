@@ -9,10 +9,6 @@ cover: https://www.notion.so/images/page-cover/met_horace_pippin.jpg
 description: 
 ---
 
-# 2023.07.13更新
-
-已经不是学生力（悲）
-
 用学生邮箱可以捞到不少好处，但因为不是主邮箱，每次需要验证的时候都需要进学校的官网、输入邮箱账号密码才能查看邮件，于是我决定尝试将校园网邮箱绑定给Apple原生邮件App进行管理
 
 首先，我们学校的邮箱用的是网易的企业邮箱

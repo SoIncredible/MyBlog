@@ -2,8 +2,8 @@
 title: Unity性能优化
 abbrlink: 6e973c22
 date: 2024-06-26 11:06:17
-tags:
-categories:
+tags: 性能优化
+categories: Unity
 cover: https://www.notion.so/images/page-cover/woodcuts_9.jpg
 description:
 swiper_index:
@@ -16,7 +16,23 @@ sticky:
 
 本小结翻译自[Unity官方的性能优化指导书](https://unity.com/cn/resources/ultimate-guide-to-profiling-unity-games)
 
+![](Unity性能优化/Ultimate_Guide_to_Profiling_Unity_Games-19.jpg)
+
 ## 设置帧率预算
+
+
+
+
+
+# 内存分析
+
+内存对运行时的性能表现的影响微乎其微，
+
+在Unity中有两种方法来分析游戏的内存占用:
+
+- Memory Profiler module: 这是Unity内置的模块，通过该模块我们可以分析我们的游戏基本的内存占用情况
+- Memory Profiler package: 这是一个Unity Package你可以将其安装到你的Unity项目中。这个模块为Unity Editor添加了额外的Memory Profiler窗口，让你能够更加详细地分析项目的内存使用情况。
+
 
 
 # Unity 性能分析工具
@@ -87,6 +103,9 @@ Batches翻译过来是批次，它代表着在这一帧中CPU向GPU输送的绘�
 
 
 
+# 参考资料
+
+- [Unity官方性能优化指导书](https://unity.com/cn/resources/ultimate-guide-to-profiling-unity-games)
 
 
 
