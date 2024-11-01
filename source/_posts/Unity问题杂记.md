@@ -60,3 +60,24 @@ DoTween不仅可以用来做动画，也可以实现音频减弱、图片的渐�
 如果要开启高刷，则需要关闭 ProjectSettings -> Player -> Resolution and Presentation 下的 [Optimized Frame Pacing](https://docs.unity3d.com/ScriptReference/PlayerSettings.Android-optimizedFramePacing.html)，并且在脚本中设置 `Application.targetFrameRate = 120;`
 
 以上的解决方案过于粗糙了，更完善的解决方案需要参考Android的[官方文档](https://developer.android.com/media/optimize/performance/frame-rate?hl=zh-cn)去到Android层实现帧率的设置，一篇[实践的帖子](https://blog.csdn.net/a310989583/article/details/135771394?spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-4-135771394-blog-118787844.235%5Ev43%5Epc_blog_bottom_relevance_base8&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-4-135771394-blog-118787844.235%5Ev43%5Epc_blog_bottom_relevance_base8&utm_relevant_index=9)
+
+# Spine动画的使用
+
+Spine动画有一个专门针对UI的组件叫做SkeletonGraphic，SkeletonGraphic组件是基于UICanvas绘制的，因此它的渲染层级可以被Canvas管理
+另外还有专门为非UI播放动画的SkeletonAnimation组件，该组件的渲染是基于MeshRenderer的，因此不受Canvas的管理，当要在UI上展示Spine动画的时候，要选择使用SkeletonGraphic组件。
+
+SkeletonGraphic相关接口
+```
+// 停止当前正在播放的动画
+heartBeatFlower.AnimationState.ClearTrack(0);         
+// 播放新的动画
+heartBeatFlower.AnimationState.SetAnimation(0, "chufa", false);  
+```
+
+SkeletonAnimation相关接口
+```
+// 停止当前正在播放的动画
+heartBeatFlower.state.SetEmptyAnimation(0,0);            
+// 播放新的动画
+heartBeatFlower.state.SetAnimation(0, "loop", true);  
+```
