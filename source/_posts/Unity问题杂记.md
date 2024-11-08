@@ -73,6 +73,8 @@ heartBeatFlower.AnimationState.ClearTrack(0);
 // 播放新的动画
 heartBeatFlower.AnimationState.SetAnimation(0, "chufa", false);  
 ```
+> 2024.11.8更新
+> 使用SkeletonGraphic.AnimationState.ClearTrack(0)遇到坑了，
 
 SkeletonAnimation相关接口
 ```
@@ -81,3 +83,21 @@ heartBeatFlower.state.SetEmptyAnimation(0,0);
 // 播放新的动画
 heartBeatFlower.state.SetAnimation(0, "loop", true);  
 ```
+
+# Animator使用
+
+Animator中必须设置一个从Entry进入的默认状态，这个从Entry进入默认状态的操作会在Animator所挂载的游戏物体的Active状态变为true或者Animator组件自身的enable状态变为true的时候自动执行，无法控制。如果在默认状态设置了某些动画，在其他开发同事不知情的情况下设置了这个Animator节点的Active状态，就会导致动画的自动触发，可能会给别人留坑。更好的使用Animator的方法是将默认状态设置为一个空状态。让真正的动画状态指向默认状态，如下图：
+
+![](Unity问题杂记/image.png)
+
+在我们需要播放动画的时机可以通过[`Animator.Play()`](https://docs.unity3d.com/cn/current/ScriptReference/Animator.Play.html)接口，并且在动画播放完之后会自动的进入默认状态，这样的好处是不用通过控制Active状态来控制动画的播放，而且在代码中我们也是通过`Animator.Play`接口控制动画的播放，比通过Active状态来控制的方法更让人知道这行代码在做什么。
+
+接口的具体参数如下，其中第三个参数normalizedTime是一个归一化的时间，[0,1]指从动画的什么时刻开始播放
+```
+public void Play (string stateName, int layer= -1, float normalizedTime= float.NegativeInfinity);
+public void Play (int stateNameHash, int layer= -1, float normalizedTime= float.NegativeInfinity);
+```
+
+# 协程的坑
+
+协程中的等待一秒并不是真正的一秒有可能会有误差
