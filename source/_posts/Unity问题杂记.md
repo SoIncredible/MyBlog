@@ -101,3 +101,7 @@ public void Play (int stateNameHash, int layer= -1, float normalizedTime= float.
 # 协程的坑
 
 协程中的等待一秒并不是真正的一秒有可能会有误差
+
+# Unity的Animation的使用的坑
+
+Animation中有一个Legacy字段，如果不勾选这个选项，在Animation中是没有办法通过Animation.Play()接口播放该动画的。
