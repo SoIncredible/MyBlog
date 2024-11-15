@@ -74,7 +74,7 @@ heartBeatFlower.AnimationState.ClearTrack(0);
 heartBeatFlower.AnimationState.SetAnimation(0, "chufa", false);  
 ```
 > 2024.11.8更新
-> 使用SkeletonGraphic.AnimationState.ClearTrack(0)遇到坑了，
+> 使用SkeletonGraphic.AnimationState.ClearTrack(0)遇到坑了，目前笔者还不清楚Spine的作用原理，从表现上看，调用该接口会将Spine动画从轨道上移除，之后想要再次播放该动画的话就无法在轨道上找到这个动画，所以如果有切换播放动画的需求，只需要调用heartBeatFlower.AnimationState.SetAnimation(0, "chufa", false);  就可以了
 
 SkeletonAnimation相关接口
 ```
@@ -105,3 +105,97 @@ public void Play (int stateNameHash, int layer= -1, float normalizedTime= float.
 # Unity的Animation的使用的坑
 
 Animation中有一个Legacy字段，如果不勾选这个选项，在Animation中是没有办法通过Animation.Play()接口播放该动画的。
+有兴趣可以做一个实验，创建一个勾选了Legacy和一个未勾选Legacy的动画，将这两个动画都添加到一个Animation组件上。在代码中获取这个Animation组件的引用，调用`Animation.GetClipCount()`接口得到的值为2，但是如果使用`foreach(AnimationState state in Animation)`去遍历却只会遍历到勾选了Legacy的AnimationClip
+
+# XML文件读取逻辑
+
+定义需要从XML中读取的数据结构
+
+```
+[XmlRoot("AssetBundleConfig")]
+public class AssetBundleConfig
+{
+    public List<BundleRule> Bundles;
+    
+    public List<AtlasRule> Atlas;
+}
+
+
+public class BundleRule
+{
+    public string Relative;
+    public string Path;
+    public string Type;
+    public bool Recursion;
+}
+
+public class AtlasRule
+{
+    public string Path;
+    public bool Recursion;
+}
+```
+定义XML文件内容
+```
+<?xml version="1.0" encoding="utf-8" ?>
+<AssetBundleConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:noNamespaceSchemaLocation="AssetBundleConfigSchema.xsd">
+    <!--带有平台名称的bundle只会出现名称所代表的平台-->
+    <Bundles>
+        <BundleRule name="Art_Animation">
+            <Path>Assets/Art/Animation</Path>
+            <Type>SubFolder</Type>
+            <Recursion>false</Recursion>
+        </BundleRule>
+
+        <BundleRule name="Art_Audio">
+            <Path>Assets/Art/Audio</Path>
+            <Type>None</Type>
+            <Recursion>false</Recursion>
+        </BundleRule>
+
+        <BundleRule name="Art_CustomShaders">
+            <Path>Assets/Art/CustomShaders</Path>
+            <Type>None</Type>
+            <Recursion>false</Recursion>
+        </BundleRule>
+
+        <BundleRule name="Art_Fonts">
+            <Path>Assets/Art/Fonts</Path>
+            <Type>None</Type>
+            <Recursion>false</Recursion>
+        </BundleRule>
+        
+        <BundleRule name="Art_Fonts8x8">
+            <Relative>Assets/Art/Fonts</Relative>
+            <Path>Assets/Art/Fonts/Fonts8x8</Path>
+            <Type>SubFolder</Type>
+            <Recursion>true</Recursion>
+        </BundleRule>
+
+    </Bundles>
+    
+    <Atlas>
+        <AtlasRule name="Art_Atlas">
+            <Path>Assets/Art/Texture/Atlas</Path>
+            <Recursion>true</Recursion>
+        </AtlasRule>
+    </Atlas>
+</AssetBundleConfig>
+```
+
+C#脚本读取该XML文件
+```
+public static T LoadXmlConfig<T>(string path) where T : class
+{
+    XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
+    T result;
+    using (var reader = XmlReader.Create(path))
+    {
+        result = (T) xmlSerializer.Deserialize(reader);
+    }
+
+    return result;
+}
+```
+调用时只需要把`AssetBundleConfig`作为T传入该方法，就可以返回XML的内容

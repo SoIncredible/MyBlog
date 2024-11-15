@@ -296,7 +296,7 @@ namespace UI.UIItems
         public string name;
 
         public readonly List<Rect> boxes = new List<Rect>();
-    }
+    }       
 }
 ```
 

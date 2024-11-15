@@ -18,10 +18,21 @@ sticky:
 
 # 依赖
 
+如果两个ab A和B中的一些资源都依赖了一个没有被指定要打包的资源C，那么C就会同时被打进ab A和B中，造成资源的冗余，增大ab和安装包的体积。而这个被A，B依赖的资源C又可以分为两种类型，一种是Assets下外部导入的资源，即开发者导入或创建的资源；另一种则是Unity内置的资源，例如内置的Shader，Default-Material和UGUI一些组件如Image用的一些纹理资源等等。因此要解决资源冗余的问题，就要分别对这两种被依赖的资源进行处理。
+
+也就是说，只有我们自己手动把一些资源打进Bundle，
+想要打Bundle，最终都要调用`BuildPipeline.BuildAssetBundles`接口，
+
+`public static AssetBundleManifest BuildAssetBundles(string outputPath,AssetBundleBuild[] builds,BuildAssetBundleOptions assetBundleOptions,BuildTarget targetPlatform)`接口支持传入AssetBundleBuild数组
+
+` public static AssetBundleManifest BuildAssetBundles(string outputPath,BuildAssetBundleOptions assetBundleOptions,BuildTarget targetPlatform)`
+通过给AssetBundleBuild显示传入打包的依赖关系，确保打包资源不会冗余
+因此 重点在于AssetBundleBuild数组的构建
+
+
 # Unity AssetBundle与图集Sprite Atlas
 
-
-Atlas上有一个IncludeInBuild 勾选了这个之后，与这个Atlas对应的散图就建立了依赖关系，因此在构建AssetBundle的时候，查询依赖会查询到Atlas文件，并把Atlas文件和散图打在一个bundle文件中
+Atlas资产的Inspector上有一个IncludeInBuild选项。勾选该选项之后，与这个Atlas对应的散图就建立了依赖关系，因此在构建AssetBundle的时候，查询依赖会查询到Atlas文件，并把Atlas文件和散图打在一个bundle文件中
 
 如果勾选了IncludeInBuild选项，就不需要再把SpriteAtlas打一个Bundle了，这样会造成图集资源的冗余
 
@@ -35,8 +46,13 @@ Sprite和SpriteAtlas和Texture的概念重要区分
 
 Sprite和Sprite Atlas是两个类，他们中具有一些图片信息的数据成员，他们不是真的“图片”！而Texture才是真正的图片，因此在MemoryProfiler中你可以看到SpriteAtlas和Sprite类外加真正的图片Texture被加载到内存中
 
-> 如果不勾选IncludeInBuild，而是制定图集打Bundle，效果是一样的嘛？
-> 待验证
+> 如果不勾选IncludeInBuild，而是指定图集打Bundle，效果是一样的嘛？
+> 
+
+
+# 案例
+
+
 
 # 参考资料
 
