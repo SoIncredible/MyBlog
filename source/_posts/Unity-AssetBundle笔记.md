@@ -9,12 +9,32 @@ description:
 swiper_index:
 sticky:
 ---
+# AssetBundle基础
+
+## AssetBundle、AssetBundle-Browser与Addressable
+
+AssetBundle是Unity推出的一种内置的资源压缩格式，能够允许开发者在运行时动态加载需要的资源。用不用取决于开发者自己。当你在Unity中创建、导入任何非代码资源或者文件夹的时候，在Inspector窗口的下面都会有一个AssetLabel：
+![](Unity-AssetBundle笔记/image-1.png)
+
+Addressable是基于AssetBundle的一套完整的Unity资源管理框架，也就是说，如果我们使用Addressable进行开发，项目中的资源如何进行打包、加载Addressable都帮我们规划好了，我们只需要按照它给定的规范和接口使用资源就可以了。但是如果我们只是使用AssetBundle，那么我们还需要开发一套自己的资源管理框架。
+
+另外，Unity还推出了[AssetBundle-Browser](https://github.com/Unity-Technologies/AssetBundles-Browser)用来可视化AssetBundle的构建过程。应该说Unity是先推出了`AssetBundleBrowser`然后推出了`Addressable`。二者都可以用来管理AssetBundle，`Addressable`中有更多的自动化功能，而`AssetBundleBrowser`则更多地需要手动管理Bundle。所以`AssetBundle-Browser`算是`Addressable`的阉割版。
+
+## AssetBundle-Browser的使用
+
+在AssetBundle-Browser仓库的说明文档中提示该工具并不作为Unity推荐的AssetBundle的资源管理工具，但是因为该工具的建议性，还是可以作为AssetBundle的入门学习使用。
+
+按照说明文档的介绍，可以直接复制git仓库的连接将该库安装到Unity工程中，但是有可能会因为网络原因失败，可以选择DownloadZip，然后解压到Assets目录下，记得删除Test目录，[不然会有Boo命名空间的报错](https://www.cnblogs.com/XieBoss-blogs1/p/17847061.html)。
+
+
 
 # AssetBundle内存
 
 使用[AssetRipper](https://github.com/AssetRipper/AssetRipper?tab=readme-ov-file)可以查看AssetBundle中的文件
 
 ![](Unity-AssetBundle笔记/image.png)
+
+Unity内置的AssetBundle工具是[Addressable库](https://docs.unity3d.com/Packages/com.unity.addressables@2.3/manual/index.html)
 
 # 依赖
 
@@ -32,6 +52,41 @@ sticky:
 在AssetBundle的工作流中，必须有一个环节指定有哪些资源是要打进Bundle的，这个操作可以由Unity内置的AssetBundle工具执行，也可以自己编写脚本执行。
 
 # Unity AssetBundle与图集Sprite Atlas
+
+测试环境使用安卓平台
+## 没有AssetBundle 没有SpriteAtlas的情况
+
+这是最原始的情况，出了那些已经放在Resources目录下的资源会被打进包内，还有那些被Resources目录中引用的放在Resources外面的资源。
+
+打出Android Apk之后解压，在目录下找到`assets/bin/Data/data.unity3d`，使用AssetRipper可以看到如下结构：
+![](Unity-AssetBundle笔记/image-2.png)
+
+其中resources.asset文件里面包含了Resources目录下的所有资源。`sharedassets0.asset`文件则包含了所有的Resources目录下引用的Resources目录外的资源
+
+
+## 没有AssetBundle 有SpriteAtlas的情况
+
+### SpriteAtlas勾选IncludeInBuild的情况
+
+### SpriteAtlas未勾选IncludeInBuild的情况
+
+## 有AssetBundle 没有SpriteAtlas的情况
+
+## 有AssetBundle 有SpriteAtlas的情况
+
+### SpriteAtlas勾选IncludeInBuild的情况
+
+### SpriteAtlas未勾选IncludeInBuild的情况
+
+
+## 如果项目中只有散图，这些散图是如何被打进包内的？
+
+分两种情况，第一种是不在Resources目录下的图片，如果没有Prefab的引用，是不会被打入包内的。 使用AndroidStudio的ApkAnalyzer查看包内的资源，
+
+
+## 
+
+如果项目中打了图集，预制体A依赖了图集中的图片a，Build之后，预制体A中依赖的是散图a还是图集呢？
 
 Atlas资产的Inspector上有一个IncludeInBuild选项。勾选该选项之后，与这个Atlas对应的散图就建立了依赖关系，因此在构建AssetBundle的时候，查询依赖会查询到Atlas文件，并把Atlas文件和散图打在一个bundle文件中
 

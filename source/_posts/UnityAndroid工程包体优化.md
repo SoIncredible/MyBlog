@@ -13,6 +13,8 @@ description:
 
 可以使用Android Studio中的`Build -> ApkAnalyzer`来对包体内容进行分析
 
+Resources目录下的文件都会被打包进`assets/bin/Data/unity default resources`文件中，游戏启动的时候会一次性把这个文件加载到内存中，因此应该要尽可能地减小放在resources目录下的文件体积。
+
 # libil2cpp.so内容分析
 
 https://blog.csdn.net/linxinfa/article/details/116572369
