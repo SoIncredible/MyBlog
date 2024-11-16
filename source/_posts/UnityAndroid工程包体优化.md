@@ -9,7 +9,7 @@ cover: https://www.notion.so/images/page-cover/met_cezanne_1890.jpg
 description:
 ---
 
-# 包体分析
+# 包体构成
 
 可以使用Android Studio中的`Build -> ApkAnalyzer`来对包体内容进行分析
 
@@ -24,7 +24,8 @@ https://blog.csdn.net/linxinfa/article/details/116572369
 
 AssetRipper的GitHub链接👉👉👉 https://github.com/AssetRipper/AssetRipper
 
-下载到本地解压后在根目录打开终端，运行`./AssetRipper.GUI.Free`打开AssetRipper
+下载到本地解压后在根目录打开终端，运行`./AssetRipper.GUI.Free`在浏览器中启动。
 
 
 # AssetBundle打包问题
+
