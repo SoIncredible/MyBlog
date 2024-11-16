@@ -27,8 +27,9 @@ sticky:
 
 ` public static AssetBundleManifest BuildAssetBundles(string outputPath,BuildAssetBundleOptions assetBundleOptions,BuildTarget targetPlatform)`
 通过给AssetBundleBuild显示传入打包的依赖关系，确保打包资源不会冗余
-因此 重点在于AssetBundleBuild数组的构建
+因此 重点在于AssetBundleBuild数组的构建。
 
+在AssetBundle的工作流中，必须有一个环节指定有哪些资源是要打进Bundle的，这个操作可以由Unity内置的AssetBundle工具执行，也可以自己编写脚本执行。
 
 # Unity AssetBundle与图集Sprite Atlas
 
