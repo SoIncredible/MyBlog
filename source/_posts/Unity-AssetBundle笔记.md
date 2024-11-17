@@ -1,7 +1,7 @@
 ---
 title: UnityAssetBundle笔记
 abbrlink: 96c99d7a
-date: 2024-06-21 16:41:59
+date: 2024-11-16 16:41:59
 tags:
 categories:
 cover: https://www.notion.so/images/page-cover/woodcuts_13.jpg
@@ -53,50 +53,99 @@ Unity内置的AssetBundle工具是[Addressable库](https://docs.unity3d.com/Pack
 
 # Unity AssetBundle与图集Sprite Atlas
 
-> 本小节建议配合[UnityAndroid工程包体优化]()这篇博客阅读
+> 本小节建议配合[UnityAndroid工程包体优化](https://soincredible.github.io/posts/279644bd/)这篇博客阅读
 
 新建一个Unity工程，Assets目录下的文件结构如下：
 ![](Unity-AssetBundle笔记/image-3.png)
-笔者使用安卓作为测试平台测试以下四种情景：
-## 没有AssetBundle 没有SpriteAtlas的情况
+其中名为TTT的图集中包含图片A、图片B、图片C资源，Image预制体中只有一个Image组件，Image组件上引用了图片A。笔者将会测试下面几种方案会如何将这些资源打入包内：
 
-这是最原始的情况，出了那些已经放在Resources目录下的资源会被打进包内，还有那些被Resources目录中资源引用的、放在Resources外面的资源。
+## 不使用AssetBundle 不使用SpriteAtlas
+
+在这种策略下，除了那些已经放在Resources目录下的资源，还有那些被Resources目录中资源引用的、放在Resources外面的资源会被打入apk。也就是说`Art/Image/A` + 所有Resources目录下的文件被打包进了apk。
 
 打出Android Apk之后解压，在目录下找到`assets/bin/Data/data.unity3d`，使用AssetRipper可以看到如下结构：
 ![](Unity-AssetBundle笔记/image-2.png)
 
-其中resources.asset文件里面包含了Resources目录下的所有资源。`sharedassets0.asset`文件则包含了所有的Resources目录下引用的Resources目录外的资源
+- `globalgamemanagers`、`unity_builtin_extra`、`globalgamemanagers.asset`是Unity自动创建的，本测试并不关心其内容，也与我们自己的资源没有关系。
 
+- `resources.asset`文件里面包含了Resources目录下的所有资源。即图片C和Image预制体
+![](Unity-AssetBundle笔记/image-4.png)
+
+- `level0`是我们构建的场景，其中包含了场景中的所有节点信息，Image预制体也在其中。
+![](Unity-AssetBundle笔记/image-5.png)
+
+- `sharedassets0.asset`文件则包含了所有的Resources目录下引用的Resources目录外的资源。其中包含了图片A。
+![](Unity-AssetBundle笔记/image-6.png)
 
 ## 没有AssetBundle 有SpriteAtlas的情况
 
 ### SpriteAtlas勾选IncludeInBuild的情况
 
-勾选了之后，散图和图集之间就建立了映射关系，散图与其依赖资源之间的依赖关系就变成了散图所在图集与依赖该散图之间的依赖关系
+> ‼️注意 笔者在做下面的实验的时候，每做一个实验都会删除原来的图集->退出Unity->删除工程下的Library目录->重新启动Unity->重新创建一个一模一样的图集，Unity存在Bug当图集的IncludeInBuild选项的变化并不会生效。
 
-那么在构建AssetBundle的时候，AssetBundle是不知道有散图的图集的概念的吧？
-Unity的AssetDataBase接口里面的GetAllDependency接口，在获取一个资源的所有依赖的时候，如果一个依赖是图片，那么它获取的依赖究竟是图集还是这个散图呢？需要验证一下。
-是不是说明在BuildBundle之前需要先构建图集？ 然后再调用GetDependency接口的时候资源的依赖就都指向图集而非散图了。
+勾选IncludeInBuild的情况下，散图和图集之间就建立了`映射关系`，`散图`与`其依赖资源`之间的依赖关系就变成了`散图所在图集`与`依赖该散图资源`之间的依赖关系。
+
+![](Unity-AssetBundle笔记/image-7.png)
+
+> 注意：Resources目录下的资源会被无条件地打入包内，即便是包含在图集内的散图，最终打进包内的是散图所在的图集+散图自己，会有资源冗余。就比如图片C，在Resources目录下有一张图片C散图，然后图片C又被打入TTT图集存放在sharedassets中，不过本测试图集中还有很多的空白空间，多一张图片C并不会造成图集变大，因此包体不会变大。
 
 ### SpriteAtlas未勾选IncludeInBuild的情况
 
-结论是：Resources目录下的资源会被无条件地打入包内，即便是包含在图集内的散图，最终打进包内的是散图所在的图集+散图自己，会有资源冗余。
+和`不使用AssetBundle 不使用SpriteAtlas`实验条件的结果一样，图集不会被打入包内。
 
 ## 有AssetBundle 没有SpriteAtlas的情况
+
+我们需要更改一下工程的目录结构，新建一个AssetBundle目录，把Resources目录下的图片C移动到Sprites目录下，把Image预制体改名为ImageA放在PrefabA目录下，复制一个ImageA预制体改名为ImageB放在PrefabB目录下，将ImageB中的Sprite引用改为图片B。我们还要把刚才创建的图集删掉，防止影响实验。
+
+![](Unity-AssetBundle笔记/image-8.png)
+
+~~我们分别给这三个目录添加AssetLabels:~~
+
+![](Unity-AssetBundle笔记/image-9.png)
+
+~~然后打开AssetBundleBrowser，就会看到我们刚才打的三个AssetBundleTag了~~
+
+![](Unity-AssetBundle笔记/image-10.png)
+
+上面这样添加AssetBundleLabel是错误的，正确的方式是打开AssetBundleBrowser将要打Bundle的文件夹或者文件拖拽进去，所有的Bundle结构组织都在AssetBundleBrowser中操作。
+
+执行Build操作
+
+![](Unity-AssetBundle笔记/image-11.png)
+
+然后BuildAndroidPlayer，此时我们的资源就不是在`assets/bin/Data/data.unity3d`目录下了，而是在`assets/bin/`目录下。
+实验预期是`assets/bin/Data/data.unity3d`内不包含任何我们自己创建的资源。不过注意：场景中还存放了一个Image的预制体，因此在`level0`中你会看到预制体相关的信息，而在`sharedassets0.asset`中你会看到预制体上引用的图片A。从场景中将预制体移除，再次打包，我们就不会再在`assets/bin/Data/data.unity3d`目录下看到任何我们自己创建的资源了。
+
+![](Unity-AssetBundle笔记/image-12.png)
+
+目前这种情况是没有资源冗余的，因为现在是散图，而且我们也在AssetBundle-Browser里面看到了每个Bundle中的资源情况。
 
 ## 有AssetBundle 有SpriteAtlas的情况
 
 ### SpriteAtlas勾选IncludeInBuild的情况
 
+按照上面说的：删除原来的图集->退出Unity->删除工程下的Library目录->重新启动Unity->重新创建一个一模一样的图集。
+
+然后打开AssetBundleBrowser，可以看到，即便是我们创建了图集并且把图片ABC都放进了图集内，在AssetBundleBrowser里面还是把图片ABC识别为了单张图片去引用，虽然看上去资源没有冗余，但是打出包来之后这些图片会以图集的方式存在在ab包内，因此每个ab包内都会有一张图集，实际上是冗余的。
+
+另外在我们的测试场景中，发现了Unity中打图集和打Bundle的机制：以图片C为例，如果图片C所在的目录被指定要打Bundle了，那么即便是图集文件中指定了包含图片C，最终构建出来的Atlas中也是不包含图片C的。
+
 ### SpriteAtlas未勾选IncludeInBuild的情况
 
+这种情况等同于`有AssetBundle 没有SpriteAtlas的情况`，不使用图集而是将散图打进包内，只要没有显式指定这些散图要打到哪个Bundle里，如果有多个Bundle引用了同一个散图，这个散图就会被打进每一个引用它的Bundle里，不只是图片，所有的资源都是这个逻辑。因此可以将放在一个图集中的不同散图看作是一个资源。
 
-## 如果项目中只有散图，这些散图是如何被打进包内的？
+## 结论
 
-分两种情况，第一种是不在Resources目录下的图片，如果没有Prefab的引用，是不会被打入包内的。 使用AndroidStudio的ApkAnalyzer查看包内的资源，
+- 想要让图集被打入包内，就必须勾选图集的IncludeInBuild。当然取消IncludeInBuild勾选应该在热更新等方面有它的应用场景，笔者目前还不了解。
+- 如果图集中的某一个散图被显示指定打入某一个Bundle，那么这个散图就不会被打进图集中，也不会因为有多个Bundle中的资源引用而造成冗余。
+- 图集的引用计数等于图集中每一个散图各自引用计数的和
+- 场景中应当尽可能地不包含任何资源的引用，而是通过一些脚本动态加载需要的资源，不然这些资源会被打进`assets/bin/Data/data.unity3d`文件中从而拖慢游戏的启动速度。
 
+好了，到此为止笔者大概清晰了AssetBundle和SpriteAtlas之间的关系，接下来笔者需要搞明白的事情是：在BuildBundle的时候自动将散图的关系和图集的关系的映射还是需要人为地去管理这个流程。我们需要看一下AssetBundleBrowser中的BuildBundle操作做了什么？
 
-## 
+那么在构建AssetBundle的时候，AssetBundle是不知道有散图的图集的概念的吧？
+Unity的AssetDataBase接口里面的GetAllDependency接口，在获取一个资源的所有依赖的时候，如果一个依赖是图片，那么它获取的依赖究竟是图集还是这个散图呢？需要验证一下。
+是不是说明在BuildBundle之前需要先构建图集？ 然后再调用GetDependency接口的时候资源的依赖就都指向图集而非散图了。
 
 如果项目中打了图集，预制体A依赖了图集中的图片a，Build之后，预制体A中依赖的是散图a还是图集呢？
 
