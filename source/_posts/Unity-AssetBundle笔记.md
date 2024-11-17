@@ -11,6 +11,10 @@ sticky:
 ---
 # AssetBundle基础
 
+## AssetBundle原理
+
+⭕️ AssetBundle在内存中如何加载、存储
+
 ## AssetBundle、AssetBundle-Browser与Addressable
 
 AssetBundle是Unity推出的一种内置的资源压缩格式，能够允许开发者在运行时动态加载需要的资源。用不用取决于开发者自己。当你在Unity中创建、导入任何非代码资源或者文件夹的时候，在Inspector窗口的下面都会有一个AssetLabel：
@@ -81,7 +85,7 @@ Unity内置的AssetBundle工具是[Addressable库](https://docs.unity3d.com/Pack
 
 ### SpriteAtlas勾选IncludeInBuild的情况
 
-> ‼️注意 笔者在做下面的实验的时候，每做一个实验都会删除原来的图集->退出Unity->删除工程下的Library目录->重新启动Unity->重新创建一个一模一样的图集，Unity存在Bug当图集的IncludeInBuild选项的变化并不会生效。
+> 注意 笔者在做下面的实验的时候，每做一个实验都会删除原来的图集->退出Unity->删除工程下的Library目录->重新启动Unity->重新创建一个一模一样的图集，Unity存在Bug当图集的IncludeInBuild选项的变化并不会生效。
 
 勾选IncludeInBuild的情况下，散图和图集之间就建立了`映射关系`，`散图`与`其依赖资源`之间的依赖关系就变成了`散图所在图集`与`依赖该散图资源`之间的依赖关系。
 
@@ -126,20 +130,23 @@ Unity内置的AssetBundle工具是[Addressable库](https://docs.unity3d.com/Pack
 
 按照上面说的：删除原来的图集->退出Unity->删除工程下的Library目录->重新启动Unity->重新创建一个一模一样的图集。
 
-然后打开AssetBundleBrowser，可以看到，即便是我们创建了图集并且把图片ABC都放进了图集内，在AssetBundleBrowser里面还是把图片ABC识别为了单张图片去引用，虽然看上去资源没有冗余，但是打出包来之后这些图片会以图集的方式存在在ab包内，因此每个ab包内都会有一张图集，实际上是冗余的。
+然后打开AssetBundleBrowser，可以看到，即便是我们创建了图集并且把图片ABC都放进了图集内，在AssetBundleBrowser里面还是把图片ABC识别为了单张图片去引用，虽然看上去资源没有冗余，但是打出包来之后这些图片会以图集的方式存在在ab包内，因此每个ab包内都会有一张图集，实际上是冗余的。所以为了避免冗余，我们需要为SpriteAtlas显示指定打包路径。
 
 另外在我们的测试场景中，发现了Unity中打图集和打Bundle的机制：以图片C为例，如果图片C所在的目录被指定要打Bundle了，那么即便是图集文件中指定了包含图片C，最终构建出来的Atlas中也是不包含图片C的。
 
-### SpriteAtlas未勾选IncludeInBuild的情况
+### SpriteAtlas未勾选IncludeInBuild的情况 其实不是因为未勾选IncludeInBuild导致图集没打进包内，而是因为没有显式制定图集Bundle
 
 这种情况等同于`有AssetBundle 没有SpriteAtlas的情况`，不使用图集而是将散图打进包内，只要没有显式指定这些散图要打到哪个Bundle里，如果有多个Bundle引用了同一个散图，这个散图就会被打进每一个引用它的Bundle里，不只是图片，所有的资源都是这个逻辑。因此可以将放在一个图集中的不同散图看作是一个资源。
 
 ## 结论
 
-- 想要让图集被打入包内，就必须勾选图集的IncludeInBuild。当然取消IncludeInBuild勾选应该在热更新等方面有它的应用场景，笔者目前还不了解。
+- 想要让图集被打入Bundle内，要么显示指定该图集被打入哪个Bundle，要么引用该图集的资源被显示打入某个或某些Bundle且勾选了IncludeInBuild，但会造成资源冗余，而且如果内嵌场景也有对该图集的引用，在内嵌资源中也会有一份冗余的图集资源。SpriteAtlas的IncludeInBuild勾选与否影响的是：当内嵌场景中有对该图集中的散图有依赖时，未勾选的图集不会内嵌进Player中，场景加载的时候有可能找不到这个图集，而如果场景没有依赖该图集，那勾不勾选无所谓，因为BuildPlayer时判定没有对该图集有引用，就算勾选了也不会内嵌进Player。**规范的图集与AssetBundle的使用应该是：内嵌场景中没有对图集的依赖、显示指定图集Bundle、不勾选IncludeInBundle**
+- 勾选IncludeInBuild，不显式指定图集Bundle的情况下，BuildPlayer构建内嵌资源和BuildBundle构建Bundle资源，两种构建资源的结果是一样的，如果有对这个图集的引用，就会把这个图集构建到各自的资源中，没有引用就不会构建到包内。突然想到，把图集放到Resources目录下等价于AssetBundle中显式指定将图集打入Bundle。不勾选IncludeInBuild，且不指定图集Bundle，打入Bundle中的就都是散图了。
 - 如果图集中的某一个散图被显示指定打入某一个Bundle，那么这个散图就不会被打进图集中，也不会因为有多个Bundle中的资源引用而造成冗余。
 - 图集的引用计数等于图集中每一个散图各自引用计数的和
 - 场景中应当尽可能地不包含任何资源的引用，而是通过一些脚本动态加载需要的资源，不然这些资源会被打进`assets/bin/Data/data.unity3d`文件中从而拖慢游戏的启动速度。
+- 想要资源不冗余，就必须把场景中所有的资源引用过一遍，将所有引用的资源都显示地打Bundle。
+- BuildPlayer与BuildBundle是两个独立的过程。在BuildPlayer阶段处理的资源都会嵌入到`assets/bin/Data/data.unity3d`，这类资源叫嵌入式资源。
 
 好了，到此为止笔者大概清晰了AssetBundle和SpriteAtlas之间的关系，接下来笔者需要搞明白的事情是：在BuildBundle的时候自动将散图的关系和图集的关系的映射还是需要人为地去管理这个流程。我们需要看一下AssetBundleBrowser中的BuildBundle操作做了什么？
 
@@ -147,29 +154,11 @@ Unity内置的AssetBundle工具是[Addressable库](https://docs.unity3d.com/Pack
 Unity的AssetDataBase接口里面的GetAllDependency接口，在获取一个资源的所有依赖的时候，如果一个依赖是图片，那么它获取的依赖究竟是图集还是这个散图呢？需要验证一下。
 是不是说明在BuildBundle之前需要先构建图集？ 然后再调用GetDependency接口的时候资源的依赖就都指向图集而非散图了。
 
-如果项目中打了图集，预制体A依赖了图集中的图片a，Build之后，预制体A中依赖的是散图a还是图集呢？
+## Sprite和SpriteAtlas和Texture的概念重要区分
 
-Atlas资产的Inspector上有一个IncludeInBuild选项。勾选该选项之后，与这个Atlas对应的散图就建立了依赖关系，因此在构建AssetBundle的时候，查询依赖会查询到Atlas文件，并把Atlas文件和散图打在一个bundle文件中
-
-如果勾选了IncludeInBuild选项，就不需要再把SpriteAtlas打一个Bundle了，这样会造成图集资源的冗余
-
-在合理使用SpriteAtlas的情况下，当我们把AssetBundle包解开以后，会发现里面会包含一张Texture和若干个Sprite这两种资产。Texture是纹理，显示的文件大小较大；而Sprite可以理解为一个描述了精灵在整张纹理上的偏移量位置信息的数据文件，显示的文件大小较小。
-
-因此这个不是冗余，是正常现象。
-
-不过确实存在一个冗余的问题：如果Prefab1和Prefab2引用了同一个Atlas的Sprite，那么这个Atlas至少要主动包含在一个AssetBundle中，否则会被动打入两个包中，造成冗余。
-
-Sprite和SpriteAtlas和Texture的概念重要区分
+在合理使用SpriteAtlas的情况下，当我们把AssetBundle包解开以后，会发现里面会包含一张Texture和若干个Sprite这两种资产。Texture是纹理，显示的文件大小较大；而Sprite可以理解为一个描述了精灵在整张纹理上的偏移量位置信息的数据文件，显示的文件大小较小。因此这个不是冗余，是正常现象。
 
 Sprite和Sprite Atlas是两个类，他们中具有一些图片信息的数据成员，他们不是真的“图片”！而Texture才是真正的图片，因此在MemoryProfiler中你可以看到SpriteAtlas和Sprite类外加真正的图片Texture被加载到内存中
-
-> 如果不勾选IncludeInBuild，而是指定图集打Bundle，效果是一样的嘛？
-> 
-
-
-# 案例
-
-
 
 # 参考资料
 
