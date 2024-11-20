@@ -69,7 +69,8 @@ Spine动画有一个专门针对UI的组件叫做SkeletonGraphic，SkeletonGraph
 SkeletonGraphic相关接口
 ```
 // 停止当前正在播放的动画
-heartBeatFlower.AnimationState.ClearTrack(0);         
+// heartBeatFlower.AnimationState.ClearTrack(0);    
+heartBeatFlower.AnimationState.SetEmptyAnimation(0,0); 
 // 播放新的动画
 heartBeatFlower.AnimationState.SetAnimation(0, "chufa", false);  
 ```
