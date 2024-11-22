@@ -61,6 +61,8 @@ DoTween不仅可以用来做动画，也可以实现音频减弱、图片的渐�
 
 以上的解决方案过于粗糙了，更完善的解决方案需要参考Android的[官方文档](https://developer.android.com/media/optimize/performance/frame-rate?hl=zh-cn)去到Android层实现帧率的设置，一篇[实践的帖子](https://blog.csdn.net/a310989583/article/details/135771394?spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-4-135771394-blog-118787844.235%5Ev43%5Epc_blog_bottom_relevance_base8&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-4-135771394-blog-118787844.235%5Ev43%5Epc_blog_bottom_relevance_base8&utm_relevant_index=9)
 
+- https://source.android.com/docs/core/graphics/multiple-refresh-rate?hl=zh-cn
+
 # Spine动画的使用
 
 Spine动画有一个专门针对UI的组件叫做SkeletonGraphic，SkeletonGraphic组件是基于UICanvas绘制的，因此它的渲染层级可以被Canvas管理
@@ -98,6 +100,12 @@ Animator中必须设置一个从Entry进入的默认状态，这个从Entry进�
 public void Play (string stateName, int layer= -1, float normalizedTime= float.NegativeInfinity);
 public void Play (int stateNameHash, int layer= -1, float normalizedTime= float.NegativeInfinity);
 ```
+
+# DOTweenAnimation组件使用
+
+DOTweenAnimation组件挂载在节点上，调用播放的时候只播第一次，之后不播了，需要搞清楚为什么
+
+
 
 # 协程的坑
 
@@ -200,3 +208,52 @@ public static T LoadXmlConfig<T>(string path) where T : class
 }
 ```
 调用时只需要把`AssetBundleConfig`作为T传入该方法，就可以返回XML的内容
+
+
+# 写一个假的进度条
+
+```
+using System;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace UI
+{
+    public class LoadingUICartoon : LoadingUI
+    {
+        [SerializeField] private Text progressText;
+        
+        private float currentValue = 0f; // 当前值
+        private float targetValue = 100f; // 目标值
+        private float speed = 1f; // 增长速度
+        private bool endLoading = false;
+        
+        protected override void Start()
+        {
+            canvas.sortingLayerID = R.SortingLayers.Default;
+            progressText.text = "0%";
+        }
+
+        private void Update()
+        {
+            if (endLoading)
+            {
+                return;
+            }
+            
+            // 使用指数衰减的方式逐渐接近目标值
+            currentValue += (targetValue - currentValue) * speed * Time.deltaTime;
+
+            // 更新Text组件的显示内容
+            progressText.text = Mathf.FloorToInt(currentValue).ToString() + "%";
+        }
+
+        public void SetProgress(float progress)
+        {
+            endLoading = true;
+            progressText.text = progress.ToString("0") + "%";
+        }
+        
+    }
+}
+```
