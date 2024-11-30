@@ -2,8 +2,8 @@
 title: MacOS与WindowsOpenGL开发环境搭建
 abbrlink: fd5f8e8b
 date: 2024-04-02 19:10:32
-tags:
-categories:
+tags: OpenGL
+categories: 图形学
 cover: https://www.notion.so/images/page-cover/woodcuts_sekka_2.jpg
 description:
 swiper_index:
@@ -91,6 +91,9 @@ cmake .. -G Ninja -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=clang -D CMAKE_CXX
 接着使用`ninja`指令
 
 对于MacOS系统，还使用`make install`命令可以把动态链接库安装到本机，可能需要管理员权限。动态库将会被安装到`usr/local/lib`目录，头文件安装到`usr/local/include`。
+> 2024.11.30更新
+> 笔者使用ninja命令替代了make命令，因此**make install**命令要被替换为**ninja install**，文件会被安装到下面的目录:
+> ![](MacOS与WindowsOpenGL开发环境搭建/image.png)
 
 执行完上面的操作之后，就可以在`build`目录的`src`目录下看到对应的平台的动态链接库文件了。
 **注意** 在Windows下使用`Ninja`构建系统编译出来的动态链接库出了`glfw3.dll`外还会生成一个`glfw3dll.lib`，这两个都是在下文搭建OpenGL开发环境中要使用到的文件。
