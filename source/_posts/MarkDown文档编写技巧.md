@@ -7,8 +7,8 @@ abbrlink: e47b5157
 categories: 技术文档
 cover: https://www.notion.so/images/page-cover/met_henri_tl_1892.jpg
 description: 
-swiper_index: 2
-sticky: 1
+swiper_index: 
+sticky: 
 ---
 # 实现文章内部跳转
 

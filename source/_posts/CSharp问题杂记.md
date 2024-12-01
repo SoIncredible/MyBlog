@@ -3,7 +3,7 @@ title: C#问题杂记
 tags:
   - C#
 categories:
-  - 学习笔记
+  - 问题记录
 cover: https://www.notion.so/images/page-cover/met_jules_tavernier_1878.jpg
 abbrlink: '34114324'
 date: 2023-04-04 15:09:52

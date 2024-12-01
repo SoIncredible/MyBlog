@@ -6,9 +6,9 @@ tags:
   - Hexo博客
 categories: 技术文档
 cover: https://www.notion.so/images/page-cover/met_georges_seurat_1884.jpg
-swiper_index: 1
+swiper_index: 
 description: Butterfly美化记录
-sticky: 1
+sticky: 
 ---
 
 

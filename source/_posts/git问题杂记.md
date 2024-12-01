@@ -3,12 +3,12 @@ title: git问题杂记
 tags: 
   - Git
 abbrlink: a72e4bb6
-categories: 零碎问题记录
+categories: 问题记录
 date: 2022-07-10 11:11:26
 cover: https://www.notion.so/images/page-cover/met_frederic_edwin_church_1871.jpg
 description: 
-sticky: 1
-swiper_index: 3
+sticky: 
+swiper_index: 
 ---
 
 # 问题记录
