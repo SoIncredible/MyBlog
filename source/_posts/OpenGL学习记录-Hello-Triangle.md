@@ -13,6 +13,7 @@ sticky:
 # 重要概念
 
 ⭕️ 遗留问题，三角形的生成一开始不是在屏幕的中心 为什么？
+⭕️ CMake如何把我需要的脚本关联起来的？
 - VAO: Vertex Array Object, 顶点数组对象
 - VBO: Vertex Buffer Object, 顶点缓冲对象
 - EBO: Element Buffer Object, 元素缓冲对象
