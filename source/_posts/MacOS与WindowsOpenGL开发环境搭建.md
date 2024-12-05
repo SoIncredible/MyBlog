@@ -24,7 +24,7 @@ OpenGL十分类似面向对象编程思想中的接口和虚方法，它只是�
 GLFW是一个专门针对OpenGL的C语言库，它提供了一些渲染物体所需的最低限度的接口。它允许用户创建OpenGL上下文、定义窗口参数以及处理用户输入。
 
 因为OpenGL只是一个标准/规范，具体的实现是由驱动开发商针对特定显卡实现的。由于OpenGL驱动版本众多，它大多数函数的位置都无法在编译时确定下来，需要在运行时查询。所以任务就落在了开发者身上，开发者需要在运行时获取函数地址并将其保存在一个函数指针中供以后使用。
-GLAD是一个开源的库，它能解决我们上面提到的那个繁琐的问题。GLAD的配置与大多数的开源库有些许的不同，GLAD使用了一个在线服务。在这里我们能够告诉GLAD需要定义的OpenGL版本，并且根据这个版本加载所有相关的OpenGL函数。
+GLAD是一个开源的库，它能解决我们上面提到的那个繁琐的问题。GLAD的配置与大多数的开源库有些许的不同，GLAD使用了一个在线服务。在这里我们能够告诉GLAD需要定义的OpenGL版本，并且根据这个版本加载所有相关的OpenGL函数。GLAD的作用是管理OpenGL的函数指针，所以在调用任何OpenGL函数之前，我们都需要初始化GLAD。
 
 ## C++工具链
 
@@ -83,7 +83,7 @@ cmake .. -G Ninja -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++
 
 接着使用`ninja`指令，如果编译成功的话，我们就能在build目录下的src目录下找到对应平台的静态链接库文件了。
 
-使用**动态链接方式**要生成动态链接库，Windows下对应的文件是.dll，Mac下对应的文件是.dylib，动态链接库的编译命令和静态链接库是一样的，但是需要指定一下`DBUILD_SHARED_LIBS`参数，注意指定一下要构建的系统，另外还要注意Windows下指定使用的编译器
+使用**动态链接方式**要生成动态链接库，Windows下对应的文件是.dll，Mac下对应的文件是.dylib，动态链接库的编译命令和静态链接库是一样的，但是需要指定一下`BUILD_SHARED_LIBS`参数，注意指定一下要构建的系统，另外还要注意Windows下指定使用的编译器
 
 ```
 cmake .. -G Ninja -D BUILD_SHARED_LIBS=ON -D CMAKE_C_COMPILER=clang -D CMAKE_CXX_COMPILER=clang++

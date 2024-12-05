@@ -1,5 +1,5 @@
 ---
-title: OpenGL学习记录 Hello Triangle
+title: OpenGL学习记录——入门篇
 abbrlink: a627ba0f
 date: 2024-04-05 15:32:57
 tags: OpenGL
@@ -9,6 +9,40 @@ description:
 swiper_index:
 sticky:
 ---
+
+# 关于C++的疑问
+
+## 头文件和CPP文件的区别
+
+笔者只在大学初期接触过一段时间的C++，记得当时老师说头文件中只包含声明不包含定义，在学习OPENGL的过程中发现入门篇教程里整个shader类的声明和定义全部放在了头文件中，于是产生了疑惑。
+
+## include后""和<>的区别
+
+比如在入门篇的[变换](https://learnopengl-cn.github.io/01%20Getting%20started/07%20Transformations/#_20)一节中，我们使用到了一个名为GLM的库，
+
+## C++代码的执行过程
+
+预编译、编译、汇编、链接，每一步都在干什么呢？
+cmake install或者ninja install又是在干什么呢？
+
+# Hello Window
+
+入门篇的[你好,窗口](https://learnopengl-cn.github.io/01%20Getting%20started/03%20Hello%20Window/)章节在笔者配置OpenGL开发环境那一篇博客中已经部分介绍了，不过两篇文章的侧重点不同，本篇文章的侧重点是对每一行教程中的代码和重要概念进行解读。
+
+## GLFW和GLAD
+
+想要使用OpenGL进行渲染，我们需要两个库：GLFW与GLAD。GLFW是一个专门针对OpenGL的C语言库，
+
+
+## 方法介绍
+
+```
+glfwInit(); // 初始化glfw
+```
+
+```
+glfwWindowHint(); //方法参数介绍
+```
 
 # 重要概念
 
