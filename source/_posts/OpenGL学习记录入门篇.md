@@ -27,7 +27,7 @@ cmake install或者ninja install又是在干什么呢？
 
 # Hello Window
 
-入门篇的[你好,窗口](https://learnopengl-cn.github.io/01%20Getting%20started/03%20Hello%20Window/)章节在笔者配置OpenGL开发环境那一篇博客中已经部分介绍了，不过两篇文章的侧重点不同，本篇文章的侧重点是对每一行教程中的代码和重要概念进行解读。
+入门篇的[你好,窗口](https://learnopengl-cn.github.io/01%20Getting%20started/03%20Hello%20Window/)章节在笔者配置OpenGL开发环境那一篇博客中已经部分介绍了，不过两篇文章的侧重点不同，本篇文章的侧重点是对每一行教程中的代码和重要概念进行解读。另外，如果我们对某些函数的描述不清楚，我们可以直接去看GLFW的源码，或者查看文档
 
 ## GLFW和GLAD
 
