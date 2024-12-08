@@ -10,18 +10,21 @@ swiper_index:
 sticky:
 ---
 
-# 关于C++的疑问
+笔者在网上能找到的C++与OpenGL的教程几乎都是基于Windows+VisualStudio展开的，也因为其直观和简易的环境配置流程，让初学者更专注于学习知识本身。这对作为Mac用户的笔者就很不友好了，需要额外了解CMake的工作原理、要选什么样的编译器等等诸如此类的，都是笔者要去搞清楚的点。
+
+# C++基础
 
 ## 头文件和CPP文件的区别
 
-笔者只在大学初期接触过一段时间的C++，记得当时老师说头文件中只包含声明不包含定义，在学习OPENGL的过程中发现入门篇教程里整个shader类的声明和定义全部放在了头文件中，于是产生了疑惑。
+在(游戏引擎架构)[https://book.douban.com/subject/25815142/]这本书中，介绍了头文件和CPP文件的区别：头文件通常用于在多个翻译单元之间共享信息，例如类型的声明以及函数原型。C++编译器并不了解头文件，实际情况是，C++预处理器预先把每个#include语句替换成相应的头文件内容，然后再把翻译单元送交源一起。这是头文件和源文件之间一个细微但是非常重要的区别。从程序员的角度看，头文件是独立的文件，但多亏了有预处理器把头文件展开，编译器接收到的才都是翻译单元。翻译单元的定义是：因为编译器每次只编译一个C++源文件至机器码，所以在技术上，源文件被称为翻译单元。那么像Mac上用的clang就是编译器的前端，负责预编译和编译的环节，
 
 ## include后""和<>的区别
 
-比如在入门篇的[变换](https://learnopengl-cn.github.io/01%20Getting%20started/07%20Transformations/#_20)一节中，我们使用到了一个名为GLM的库，
+比如在OpenGL入门篇的[变换](https://learnopengl-cn.github.io/01%20Getting%20started/07%20Transformations/#_20)一节中，我们使用到了一个名为GLM的库，
 
 ## C++代码的执行过程
 
+clang是编译器前端，通过clang，
 预编译、编译、汇编、链接，每一步都在干什么呢？
 cmake install或者ninja install又是在干什么呢？
 
@@ -41,8 +44,36 @@ glfwInit(); // 初始化glfw
 ```
 
 ```
-glfwWindowHint(); //方法参数介绍
+void glfwWindowHint	(int hint,
+                    int value 
+                    )		
+
 ```
+This function sets hints for the next call to glfwCreateWindow. The hints, once set, retain their values until changed by a call to this function or glfwDefaultWindowHints, or until the library is terminated.
+
+Window hints need to be set before the creation of the window and context you wish to have the specified attributes. They function as additional arguments to glfwCreateWindow.
+
+```
+
+GLFWwindow * glfwCreateWindow(int width,
+                            int height,
+                            const char * title,
+                            GLFWmonitor * monitor,
+                            GLFWwindow * share 
+                            )	
+```
+This function creates a window and its associated OpenGL or OpenGL ES context. Most of the options controlling how the window and its context should be created are specified with window hints.
+
+```
+void glfwMakeContextCurrent	(GLFWwindow * window)
+```
+
+This function makes the OpenGL or OpenGL ES context of the specified window current on the calling thread. It can also detach the current context from the calling thread without making a new one current by passing in NULL.
+
+```
+glViewport(1, 2, 3, 4);
+```
+
 
 # 重要概念
 
