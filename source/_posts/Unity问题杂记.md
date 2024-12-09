@@ -54,15 +54,6 @@ GetComponentInParent方法中要一个参数，这个参数的作用是是否包
 
 DoTween不仅可以用来做动画，也可以实现音频减弱、图片的渐显操作。
 
-# 解除帧率限制(Android)
-
-对一些安卓高刷屏来说，进游戏时屏幕刷新率会被设置成60，这应该和Android系统的策略有关，因此通过`Screen.currentResolution.refreshRateRatio`接口拿到的屏幕刷新率是不准确的，
-如果要开启高刷，则需要关闭 ProjectSettings -> Player -> Resolution and Presentation 下的 [Optimized Frame Pacing](https://docs.unity3d.com/ScriptReference/PlayerSettings.Android-optimizedFramePacing.html)，并且在脚本中设置 `Application.targetFrameRate = 120;`
-
-以上的解决方案过于粗糙了，更完善的解决方案需要参考Android的[官方文档](https://developer.android.com/media/optimize/performance/frame-rate?hl=zh-cn)去到Android层实现帧率的设置，一篇[实践的帖子](https://blog.csdn.net/a310989583/article/details/135771394?spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-4-135771394-blog-118787844.235%5Ev43%5Epc_blog_bottom_relevance_base8&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-4-135771394-blog-118787844.235%5Ev43%5Epc_blog_bottom_relevance_base8&utm_relevant_index=9)
-
-- https://source.android.com/docs/core/graphics/multiple-refresh-rate?hl=zh-cn
-
 # Spine动画的使用
 
 Spine动画有一个专门针对UI的组件叫做SkeletonGraphic，SkeletonGraphic组件是基于UICanvas绘制的，因此它的渲染层级可以被Canvas管理

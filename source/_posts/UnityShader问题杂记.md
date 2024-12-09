@@ -154,3 +154,10 @@ OnRenderImage接口的官方描述如下：Unity在相机完成渲染后调用�
 这些命令会被Unity渲染引擎收集起来，然后在适当的时候一起发送给GPU。GPU收到这些命令后，会按照指令执行渲染操作。这个过程确实不是立即发生的，而是在CPU端的所有渲染相关命令都提交给GPU之后，GPU才开始执行这些命令。这意味着，`Graphics.Blit`调用发生时，并不会立即执行Shader效果，而是稍后在GPU的渲染队列中执行。
 
 另外，当前实现屏幕后处理的效果使用的都是CommandBuffer了，比如Unity官方的屏幕后处理的库。OnRenderImage已经很少使用了。
+
+
+# Shader变体参考资料
+
+- https://www.bilibili.com/video/BV1P44y1V7bu/?spm_id_from=333.999.0.0
+- https://www.bilibili.com/video/BV1PG411G7DR/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102
+- https://blog.csdn.net/qq_36383623/article/details/103327389
