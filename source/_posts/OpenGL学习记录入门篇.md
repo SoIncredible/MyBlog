@@ -37,17 +37,39 @@ cmake install或者ninja install又是在干什么呢？
 想要使用OpenGL进行渲染，我们需要两个库：GLFW与GLAD。GLFW是一个专门针对OpenGL的C语言库，
 
 
-## 方法介绍
+## 接口使用
+
+### glfwInit()
 
 ```
 glfwInit(); // 初始化glfw
 ```
 
+### glViewport (GLint x, GLint y, GLsizei width, GLsizei height)
+
+这是一个glad头文件中生命的接口.
+
+
+
+### GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share)
+
+```
+glfwCreateWindow();
+```
+前两个参数代表要创建的窗口的宽和高,第三个参数代表窗口的名称,第四个和第五个参数我们先忽略.
+如果我们不使用glViewport接口,也不给glfwSetFramebufferSizeCallback传入回调的话,运行我们的程序,当我们拖拽窗口的时候,我们生成的图形就会随着窗口的比例缩放,有时这并不是我们想要的.因此,我们要使用glViewPort接口的话
+glViewport的前两个参数代表的是视口左下角距离相对于窗口左下角的坐标.而第三个和第四个参数代表的是视口的大小,那么如果我不想让我渲染的图形收到窗口非等比例缩放的影响的话,我需要添加回调
+
+好了,现在看起来我们的窗口在拖拽过程中只要不松手,我们渲染的内容就不会更新.
+
+glCreateWindow与glViewport是两个决定窗口大小相关的方法
+
+### 其他
+
 ```
 void glfwWindowHint	(int hint,
                     int value 
                     )		
-
 ```
 This function sets hints for the next call to glfwCreateWindow. The hints, once set, retain their values until changed by a call to this function or glfwDefaultWindowHints, or until the library is terminated.
 
@@ -70,33 +92,11 @@ void glfwMakeContextCurrent	(GLFWwindow * window)
 
 This function makes the OpenGL or OpenGL ES context of the specified window current on the calling thread. It can also detach the current context from the calling thread without making a new one current by passing in NULL.
 
-```
-glViewport(1, 2, 3, 4);
-```
-
-```
-glfwCreateWindow();
-```
-前两个参数代表要创建的窗口的宽和高,第三个参数代表窗口的名称,第四个和第五个参数我们先忽略.
-如果我们不使用glViewport接口,也不给glfwSetFramebufferSizeCallback传入回调的话,运行我们的程序,当我们拖拽窗口的时候,我们生成的图形就会随着窗口的比例缩放,有时这并不是我们想要的.因此,我们要使用glViewPort接口的话
-glViewport的前两个参数代表的是视口左下角距离相对于窗口左下角的坐标.而第三个和第四个参数代表的是视口的大小,那么如果我不想让我渲染的图形收到窗口非等比例缩放的影响的话,我需要添加回调
-
-好了,现在看起来我们的窗口在拖拽过程中只要不松手,我们渲染的内容就不会更新.
-
-glCreateWindow与glViewport是两个决定窗口大小相关的方法
-```
-
-```
-
 我们使用glfwCreateWindow()
 
 # 重要概念
 
-⭕️ 遗留问题，三角形的生成一开始不是在屏幕的中心 为什么？
-⭕️ CMake如何把我需要的脚本关联起来的？
 - VAO: Vertex Array Object, 顶点数组对象
 - VBO: Vertex Buffer Object, 顶点缓冲对象
 - EBO: Element Buffer Object, 元素缓冲对象
 - IBO: Index Buffer Object, 索引缓冲对象
-
-# 实践
