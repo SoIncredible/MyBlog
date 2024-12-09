@@ -199,8 +199,8 @@ GLAD和GLFW都是第三方库，在VSCode直接使用是没有提示的。使用
 在`includePath`中将项目的include目录添加进去，保存重启VSCode，编写OpenGL相关代码时就会有提示了。
 
 > 2024.12.9更新 
-> 虽然有智能提示了，但是在编译项目的时候，clang可以找到该文件吗？
-> 应该是不可以的，需要在CMake中指定要包含的目录
+> 请注意,虽然有智能提示了，但是不代表在编译项目的时候，编译器可以找到对应的头文件
+> 我们需要在CMakeList文件中使用`include_directories(${INCLUDE_DIR})`命令添加相关的文件路径
 
 ### include头文件第一行报红问题
 
