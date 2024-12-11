@@ -4,7 +4,7 @@ date: 2022-06-27 16:58:54
 tags: 
   - Hexo博客
 abbrlink: e47b5157
-categories: 软筋呢个
+categories: 软技能
 cover: https://www.notion.so/images/page-cover/met_henri_tl_1892.jpg
 description: 
 swiper_index: 
