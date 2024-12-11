@@ -6,7 +6,7 @@ date: 2024-08-15 08:29:34
 tags:
  - Unity
  - Shader
-categories: UnityShader入门精要笔记
+categories: Shader入门精要
 description:
 swiper_index:
 sticky:

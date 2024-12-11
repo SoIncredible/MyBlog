@@ -5,7 +5,7 @@ date: 2024-08-27 12:32:21
 tags:
  - Unity
  - Shader
-categories: UnityShader入门精要笔记
+categories: Shader入门精要
 cover: https://www.notion.so/images/page-cover/rijksmuseum_mignons_1660.jpg
 description:
 swiper_index:

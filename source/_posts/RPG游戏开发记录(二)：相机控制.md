@@ -1,7 +1,7 @@
 ---
 title: RPG游戏开发记录(二)：相机控制
-tags: RPG
-categories: Unity
+tags: 开发日志
+categories: 硬技能
 cover: https://www.notion.so/images/page-cover/met_vincent_van_gogh_ginoux.jpg
 abbrlink: ea538f2a
 date: 2024-09-15 00:38:54

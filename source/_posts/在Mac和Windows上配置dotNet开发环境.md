@@ -3,7 +3,7 @@ title: 在Mac和Windows上配置dotNet开发环境
 tags:
   - C#
   - Rider
-categories: 技术文档
+categories: 硬技能
 abbrlink: 724ccb4
 date: 2023-03-10 16:06:25
 cover: https://www.notion.so/images/page-cover/met_paul_signac.jpg

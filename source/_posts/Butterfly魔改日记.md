@@ -2,18 +2,13 @@
 title: Butterfly魔改日记
 abbrlink: 370bdedc
 date: 2022-12-14 20:15:23
-tags: 
-  - Hexo博客
-categories: 技术文档
+tags: 技术文档
+categories: 硬技能
 cover: https://www.notion.so/images/page-cover/met_georges_seurat_1884.jpg
 swiper_index: 
 description: Butterfly美化记录
 sticky: 
 ---
-
-
-
-
 
 <img src="https://ghchart.rshah.org/SoIncredible" alt="SoIncredible's Github chart" />
 

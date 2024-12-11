@@ -1,9 +1,11 @@
 ---
 title: MacOS与WindowsOpenGL开发环境搭建
 abbrlink: fd5f8e8b
-date: 2024-04-02 19:10:32
-tags: OpenGL
-categories: 图形学
+date: 2024-12-02 19:10:32
+tags: 
+    - OpenGL
+    - C++
+categories: 硬技能
 cover: https://www.notion.so/images/page-cover/woodcuts_sekka_2.jpg
 description:
 swiper_index:

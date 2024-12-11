@@ -3,7 +3,7 @@ title: 在Mac和Windows上配置Java开发环境
 tags:
   - Java
   - IDEA
-categories: 技术文档
+categories: 硬技能
 abbrlink: f57878ea
 date: 2023-03-08 18:00:38
 cover: https://www.notion.so/images/page-cover/met_john_singer_sargent_morocco.jpg

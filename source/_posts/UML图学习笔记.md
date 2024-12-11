@@ -1,8 +1,8 @@
 ---
 title: UML图学习笔记
 tags:
-  - 设计模式
-categories: 学习笔记
+  - 技术文档
+categories: 软技能
 abbrlink: 6ea8fdb7
 date: 2023-04-18 10:33:10
 cover: https://www.notion.so/images/page-cover/woodcuts_14.jpg

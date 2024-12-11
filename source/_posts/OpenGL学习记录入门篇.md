@@ -3,7 +3,7 @@ title: OpenGL学习记录——入门篇
 abbrlink: a627ba0f
 date: 2024-12-10 1:00:57
 tags: OpenGL
-categories: 图形学
+categories: 硬技能
 cover: https://www.notion.so/images/page-cover/woodcuts_sekka_1.jpg
 description:
 swiper_index:

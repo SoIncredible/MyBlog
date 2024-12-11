@@ -5,7 +5,7 @@ tags:
   - C#
   - VSCode
 abbrlink: e57f243c
-categories: 技术文档
+categories: 环境配置
 date: 2022-07-06 00:07:34
 cover: https://www.notion.so/images/page-cover/rijksmuseum_jansz_1636.jpg
 description: 

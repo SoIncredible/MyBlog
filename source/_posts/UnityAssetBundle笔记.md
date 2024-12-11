@@ -4,7 +4,7 @@ abbrlink: 96c99d7a
 date: 2024-11-16 16:41:59
 tags:
     - AssetBundle
-categories:
+categories: 硬技能
 cover: https://www.notion.so/images/page-cover/woodcuts_13.jpg
 description:
 swiper_index:

@@ -5,7 +5,7 @@ date: 2024-07-07 10:24:49
 tags:
  - Unity
  - Shader
-categories: UnityShader入门精要笔记
+categories: Shader入门精要
 cover: https://www.notion.so/images/page-cover/woodcuts_3.jpg
 description:
 swiper_index:
@@ -75,12 +75,12 @@ Shader "Unity Shader Book/Chapter 8/Alpha Test"
 两个透明物体的渲染顺序也很重要
 
 A和B两个物体，如果谁先渲染，最终显示在屏幕上看起来就是谁被挡在了后面，为什么呢？混合操作的实现原理是什么？
-| 语义   | 描述 |
-| --------- | ----------- |
-| BlendOff   | 关闭混合       |
-| Blend SrcFactor DstFactor | 开启混合，并设置混合因子。源颜色（该片元产生的颜色）会乘以SrcFactor，而目标颜色（已经存在于颜色缓冲中的颜色）会乘以DstFactor，然后把两者相加后再存入颜色缓冲中       |
-|Blend SrcFactor DstFactor SrcFactorA DstFactorA |和上面几乎一样 只是使用了不同的混合因子来混合透明通道
-|BlendOp BlendOperation|并非是把源颜色和目标颜色简单相加后混合，而是使用BlendOperation对他们进行其他操作|
+| 语义                                            | 描述                                                                                                                                                           |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BlendOff                                        | 关闭混合                                                                                                                                                       |
+| Blend SrcFactor DstFactor                       | 开启混合，并设置混合因子。源颜色（该片元产生的颜色）会乘以SrcFactor，而目标颜色（已经存在于颜色缓冲中的颜色）会乘以DstFactor，然后把两者相加后再存入颜色缓冲中 |
+| Blend SrcFactor DstFactor SrcFactorA DstFactorA | 和上面几乎一样 只是使用了不同的混合因子来混合透明通道                                                                                                          |
+| BlendOp BlendOperation                          | 并非是把源颜色和目标颜色简单相加后混合，而是使用BlendOperation对他们进行其他操作                                                                               |
 
 在本节中，我们会使用上表中的第二种语义，并且我们会把源颜色的混合因子SrcFactor设置成SrcAlpha，而目标颜色的混合因子DstFactor设置为OneMinusSrcAlpha。这意味着，经过混合后的新颜色是：
 $$DstColor_{new} = SrcAlpha \times SrcColor + (1 - SrcAlpha) \times DstColor_{old}$$
@@ -308,41 +308,41 @@ ColorMask RGB | A | 0 | 其他任何R、G、B、A的组合
 
 现在，我们已知两个操作数：源颜色S和目标颜色D，想要得输出颜色O就必须使用一个等式来计算。我们把这个等式成为**混合等式（blend equation）**当进行混合时，我们需要两个混合等式：一个用于混合RGB通道，一个用于混合A通道。当设置混合状态时，我们实际上设置的就是混合等式中的**操作**和**因子**。在默认情况下，混合等式使用的操作都是加操作（我们也可以使用其他操作），我们只需要再设置一下混合因子即可。由于需要两个等式（分别用于混合RGB通道和A通道），每个等式都有两个因子（一个用于和源颜色相乘，另一个用于和目标颜色相乘），因此一共需要四个因子。
 
-| 语义 | 描述|
-| --- | --- |
+| 语义                                            | 描述                                                                                                                                                           |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Blend SrcFactor DstFactor                       | 开启混合，并设置混合因子。源颜色（该片元产生的颜色）会乘以SrcFactor，而目标颜色（已经存在于颜色缓冲中的颜色）会乘以DstFactor，然后把两者相加后再存入颜色缓冲中 |
-| Blend SrcFactor DstFactor SrcFactorA DstFactorA | 和上面几乎一样 只是使用了不同的混合因子来混合透明通道 |
+| Blend SrcFactor DstFactor SrcFactorA DstFactorA | 和上面几乎一样 只是使用了不同的混合因子来混合透明通道                                                                                                          |
 
 可以发现，上面这个表中的第一个语义只提供了两个因子，这意味着将使用同样的混合因子来混合RGB通道和A通道，即此时SrcFactorA将等于SrcFactor，DstFactorA将等于DstFactor。下面就是使用这些因子进行加法混合时的公式：
 $$ O_{rgb} = SrcFactor \times S_{rgb} + DstFactor \times D_{rgb} $$
 $$ O_{a} = SrcFactor \times S_{a} + DstFactor \times D_{a} $$ 
 下表给出了ShaderLab支持的混合因子
-|参数 | 描述|
-|--- |--- |
-|One|因子为1|
-|Zero|因子为0|
-|SrcColor|因子为源颜色值，当用于混合RGB的混合等式时，使用SrcColor的RGB分量作为混合因子；当用于混合A的混合等式时，使用SrcColor的A分量作为混合因子|
-|SrcAlpha|混合因子为源颜色的透明度值（A通道）|
-|DstColor|因子为目标颜色值，当用于混合RGB通道等式时，使用DstColor的RGB分量作为混合因子；当用于混合A通道的|
-|DstAlpha|因子为目标颜色的透明度值（A通道）|
-|DsrColor|因子为目标颜色值，当用于混合RGB通道的混合等式时，使用结果的RGB分量作为混合因子；当用于混合A通道的混合等式时，使用DstColor的A分量作为混合因子|
-|OneMinusSrcColor|因子为(1-源颜色)，当用于混合RGB的混合等式时，使用结果的RGB分量作为混合因子；当用于混合A的混合等式时，使用结果的A分量作为混合因子|
-|OneMinusSrcAlpha|因子为(1-源颜色的透明度值)|
-|OneMinusDstColor|因子为(1-目标颜色的颜色值)。当用于混合RGB的混合等式时，使用结果的RGB分量作为混合因子；当用于混合A的混合等式时，使用结果的A分量作为混合因子|
-|OneMinusDstAlpha|因子为(1-目标颜色的透明度值)|
+| 参数             | 描述                                                                                                                                         |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| One              | 因子为1                                                                                                                                      |
+| Zero             | 因子为0                                                                                                                                      |
+| SrcColor         | 因子为源颜色值，当用于混合RGB的混合等式时，使用SrcColor的RGB分量作为混合因子；当用于混合A的混合等式时，使用SrcColor的A分量作为混合因子       |
+| SrcAlpha         | 混合因子为源颜色的透明度值（A通道）                                                                                                          |
+| DstColor         | 因子为目标颜色值，当用于混合RGB通道等式时，使用DstColor的RGB分量作为混合因子；当用于混合A通道的                                              |
+| DstAlpha         | 因子为目标颜色的透明度值（A通道）                                                                                                            |
+| DsrColor         | 因子为目标颜色值，当用于混合RGB通道的混合等式时，使用结果的RGB分量作为混合因子；当用于混合A通道的混合等式时，使用DstColor的A分量作为混合因子 |
+| OneMinusSrcColor | 因子为(1-源颜色)，当用于混合RGB的混合等式时，使用结果的RGB分量作为混合因子；当用于混合A的混合等式时，使用结果的A分量作为混合因子             |
+| OneMinusSrcAlpha | 因子为(1-源颜色的透明度值)                                                                                                                   |
+| OneMinusDstColor | 因子为(1-目标颜色的颜色值)。当用于混合RGB的混合等式时，使用结果的RGB分量作为混合因子；当用于混合A的混合等式时，使用结果的A分量作为混合因子   |
+| OneMinusDstAlpha | 因子为(1-目标颜色的透明度值)                                                                                                                 |
 
 
 ## 混合操作
 
 在上面涉及的混合等式中，当把源颜色和目标颜色与它们对应的混合因子相乘之后，我们都是把它们的结果相加起来作为输出颜色的。那么可不可以选择不使用加法，而使用减法呢？答案是肯定的，我们可以使用ShaderLab的**BlendOp BlendOperation**命令，即混合操作命令。下表给出了ShaderLab中支持的混合操作
-|操作|描述|
-|---|---|
-|Add|将混合后的源颜色和目标颜色相加。默认的混合操作。使用的混合等式是：<br>$O_{rgb} = SrcFactor \times S_{rgb} + DstFactor \times D_{rgb}$ <br>$O_{a} = SrcFactorA \times DstFactorA$|
-|Sub|用混合后的源颜色减去混合后的目标颜色。使用的混合等式是：<br>$O_{rgb} = SrcFactor \times S_{rgb} - DstFactor \times D_{rgb}$ <br> $O_{a} = SrcFactorA \times S_{a} - DstFactorA \times D_{a}$|
-|RevSub|使用混合后的目标颜色减去混合后的源颜色。使用的混合等式是: <br> $O_{rgb} = DstFactor \times D_{rgb} - SrcFactor \times S_{rgb}$ <br>$O_{a} = DstFactorA \times D_{a} - SrcFactor \times S_{a}$ |
-|Min|使用源颜色和目标颜色中较小的值，是逐分量比较的，使用的混合等式是：<br> $O_{rgba} = (min(S_{r}, D{r}),min(S_{g}, D{g}),min(S_{b}, D{b}),min(S_{a}, D{a}))$|
-|Max|使用源颜色和目标颜色中较大的值，是逐分量比较的，使用的混合等式是: <br> $O_{rgba} = (max(S_{r}, D{r}),max(S_{g}, D{g}),max(S_{b}, D{b}),max(S_{a}, D{a}))$|
-|其他逻辑操作|只在DirectX 11.1中支持|
+| 操作         | 描述                                                                                                                                                                                          |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Add          | 将混合后的源颜色和目标颜色相加。默认的混合操作。使用的混合等式是：<br>$O_{rgb} = SrcFactor \times S_{rgb} + DstFactor \times D_{rgb}$ <br>$O_{a} = SrcFactorA \times DstFactorA$              |
+| Sub          | 用混合后的源颜色减去混合后的目标颜色。使用的混合等式是：<br>$O_{rgb} = SrcFactor \times S_{rgb} - DstFactor \times D_{rgb}$ <br> $O_{a} = SrcFactorA \times S_{a} - DstFactorA \times D_{a}$  |
+| RevSub       | 使用混合后的目标颜色减去混合后的源颜色。使用的混合等式是: <br> $O_{rgb} = DstFactor \times D_{rgb} - SrcFactor \times S_{rgb}$ <br>$O_{a} = DstFactorA \times D_{a} - SrcFactor \times S_{a}$ |
+| Min          | 使用源颜色和目标颜色中较小的值，是逐分量比较的，使用的混合等式是：<br> $O_{rgba} = (min(S_{r}, D{r}),min(S_{g}, D{g}),min(S_{b}, D{b}),min(S_{a}, D{a}))$                                     |
+| Max          | 使用源颜色和目标颜色中较大的值，是逐分量比较的，使用的混合等式是: <br> $O_{rgba} = (max(S_{r}, D{r}),max(S_{g}, D{g}),max(S_{b}, D{b}),max(S_{a}, D{a}))$                                     |
+| 其他逻辑操作 | 只在DirectX 11.1中支持                                                                                                                                                                        |
 
 混合操作命令通常是与混合因子命令一起工作的。但是需要注意的是，当使用**Min**和**Max**混合操作的时候，混合因子实际上是不起作用的，它们仅会判断原始的源颜色和目标颜色之间的比较结果。
 

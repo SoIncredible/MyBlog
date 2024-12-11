@@ -2,8 +2,8 @@
 title: Mac终端优化记录
 abbrlink: eeec06d0
 date: 2024-09-11 18:08:37
-tags:
-categories:
+tags: 环境配置
+categories: 硬技能
 cover: https://www.notion.so/images/page-cover/woodcuts_sekka_3.jpg
 description:
 swiper_index:

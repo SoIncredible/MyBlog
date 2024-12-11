@@ -27,3 +27,8 @@ sticky:
   
 > 2024.12.10更新
 > 尝试了上面的方法,最终失败了
+
+ 
+# 问题
+
+有些Android手机设置帧率120HZ但是实际上达不到的问题https://answer.uwa4d.com/question/64e7779266b5c657c78be192

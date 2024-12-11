@@ -2,8 +2,11 @@
 title: CPP与CS编译生成DLL
 abbrlink: 4ea0c9c3
 date: 2023-09-28 18:04:28
-tags:
-categories:
+tags: 
+  - 技术文档
+  - C++
+  - C#
+categories: 硬技能
 cover: https://www.notion.so/images/page-cover/met_henry_lerolle_1885.jpg
 description:
 swiper_index:

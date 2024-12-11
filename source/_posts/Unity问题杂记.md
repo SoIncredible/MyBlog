@@ -1,8 +1,8 @@
 ---
 title: Unity问题杂记
 tags: 
-  - Unity
-categories: 问题记录
+  - 问题杂记
+categories: 硬技能
 abbrlink: 127bc3c9
 date: 2022-12-19 18:13:50
 cover: https://www.notion.so/images/page-cover/met_joseph_hidley_1870.jpg

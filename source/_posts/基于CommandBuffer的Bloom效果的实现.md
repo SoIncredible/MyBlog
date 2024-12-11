@@ -2,8 +2,10 @@
 title: 基于CommandBuffer的Bloom效果的实现
 abbrlink: 257b5b2c
 date: 2024-05-13 07:04:40
-tags:
-categories:
+tags: 
+    - Shader
+    - 
+categories: 硬技能
 cover: https://www.notion.so/images/page-cover/met_edgar_degas_1874.jpg
 description:
 swiper_index:

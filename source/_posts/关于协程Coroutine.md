@@ -1,8 +1,7 @@
 ---
 title: 关于协程Coroutine
-tags:
-  - C#
-categories: 学习笔记
+tags: 技术文档
+categories: 软技能
 abbrlink: 83d7c4e7
 date: 2023-04-17 15:04:49
 cover: https://www.notion.so/images/page-cover/met_henri_rousseau_1907.jpg
