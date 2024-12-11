@@ -1,5 +1,5 @@
 ---
-title: 学习技能
+title: Keep On Keeping On
 tags:
 categories:
 cover: https://www.notion.so/images/page-cover/met_william_turner_1835.jpg

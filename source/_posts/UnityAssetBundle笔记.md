@@ -3,6 +3,7 @@ title: UnityAssetBundle笔记
 abbrlink: 96c99d7a
 date: 2024-11-16 16:41:59
 tags:
+    - AssetBundle
 categories:
 cover: https://www.notion.so/images/page-cover/woodcuts_13.jpg
 description:
@@ -18,7 +19,7 @@ sticky:
 ## AssetBundle、AssetBundle-Browser与Addressable
 
 AssetBundle是Unity推出的一种内置的资源压缩格式，能够允许开发者在运行时动态加载需要的资源。用不用取决于开发者自己。当你在Unity中创建、导入任何非代码资源或者文件夹的时候，在Inspector窗口的下面都会有一个AssetLabel：
-![](Unity-AssetBundle笔记/image-1.png)
+![](UnityAssetBundle笔记/image-1.png)
 
 Addressable是基于AssetBundle的一套完整的Unity资源管理框架，也就是说，如果我们使用Addressable进行开发，项目中的资源如何进行打包、加载Addressable都帮我们规划好了，我们只需要按照它给定的规范和接口使用资源就可以了。但是如果我们只是使用AssetBundle，那么我们还需要开发一套自己的资源管理框架。
 
@@ -36,7 +37,7 @@ Addressable是基于AssetBundle的一套完整的Unity资源管理框架，也�
 
 使用[AssetRipper](https://github.com/AssetRipper/AssetRipper?tab=readme-ov-file)可以查看AssetBundle中的文件
 
-![](Unity-AssetBundle笔记/image.png)
+![](UnityAssetBundle笔记/image.png)
 
 Unity内置的AssetBundle工具是[Addressable库](https://docs.unity3d.com/Packages/com.unity.addressables@2.3/manual/index.html)
 
@@ -60,7 +61,7 @@ Unity内置的AssetBundle工具是[Addressable库](https://docs.unity3d.com/Pack
 > 本小节建议配合[UnityAndroid工程包体优化](https://soincredible.github.io/posts/279644bd/)这篇博客阅读
 
 新建一个Unity工程，Assets目录下的文件结构如下：
-![](Unity-AssetBundle笔记/image-3.png)
+![](UnityAssetBundle笔记/image-3.png)
 其中名为TTT的图集中包含图片A、图片B、图片C资源，Image预制体中只有一个Image组件，Image组件上引用了图片A。笔者将会测试下面几种方案会如何将这些资源打入包内：
 
 ## 不使用AssetBundle 不使用SpriteAtlas
@@ -68,18 +69,18 @@ Unity内置的AssetBundle工具是[Addressable库](https://docs.unity3d.com/Pack
 在这种策略下，除了那些已经放在Resources目录下的资源，还有那些被Resources目录中资源引用的、放在Resources外面的资源会被打入apk。也就是说`Art/Image/A` + 所有Resources目录下的文件被打包进了apk。
 
 打出Android Apk之后解压，在目录下找到`assets/bin/Data/data.unity3d`，使用AssetRipper可以看到如下结构：
-![](Unity-AssetBundle笔记/image-2.png)
+![](UnityAssetBundle笔记/image-2.png)
 
 - `globalgamemanagers`、`unity_builtin_extra`、`globalgamemanagers.asset`是Unity自动创建的，本测试并不关心其内容，也与我们自己的资源没有关系。
 
 - `resources.asset`文件里面包含了Resources目录下的所有资源。即图片C和Image预制体
-![](Unity-AssetBundle笔记/image-4.png)
+![](UnityAssetBundle笔记/image-4.png)
 
 - `level0`是我们构建的场景，其中包含了场景中的所有节点信息，Image预制体也在其中。
-![](Unity-AssetBundle笔记/image-5.png)
+![](UnityAssetBundle笔记/image-5.png)
 
 - `sharedassets0.asset`文件则包含了所有的Resources目录下引用的Resources目录外的资源。其中包含了图片A。
-![](Unity-AssetBundle笔记/image-6.png)
+![](UnityAssetBundle笔记/image-6.png)
 
 ## 没有AssetBundle 有SpriteAtlas的情况
 
@@ -89,7 +90,7 @@ Unity内置的AssetBundle工具是[Addressable库](https://docs.unity3d.com/Pack
 
 勾选IncludeInBuild的情况下，散图和图集之间就建立了`映射关系`，`散图`与`其依赖资源`之间的依赖关系就变成了`散图所在图集`与`依赖该散图资源`之间的依赖关系。
 
-![](Unity-AssetBundle笔记/image-7.png)
+![](UnityAssetBundle笔记/image-7.png)
 
 > 注意：Resources目录下的资源会被无条件地打入包内，即便是包含在图集内的散图，最终打进包内的是散图所在的图集+散图自己，会有资源冗余。就比如图片C，在Resources目录下有一张图片C散图，然后图片C又被打入TTT图集存放在sharedassets中，不过本测试图集中还有很多的空白空间，多一张图片C并不会造成图集变大，因此包体不会变大。
 
@@ -101,26 +102,26 @@ Unity内置的AssetBundle工具是[Addressable库](https://docs.unity3d.com/Pack
 
 我们需要更改一下工程的目录结构，新建一个AssetBundle目录，把Resources目录下的图片C移动到Sprites目录下，把Image预制体改名为ImageA放在PrefabA目录下，复制一个ImageA预制体改名为ImageB放在PrefabB目录下，将ImageB中的Sprite引用改为图片B。我们还要把刚才创建的图集删掉，防止影响实验。
 
-![](Unity-AssetBundle笔记/image-8.png)
+![](UnityAssetBundle笔记/image-8.png)
 
 ~~我们分别给这三个目录添加AssetLabels:~~
 
-![](Unity-AssetBundle笔记/image-9.png)
+![](UnityAssetBundle笔记/image-9.png)
 
 ~~然后打开AssetBundleBrowser，就会看到我们刚才打的三个AssetBundleTag了~~
 
-![](Unity-AssetBundle笔记/image-10.png)
+![](UnityAssetBundle笔记/image-10.png)
 
 上面这样添加AssetBundleLabel是错误的，正确的方式是打开AssetBundleBrowser将要打Bundle的文件夹或者文件拖拽进去，所有的Bundle结构组织都在AssetBundleBrowser中操作。
 
 执行Build操作
 
-![](Unity-AssetBundle笔记/image-11.png)
+![](UnityAssetBundle笔记/image-11.png)
 
 然后BuildAndroidPlayer，此时我们的资源就不是在`assets/bin/Data/data.unity3d`目录下了，而是在`assets/bin/`目录下。
 实验预期是`assets/bin/Data/data.unity3d`内不包含任何我们自己创建的资源。不过注意：场景中还存放了一个Image的预制体，因此在`level0`中你会看到预制体相关的信息，而在`sharedassets0.asset`中你会看到预制体上引用的图片A。从场景中将预制体移除，再次打包，我们就不会再在`assets/bin/Data/data.unity3d`目录下看到任何我们自己创建的资源了。
 
-![](Unity-AssetBundle笔记/image-12.png)
+![](UnityAssetBundle笔记/image-12.png)
 
 目前这种情况是没有资源冗余的，因为现在是散图，而且我们也在AssetBundle-Browser里面看到了每个Bundle中的资源情况。
 

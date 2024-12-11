@@ -1,13 +1,15 @@
 ---
-title: 游戏中的设计模式(二) —— 组件模式
+title: UnityAssetBundle工作流整理
 abbrlink: 1a407a45
 date: 2024-09-11 17:51:04
 tags:
-    - 设计模式
+    - AssetBundle
 categories:
-    - 游戏开发中的设计模式
+    - 
 cover: https://www.notion.so/images/page-cover/met_emanuel_leutze.jpg
 description:
 swiper_index:
 sticky:
 ---
+
+# 版本管理
