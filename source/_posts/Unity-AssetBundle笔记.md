@@ -169,3 +169,4 @@ Sprite和Sprite Atlas是两个类，他们中具有一些图片信息的数据�
 - https://www.jianshu.com/p/0d18ac565563
 - https://blog.csdn.net/sunheng_/article/details/128204386
 - https://blog.uwa4d.com/archives/TechSharing_249.html
+- https://www.yuque.com/sibyl-3ao1w/phv062/sgagpsf8bcm9fu1b?singleDoc
