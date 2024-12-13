@@ -51,7 +51,7 @@ sticky: 1
 - Godot
 - 算法
 - 设计模式
-- Vim
+- [Vim]()
 - [MarkDown文档编写技巧](https://github.com/LearnShare/Learning-Markdown)
 - [Piccolo游戏引擎社区](https://www.piccoloengine.com/topics/node/feed/all)
 - [3b1b——线性代数的本质](https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab&index=2)
@@ -64,6 +64,8 @@ sticky: 1
 - [GLFW](https://github.com/glfw/glfw)
 - [Jenkins](https://github.com/jenkinsci/jenkins)
 - [AssetBundleBrowser](https://github.com/Unity-Technologies/AssetBundles-Browser)
+- [ET框架](https://github.com/egametang/ET)
+- [MongoDB](https://github.com/mongodb/mongo)
 
 # 博客
 
@@ -103,3 +105,12 @@ sticky: 1
 - MarkDown
 - 开发日志
 - Hexo
+
+# 可用封面
+- https://www.notion.so/images/page-cover/woodcuts_16.jpg
+- https://www.notion.so/images/page-cover/woodcuts_15.jpg
+- https://www.notion.so/images/page-cover/rijksmuseum_jansz_1641.jpg
+- https://www.notion.so/images/page-cover/rijksmuseum_jan_lievens_1627.jpg
+- https://www.notion.so/images/page-cover/rijksmuseum_jansz_1637.jpg
+- https://www.notion.so/images/page-cover/met_henri_tl_1892.jpg
+- https://www.notion.so/images/page-cover/met_horace_pippin.jpg
