@@ -66,6 +66,8 @@ sticky: 1
 - [AssetBundleBrowser](https://github.com/Unity-Technologies/AssetBundles-Browser)
 - [ET框架](https://github.com/egametang/ET)
 - [MongoDB](https://github.com/mongodb/mongo)
+- [UniTask](https://github.com/Cysharp/UniTask)
+- [RedKit官方文档](https://cdprojektred.atlassian.net/wiki/spaces/W3REDkit/pages/36864027/WS+Script+Studio+basics)
 
 # 博客
 
@@ -75,6 +77,7 @@ sticky: 1
 - [Alexander Ameye](https://ameye.dev/)
 - [CandyCat冯乐乐](https://candycat1992.github.io/)
 - [OWNSELF](https://www.ownself.org/)
+- [云风的Blog](https://blog.codingnow.com/)
 
 
 # Categories

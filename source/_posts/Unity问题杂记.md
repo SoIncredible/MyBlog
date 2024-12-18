@@ -91,7 +91,10 @@ Animator中必须设置一个从Entry进入的默认状态，这个从Entry进�
 public void Play (string stateName, int layer= -1, float normalizedTime= float.NegativeInfinity);
 public void Play (int stateNameHash, int layer= -1, float normalizedTime= float.NegativeInfinity);
 ```
-
+> 2024.12.18更新
+> 最近尝试了一种新的延时方法,以前在处理当某一动画播放完毕后,执行一段逻辑的时候,都是用
+> 下面这两种方法都可以对当前的Animator播放动画的normalizedTime做调整
+> ![](Unity问题杂记/image-1.png)
 # DOTweenAnimation组件使用
 
 DOTweenAnimation组件挂载在节点上，调用播放的时候只播第一次，之后不播了，需要搞清楚为什么
@@ -253,3 +256,12 @@ namespace UI
 
 # 查询资源依赖的方案
 
+# Unity预制体中的Image组件内容不显示
+
+https://blog.csdn.net/WGYHAPPY/article/details/116161817
+
+# Mac下如何打出乘号
+https://www.zhihu.com/question/20367435
+
+# 加载会出问题
+提示要执行Coroutine的物体的状态是inactive的
