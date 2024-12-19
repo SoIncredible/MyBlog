@@ -103,7 +103,10 @@ DOTweenAnimation组件挂载在节点上，调用播放的时候只播第一次�
 
 # 协程的坑
 
-协程中的等待一秒并不是真正的一秒有可能会有误差
+- 协程中的等待一秒并不是真正的一秒有可能会有误差
+
+- 提示要执行Coroutine的物体的状态是inactive的
+一个GameObject,在同一帧内,先被SetActive了,然后紧接着用这个GameObject上的一个Mono执行StartCoroutine,会提示GameObject无法被执行,验证是否是这样的.
 
 # Unity的Animation的使用的坑
 
@@ -262,6 +265,3 @@ https://blog.csdn.net/WGYHAPPY/article/details/116161817
 
 # Mac下如何打出乘号
 https://www.zhihu.com/question/20367435
-
-# 加载会出问题
-提示要执行Coroutine的物体的状态是inactive的
