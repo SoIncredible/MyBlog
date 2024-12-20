@@ -263,5 +263,10 @@ namespace UI
 
 https://blog.csdn.net/WGYHAPPY/article/details/116161817
 
+# 使用摄像机渲染一个RenderTexture 以及 我想要把一个Canvas放到世界坐标下,即不会在上层嵌套一个UICanvas
+
+https://blog.csdn.net/qq_37179591/article/details/118148818
+
+
 # Mac下如何打出乘号
 https://www.zhihu.com/question/20367435
