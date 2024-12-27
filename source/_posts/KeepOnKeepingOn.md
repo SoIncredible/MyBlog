@@ -68,6 +68,9 @@ sticky: 1
 - [MongoDB](https://github.com/mongodb/mongo)
 - [UniTask](https://github.com/Cysharp/UniTask)
 - [RedKit官方文档](https://cdprojektred.atlassian.net/wiki/spaces/W3REDkit/pages/36864027/WS+Script+Studio+basics)
+- [GameFrameWork](https://github.com/EllanJiang/GameFramework)
+- [GDC](https://www.youtube.com/@Gdconf)
+- [kbEngine](https://kbengine.github.io//)
 
 # 博客
 
@@ -116,4 +119,3 @@ sticky: 1
 - https://www.notion.so/images/page-cover/rijksmuseum_jan_lievens_1627.jpg
 - https://www.notion.so/images/page-cover/rijksmuseum_jansz_1637.jpg
 - https://www.notion.so/images/page-cover/met_henri_tl_1892.jpg
-- https://www.notion.so/images/page-cover/met_horace_pippin.jpg
