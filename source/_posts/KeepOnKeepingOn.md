@@ -119,4 +119,3 @@ sticky: 1
 - https://www.notion.so/images/page-cover/rijksmuseum_jansz_1641.jpg
 - https://www.notion.so/images/page-cover/rijksmuseum_jan_lievens_1627.jpg
 - https://www.notion.so/images/page-cover/rijksmuseum_jansz_1637.jpg
-- https://www.notion.so/images/page-cover/met_henri_tl_1892.jpg
