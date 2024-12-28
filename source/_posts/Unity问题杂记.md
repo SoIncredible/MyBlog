@@ -95,6 +95,9 @@ public void Play (int stateNameHash, int layer= -1, float normalizedTime= float.
 > 最近尝试了一种新的延时方法,以前在处理当某一动画播放完毕后,执行一段逻辑的时候,都是用
 > 下面这两种方法都可以对当前的Animator播放动画的normalizedTime做调整
 > ![](Unity问题杂记/image-1.png)
+> 2024.12.28更新
+> 我们更近一步,使用UniTask来实现
+> 
 # DOTweenAnimation组件使用
 
 DOTweenAnimation组件挂载在节点上，调用播放的时候只播第一次，之后不播了，需要搞清楚为什么

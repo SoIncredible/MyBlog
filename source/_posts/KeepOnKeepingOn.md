@@ -23,7 +23,7 @@ sticky: 1
 - ⭕️ Unity粒子系统的使用 -> UI框架博客+实现
 - ⭕️ Unity渲染管线了解
 - ⭕️ 注意到图集和散图一样,都是可以设置在不同平台上的Compress Format的,需要测试的是,即使将图集设置了合理的压缩格式,如果图集中的散图用的压缩格式不合理,还是会导致包体会大.
-- ⭕️ 整理所有博客的Tag和Category
+- ⭕️ Random类的内部实现原理
 
 # 资源
 
@@ -36,6 +36,7 @@ sticky: 1
 - [一个在线的Shader构建器](https://www.shadertoy.com/)
 - Gradle
 - Jenkins
+- [C#服务器](https://www.youtube.com/watch?v=vOBSAFmL610&list=PLI9CK8e_e3MeDv8K1vi0FosBV4dKmcOo3)
 - [Games101](https://www.bilibili.com/video/BV1X7411F744)
 - [Games101作业](https://games-cn.org/forums/topic/allhw/)
 - [Games104](https://www.bilibili.com/video/BV1oU4y1R7Km)
