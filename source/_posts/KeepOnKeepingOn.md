@@ -118,4 +118,3 @@ sticky: 1
 - https://www.notion.so/images/page-cover/woodcuts_15.jpg
 - https://www.notion.so/images/page-cover/rijksmuseum_jansz_1641.jpg
 - https://www.notion.so/images/page-cover/rijksmuseum_jan_lievens_1627.jpg
-- https://www.notion.so/images/page-cover/rijksmuseum_jansz_1637.jpg
