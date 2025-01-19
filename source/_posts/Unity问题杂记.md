@@ -835,3 +835,9 @@ public class ObjectPool<T> where T : new()
 
 
 # UnityEditor下的加载弹窗或者弹窗
+
+# Unity中安装的NuGet包
+
+使用Rider的时候,如果在代码中用到了一些第三方的.Net库,在提示里面会有一个选项是从NuGet中安装该第三方库.但是这个第三方库
+
+# .Net .NetFramework .NetStandard C#版本之间的关系
