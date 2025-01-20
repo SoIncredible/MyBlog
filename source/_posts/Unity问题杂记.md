@@ -832,9 +832,21 @@ public class ObjectPool<T> where T : new()
 
 # 查询资源引用
 
+见[GitHub](https://github.com/SoIncredible/UnityUtils)工具库
 
 
 # UnityEditor下的加载弹窗或者弹窗
+```
+private static void ShowProgress(float progress, int total, int current)
+{
+    EditorUtility.DisplayProgressBar("Searching",
+        string.Format("Checking ({0}/{1}), please wait...", current, total), progress);
+}
+```
+
+```
+EditorUtility.DisplayDialog( "", "Board64中不存在对Board100的依赖", "OK" );
+```
 
 # Unity中安装的NuGet包
 
