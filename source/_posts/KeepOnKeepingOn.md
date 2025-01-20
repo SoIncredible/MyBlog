@@ -79,6 +79,7 @@ sticky: 1
 - [GameFrameWork](https://github.com/EllanJiang/GameFramework)
 - [GDC](https://www.youtube.com/@Gdconf)
 - [kbEngine](https://kbengine.github.io//)
+- [mixamo免费下载角色动画](https://www.mixamo.com/#/?page=3)
 
 # 博客
 
