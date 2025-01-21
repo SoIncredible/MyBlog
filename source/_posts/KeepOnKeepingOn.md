@@ -125,5 +125,3 @@ sticky: 1
 # 可用封面
 - https://www.notion.so/images/page-cover/woodcuts_16.jpg
 - https://www.notion.so/images/page-cover/woodcuts_15.jpg
-- https://www.notion.so/images/page-cover/rijksmuseum_jansz_1641.jpg
-- https://www.notion.so/images/page-cover/rijksmuseum_jan_lievens_1627.jpg
