@@ -124,4 +124,3 @@ sticky: 1
 
 # 可用封面
 - https://www.notion.so/images/page-cover/woodcuts_16.jpg
-- https://www.notion.so/images/page-cover/woodcuts_15.jpg
