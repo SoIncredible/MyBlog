@@ -12,8 +12,6 @@ sticky: 1
 
 
 # TODO
-
-- ⭕️ 💢❗️热更新方案 
 - ⭕️ 场景如果打了AssetBundle是如何加载的？和普通资源一样吗？-> AssetBundle博客补全
 - ⭕️ 反编译入门
 - ⭕️ 华佗Hybrid入门
@@ -28,9 +26,14 @@ sticky: 1
   - ⭕️ 权重随机池
   - ⭕️ 在线配置表
   - ⭕️ 引用资源检查工具
+  - ⭕️ 状态机
+  - ⭕️ 缓存池
+- ⭕️ TimeLine插件
+- ⭕️ Cinemachine插件
 - ⭕️ 二叉树算法整理
 - ⭕️ 图算法整理
 - ⭕️ 排序算法整理
+- [Unity面试](https://www.mmzsblog.cn/articles/2022/02/23/1645604883865.html#toc_h4_188)
 
 # 资源
 
@@ -121,6 +124,3 @@ sticky: 1
 - MarkDown
 - 开发日志
 - Hexo
-
-# 可用封面
-- https://www.notion.so/images/page-cover/woodcuts_16.jpg
