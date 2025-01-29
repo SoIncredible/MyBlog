@@ -84,9 +84,9 @@ sticky: 1
 - [kbEngine](https://kbengine.github.io//)
 - [love2d轻量级游戏引擎,小丑牌的开发引擎](https://love2d.org/wiki/Game_Distribution)
 - [mixamo免费下载角色动画](https://www.mixamo.com/#/?page=3)
-
+- [开源对话框架fungus](https://github.com/snozbot/fungus)
+- [RedBlobGames可视化A*寻路算法](https://www.redblobgames.com/)
 # 博客
-
 - [Frog's Blog](https://frog-game.github.io/posts/blog/wufengdashijie/)
 - [烟雨迷离半世殇](https://www.lfzxb.top/)
 - [狂飙](https://networm.me/)
