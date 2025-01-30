@@ -17,7 +17,6 @@ sticky: 1
 - ⭕️ 华佗Hybrid入门
 - ⭕️ 依赖注入博客
 - ⭕️ [搞清楚Unity TextureImporter中几种压缩格式的使用](https://docs.unity3d.com/2022.3/Documentation/Manual/class-TextureImporterOverride.html)
-- ⭕️ 奥丁的使用
 - ⭕️ Unity粒子系统的使用 -> UI框架博客+实现
 - ⭕️ Unity渲染管线了解
 - ⭕️ 注意到图集和散图一样,都是可以设置在不同平台上的Compress Format的,需要测试的是,即使将图集设置了合理的压缩格式,如果图集中的散图用的压缩格式不合理,还是会导致包体会大.
@@ -32,7 +31,6 @@ sticky: 1
 - ⭕️ Cinemachine插件
 - ⭕️ 二叉树算法整理
 - ⭕️ 图算法整理
-- ⭕️ 排序算法整理
 - [Unity面试](https://www.mmzsblog.cn/articles/2022/02/23/1645604883865.html#toc_h4_188)
 
 # 资源
@@ -45,7 +43,7 @@ sticky: 1
 - [GLFW主页](https://www.glfw.org/docs/latest/index.html)
 - [一个在线的Shader构建器](https://www.shadertoy.com/)
 - Gradle
-- Jenkins
+- [Jenkins](https://www.jenkins.io/)
 - [C#服务器](https://www.youtube.com/watch?v=vOBSAFmL610&list=PLI9CK8e_e3MeDv8K1vi0FosBV4dKmcOo3)
 - [Games101](https://www.bilibili.com/video/BV1X7411F744)
 - [Games101作业](https://games-cn.org/forums/topic/allhw/)
@@ -86,6 +84,7 @@ sticky: 1
 - [mixamo免费下载角色动画](https://www.mixamo.com/#/?page=3)
 - [开源对话框架fungus](https://github.com/snozbot/fungus)
 - [RedBlobGames可视化A*寻路算法](https://www.redblobgames.com/)
+- [避障算法RVO](https://github.com/warmtrue/RVO2-Unity)
 # 博客
 - [Frog's Blog](https://frog-game.github.io/posts/blog/wufengdashijie/)
 - [烟雨迷离半世殇](https://www.lfzxb.top/)

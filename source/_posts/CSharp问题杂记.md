@@ -495,3 +495,23 @@ protected、private、protected internal只能用于嵌套的类
 
 嵌套类型的访问修饰符为：public、internal、protected、private和protected internal
 
+# 随机数
+随机数生成的原理可以分为两类：伪随机数生成（Pseudo-Random Number Generation, PRNG）和真随机数生成（True Random Number Generation, TRNG）。大多数计算机系统使用的是伪随机数生成器，因为它们效率高且易于实现。以下是随机数生成的基本原理和方法。
+
+1. 伪随机数生成（PRNG）
+伪随机数生成器是一种算法，它通过数学公式或预定义的规则生成一个看似随机的数列。伪随机数生成器并不是真正的随机，它是确定性的，即只要输入相同的初始值（种子），就会生成相同的随机数序列。
+
+1.1 基本原理
+伪随机数生成器通常基于以下公式：
+
+$$ X_{n + 1}  = (a ⋅ X_{n} + c) mod m$$
+
+其中:
+- $X_{n}$ 当前随机数(种子)
+- $X_{n+1}$ 下一个随机数
+- a 乘数
+- c 增量
+- m 模数（Modulus）。
+- 初始值$X_{0}$ 种子
+
+这个公式被称为线性同余生成器（Linear Congruential Generator, LCG），是最常见的伪随机数生成算法之一。
