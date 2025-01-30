@@ -85,6 +85,7 @@ sticky: 1
 - [开源对话框架fungus](https://github.com/snozbot/fungus)
 - [RedBlobGames可视化A*寻路算法](https://www.redblobgames.com/)
 - [避障算法RVO](https://github.com/warmtrue/RVO2-Unity)
+- [xLua](https://github.com/Tencent/xLua)
 # 博客
 - [Frog's Blog](https://frog-game.github.io/posts/blog/wufengdashijie/)
 - [烟雨迷离半世殇](https://www.lfzxb.top/)
