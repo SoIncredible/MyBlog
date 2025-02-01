@@ -20,7 +20,6 @@ sticky: 1
 - ⭕️ Unity粒子系统的使用 -> UI框架博客+实现
 - ⭕️ Unity渲染管线了解
 - ⭕️ 注意到图集和散图一样,都是可以设置在不同平台上的Compress Format的,需要测试的是,即使将图集设置了合理的压缩格式,如果图集中的散图用的压缩格式不合理,还是会导致包体会大.
-- ⭕️ Random类的内部实现原理
 - ⭕️ 工具库整理
   - ⭕️ 权重随机池
   - ⭕️ 在线配置表
@@ -124,3 +123,6 @@ sticky: 1
 - MarkDown
 - 开发日志
 - Hexo
+
+# Cover
+- https://www.notion.so/images/page-cover/met_gerome_1890.jpg

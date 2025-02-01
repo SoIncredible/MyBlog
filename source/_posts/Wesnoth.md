@@ -1,9 +1,10 @@
 ---
 title: Wesnoth
+cover: 'https://www.notion.so/images/page-cover/woodcuts_16.jpg'
+abbrlink: d1d5504
 date: 2025-01-27 01:22:14
 tags:
 categories:
-cover: https://www.notion.so/images/page-cover/woodcuts_16.jpg
 description:
 swiper_index:
 sticky:

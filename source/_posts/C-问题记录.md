@@ -1,5 +1,6 @@
 ---
 title: C++问题记录
+abbrlink: bcb0fea1
 date: 2025-01-26 21:01:12
 tags:
 categories:

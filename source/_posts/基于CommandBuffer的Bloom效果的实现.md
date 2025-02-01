@@ -66,24 +66,8 @@ Bloom的实现原理比较简单：首先根据一个阈值提取出图像中较
 对SetGlobalTexture的理解
 CommandBuffer和Shader类中都可以执行一个SetGlobalTexture的方法，这个方法的使用还是要说一下
 
-使用SetGlo
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # 参考资料
-[Unity PostProcessing后处理官方文档]()
+[Unity PostProcessing后处理官方文档](https://docs.unity3d.com/Packages/com.unity.postprocessing@3.4/manual/index.html)
 
 [Unity Render Pipeline官方文档](https://docs.unity3d.com/Manual/render-pipelines-overview.html)
 
