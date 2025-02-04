@@ -7,6 +7,8 @@ abbrlink: 127bc3c9
 date: 2022-12-19 18:13:50
 cover: https://www.notion.so/images/page-cover/met_joseph_hidley_1870.jpg
 description: 
+swiper_index: 3
+sticky: 3
 ---
 
 > 本篇博客记录笔者在Unity开发中遇到的各种小问题，有可能是Unity奇怪的bug、Unity Editor的使用小技巧或者是一些不值得开一篇新博客的小知识点

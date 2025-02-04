@@ -10,7 +10,7 @@ categories: 硬技能
 cover: https://www.notion.so/images/page-cover/woodcuts_7.jpg
 description:
 swiper_index:
-sticky:
+sticky: 99
 ---
 
 # CPU和GPU的关系

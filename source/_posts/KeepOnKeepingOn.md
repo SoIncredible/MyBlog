@@ -6,8 +6,7 @@ cover: https://www.notion.so/images/page-cover/met_william_turner_1835.jpg
 abbrlink: fd7e9d17
 date: 2023-03-27 10:19:52
 description:
-swiper_index: 1
-sticky: 1
+sticky: 100
 ---
 
 

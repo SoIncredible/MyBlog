@@ -1,13 +1,13 @@
 ---
 title: C++问题记录
 abbrlink: bcb0fea1
-date: 2025-01-26 21:01:12
+date: 2024-01-26 21:01:12
 tags:
 categories:
-cover:
+cover: https://www.notion.so/images/page-cover/met_vincent_van_gogh_irises.jpg
 description:
-swiper_index:
-sticky:
+swiper_index: 3
+sticky: 3
 ---
 
 # 并不是所有的对象都是new出来的
