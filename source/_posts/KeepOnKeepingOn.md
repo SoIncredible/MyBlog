@@ -87,6 +87,7 @@ sticky: 100
 # 博客
 - [Frog's Blog](https://frog-game.github.io/posts/blog/wufengdashijie/)
 - [烟雨迷离半世殇](https://www.lfzxb.top/)
+- [水曜日鸡](https://blog.csdn.net/j756915370?type=blog)
 - [狂飙](https://networm.me/)
 - [Alexander Ameye](https://ameye.dev/)
 - [CandyCat冯乐乐](https://candycat1992.github.io/)

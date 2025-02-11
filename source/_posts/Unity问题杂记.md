@@ -859,3 +859,7 @@ EditorUtility.DisplayDialog( "", "Board64中不存在对Board100的依赖", "OK"
 https://github.com/applejag/Newtonsoft.Json-for-Unity/wiki/Install-official-via-UPM
 
 # .Net .NetFramework .NetStandard C#版本之间的关系
+
+# Unity中合并两个Mesh
+
+https://blog.csdn.net/qq_42980269/article/details/123064307

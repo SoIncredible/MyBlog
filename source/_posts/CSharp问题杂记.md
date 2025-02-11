@@ -515,3 +515,17 @@ $$ X_{n + 1}  = (a ⋅ X_{n} + c) mod m$$
 - 初始值$X_{0}$ 种子
 
 这个公式被称为线性同余生成器（Linear Congruential Generator, LCG），是最常见的伪随机数生成算法之一。
+
+# int?
+
+`int?`表示可空类型，它是一种特殊的值类型，它的值可以为null，在变量设初值的时候，给变量赋值为null，而不是0
+
+`int??`用于判断并赋值，先判断当前变量是否为null，如果是就可以赋一个新值，否则跳过。注：这是一个右值，不是一个statement。
+
+```c#
+public int？ a=null；
+public int b()
+{
+return this.a ?? 0;
+}
+```
