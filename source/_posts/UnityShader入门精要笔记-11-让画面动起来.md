@@ -5,7 +5,7 @@ date: 2024-07-28 12:36:13
 tags:
  - Unity
  - Shader
-categories: Shader入门精要
+categories: UnityShader
 cover: https://www.notion.so/images/page-cover/rijksmuseum_claesz_1628.jpg
 description:
 swiper_index:

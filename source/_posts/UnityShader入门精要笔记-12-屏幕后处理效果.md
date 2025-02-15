@@ -5,7 +5,7 @@ date: 2024-07-31 23:13:20
 tags:
  - Unity
  - Shader
-categories: Shader入门精要
+categories: UnityShader
 cover: https://www.notion.so/images/page-cover/rijksmuseum_avercamp_1608.jpg
 description:
 swiper_index:

@@ -6,7 +6,7 @@ tags:
  - Unity
  - Shader
  - 问题杂记
-categories: 硬技能
+categories: UnityShader
 cover: https://www.notion.so/images/page-cover/woodcuts_7.jpg
 description:
 swiper_index:
@@ -156,9 +156,10 @@ OnRenderImage接口的官方描述如下：Unity在相机完成渲染后调用�
 
 另外，当前实现屏幕后处理的效果使用的都是CommandBuffer了，比如Unity官方的屏幕后处理的库。OnRenderImage已经很少使用了。
 
-
 # Shader变体参考资料
 
 - https://www.bilibili.com/video/BV1P44y1V7bu/?spm_id_from=333.999.0.0
 - https://www.bilibili.com/video/BV1PG411G7DR/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102
 - https://blog.csdn.net/qq_36383623/article/details/103327389
+
+# 一个有六个面的立方体模型 为什么一张贴图会按照某种规则贴在六个面上?

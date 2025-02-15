@@ -5,7 +5,7 @@ date: 2024-07-13 12:09:27
 tags:
  - Unity
  - Shader
-categories: Shader入门精要
+categories: UnityShader
 cover: https://www.notion.so/images/page-cover/woodcuts_2.jpg
 description:
 swiper_index:
