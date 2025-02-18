@@ -1,12 +1,13 @@
 ---
 title: MarkDown LaTeX符号整理
+swiper_index: 100
+sticky: 100
+abbrlink: 89282b50
 date: 2025-02-15 18:03:54
 tags:
 categories:
-cover:
+cover: https://lh4.googleusercontent.com/proxy/lPTC1C7q4Fc5qt7VXR3sjlsO9Mkx6ydn_WxwaXN4XrEee3E2YXG7qjATfsnC6c4j6b7THd-0yuhcy_glilpP6nMsea9cuI-heNgL_HU=w3840-h2160-p-k-no-nd-mv
 description:
-swiper_index: 100
-sticky: 100
 ---
 
 # 插入公式

@@ -5,7 +5,7 @@ date: 2024-09-11 00:36:49
 tags:
  - Unity
  - Shader
-categories: UnityShader入门精要笔记
+categories: UnityShader
 cover: https://www.notion.so/images/page-cover/rijksmuseum_jansz_1637.jpg
 description:
 swiper_index:
@@ -85,4 +85,82 @@ v2f vert(a2v v)
 ```
 使用TANGENT_SPACE_ROTATION实现了从坐标空间到切线空间的变换矩阵.
 4. 我们还需要片元着色器来模拟消融的效果
-   
+
+```
+fixed4 frag(v2f i) : SV_Target
+{
+    fixed3 burn = tex2D(_BurnMap, i.uvBurnMap).rgb;
+    clip(burn.r - _BurnAmount);
+
+    float3 tangentLightDir = normalize(i.lightDir);
+    fixed3 tangentNormal = UnpackNormal(tex2D(_BumpMap, i.uvBumpMap));
+
+    fixed3 albedo = tex2D(_MainTex, i.uvMainTex).rgb;
+
+    fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo;
+    fixed3 diffuse = _LightColor0.rgb * albedo * max(0, dot(tangentNormal, tangentLightDir));
+
+    fixed t = 1 - smoothstep(0.0, _LineWidth, burn.r - _BurnAmount);
+    fixed3 burnColor = lerp(_BurnFirstColor, _BurnSecondColor, t);
+    burnColor = pow(burnColor, 5);
+
+    UNITY_LIGHT_ATTENUATION(atten, i, i.worldPos);
+
+    fixed3 finalColor = lerp(ambient + diffuse * atten, burnColor, t * step(0.0001l, _BurnAmount));
+
+    return fixed4(finalColor, 1);
+}
+```
+我们首先对噪声纹理进行采样,并将采样结果和用于控制消融程度的属性_BurnAmount相减,传递给clip函数. 当结果小于0时,该像素将会被剔除,从而不会显示到屏幕上.如果通过了测试,则进行正常的光照计算.我们首先根据漫反射纹理得到材质的反照率albedo,并由此计算得到环境光照, 进而得到漫反射光照.然后,我们计算了烧焦颜色burnColor. 我们想要在宽度为_LineWidth的范围内模拟一个烧焦的颜色变化,第一步就是用了smoothstep函数来计算混合系数t.当t的值为1时,表明该像素位于消融的边界处,当t值为0时,表明该像素为正常的模型颜色,而中间的插值则表示需要模拟一个烧焦效果.我们首先用t来混合两种火焰颜色_BurnFirstColor和_BurnSecondColor,为了让效果更佳接近烧焦的痕迹,我们还使用pow函数对结果进行处理.然后,我们再次使用t来混合正常的光照颜色(环境光+漫反射)和烧焦颜色.我们这里又使用了step函数来报称当_BurnAmount为0时,不显示任何消融效果.最后,返回混合后的颜色值finalColor
+
+与之前的实现不同,我们在本例中还定义了一个用于投射阴影的Pass.正如我们在之前解释过的一样:使用透明度测试的物体的阴影需要特别处理,如果仍然使用普通的阴影Pass,那么被剔除的区域仍然会向其他物体投射阴影,造成穿帮.为了让物体的阴影也能配合透明度测试产生正确的效果,我们需要定义一个投射阴影的Pass.
+
+```
+Pass
+
+{
+    Tags{ "LightMode"="ShadowCaster" }
+    CGPROGRAM
+
+    #pragma vertex vert
+    #pragma fragment frag
+
+    #pragma multi_compile_shadowcaster
+
+    struct v2f
+    {
+        V2F_SHADOW_CASTER;
+        float2 uvBurnMap : TEXCOORD1;
+    };
+
+    v2f vert(appdata_base v)
+    {
+        v2f o;
+
+        TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+
+        o.uvBurnMap = TRANSFORM_TEX(v.texcoord, _BurnMap);
+        return o;
+    }
+
+    fixed4 frag(v2f i) : SV_Target{
+        fixed3 burn = tex2D(_BurnMap,i.uvBurnMap).rgb;
+
+        clip(burn.r - _BurnAmount);
+
+        SHADOW_CASTER_FRAGMENT(i)
+    }
+    
+    ENDCG
+}
+```
+
+阴影投射的重点在于我们需要按正常Pass的处理来剔除片元或进行定点动画,以便可以和物体正常渲染的结果相匹配.在自定义的阴影投射的Pass中,我们通常会使用Unity提供的内置宏`V2F_SHADOW_CASTER`、`TRANSFER_SHADOW_CASTER_NORMALOFFSET`和`SHADOW_CASTER_FRAGMENT`来帮助我们计算阴影投射时所需要的各种变量,而我们可以只关注自定义计算的部分.在上面的代码中,我们首先在v2f结构体中利用V2F_SHADOW_CASTER来定义阴影投射需要定义的变量.随后,在顶点着色器中,我们使用TRANSFER_SHADOW_CASTER_NORMALOFFSET来填充V2F_SHADOW_CASTER在背后声明的一些变量,这是由Unity在背后为我们完成的. 我们需要在顶点着色器中关注自定义的计算部分,这里指的就是我们需要计算噪声纹理的采样坐标uvBurnMap. 在片元着色器中,我们首先按之前的处理方法使用噪声纹理的采样结果来剔除片元,最后再利用SHADOW_CASTER_FRAGMENT来让Unity为我们完成阴影投射的部分,把结果输出到深度图和阴影映射纹理中.
+通过Unity提供的这三个内置宏,我们可以方便地定义需要阴影投射的Pass, 但由于这些宏需要使用一些特定的输入变量,因此我们需要保证为它们提供了这些变量. 例如TRANSFER_SHADOW_CASTER_NORMALOFFSET会使用名称v作为输入结构体,v中需要包含顶点位置v.vertex和顶点法线v.normal的信息,我们可以直接使用内置的appdata_base结构体,它包含了这些必须的顶点变量. 如果我们需要进行定点动画,可以在顶点着色器中直接修改v.vertex,再传递给TRANSFER_SHADOW_CASTER_NORMALOFFSET.
+
+
+投射阴影“三剑客” 想投射阴影除了编写Shader代码还要把MeshRenderer中的`CastShadows`选项打开 `V2F_SHADOW_CASTER`、`TRANSFER_SHADOW_CASTER_NORMALOFFSET`和`SHADOW_CASTER_FRAGMENT`
+
+接收阴影“三剑客” `SHADOW_COORDS` `TRANSFER_SHADOW` `SHADOW_ATTENUATION`
+
+统一管理光照衰减(Attenuation)和接收阴影`SHADOW_COORDS` `TRANSFER_SHADOW` 将`SHADOW_ATTENUATION`替换为`UNITY_LIGHT_ATTENUATION`
