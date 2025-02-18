@@ -328,6 +328,260 @@ public class Program{
 dotnet run
 ```
 
+# Unity中C#和C++协同
 
+如果想在C#侧使用C++中的一个类的话,需要将这个类的每一个public成员方法封装一个静态方法供C#测调用,然后C#侧做一个中间层的封装,即在C#侧将这些静态方法重新封装成类.
 
-## Windows Git Bash环境
+以一个Stack结构为例:
+## C++侧
+
+```
+// StackLib.h
+#ifndef STACKLIBRARY_H
+#define STACKLIBRARY_H
+
+#if defined _WIN32 || defined __CYGWIN__
+#ifdef BUILDING_DLL
+#ifdef __GNUC__
+#define DLL_PUBLIC __attribute__((dllexport))
+#else
+#define DLL_PUBLIC __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
+#endif
+#else
+#ifdef __GNUC__
+#define DLL_PUBLIC __attribute__((dllimport))
+#else
+#define DLL_PUBLIC __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
+#endif
+#endif
+#define DLL_LOCAL
+#else
+#if __GNUC__ >= 4
+#define DLL_PUBLIC __attribute__((visibility("default")))
+#define DLL_LOCAL __attribute__((visibility("hidden")))
+#else
+#define DLL_PUBLIC
+#define DLL_LOCAL
+#endif
+#endif
+
+#include <stack>
+
+// 定义一个结构体来包装栈类
+typedef struct StackWrapper
+{
+    std::stack<int> stack;
+} StackWrapper;
+
+class Stack{
+    private:
+        
+
+    public:
+        StackWrapper *stack;
+
+        // 创建栈实例
+        Stack *CreateStack();
+
+        Stack();
+
+        // 销毁栈实例
+        void DestroyStack(Stack *stackWrapper);
+
+        // 入栈操作
+        void Push(Stack *stackWrapper, int value);
+
+        // 出栈操作
+        int Pop(Stack *stackWrapper);
+
+        // 判断栈是否为空
+        bool IsEmpty(Stack *stackWrapper);
+};
+
+#endif // STACKLIBRARY_H
+```
+
+```
+// StackLib.cpp
+#include "StackLib.h"
+
+Stack::Stack(){
+    stack = new StackWrapper();
+}
+
+// 创建栈实例
+Stack * Stack::CreateStack()
+{
+    return new Stack();
+}
+
+// 销毁栈实例
+void Stack::DestroyStack(Stack* stackWrapper) {
+    if (stackWrapper) {
+        delete stackWrapper;
+    }
+}
+
+// 入栈操作
+void Stack::Push(Stack *stackWrapper, int value)
+{
+    if (stackWrapper) {
+        stackWrapper->stack->stack.push(value);
+    }
+}
+
+// 出栈操作
+int Stack::Pop(Stack *stackWrapper)
+{
+    if (stackWrapper && !stackWrapper->stack->stack.empty())
+    {
+        int value = stackWrapper->stack->stack.top();
+        stackWrapper->stack->stack.pop();
+        return value;
+    }
+    return -1; // 表示栈为空
+}
+
+// 判断栈是否为空
+bool Stack::IsEmpty(Stack *stackWrapper)
+{
+    if (stackWrapper) {
+        return stackWrapper->stack->stack.empty();
+    }
+    return true;
+}
+```
+
+```
+// StackUtils.cpp
+#include "StackLib.h"
+
+extern "C" {
+
+    DLL_PUBLIC Stack *CreateStack();
+    DLL_PUBLIC void DestroyStack(Stack *stackWrapper);
+    DLL_PUBLIC void Push(Stack *stackWrapper, int value);
+    DLL_PUBLIC int Pop(Stack *StackWrapper);
+    DLL_PUBLIC bool IsEmpty(Stack *StackWrapper);
+
+    Stack* CreateStack(){
+        return new Stack();
+    }
+
+    void DestroyStack(Stack* stackWrapper){
+        stackWrapper->DestroyStack(stackWrapper);
+    }
+
+    void Push(Stack* StackWrapper, int value){
+        StackWrapper->Push(StackWrapper, value);
+    }
+
+    int Pop(Stack* StackWrapper){
+        return StackWrapper->Pop(StackWrapper);
+    }
+
+    bool IsEmpty(Stack* StackWrapper){
+        return StackWrapper->IsEmpty(StackWrapper);
+    }
+}
+```
+
+在Mac上,导出dylib:
+
+```
+g++ -shared -o StackLibrary.dylib StackLib.cpp StackUtils.cpp   
+```
+
+## C#侧
+
+```
+using System;
+using System.Runtime.InteropServices;
+using UnityEngine;
+
+namespace CPP
+{
+    public static class StackDLL{
+        // 引入C++动态链接库中的函数
+        [DllImport("StackLibrary")]
+        public static extern IntPtr CreateStack();
+
+        [DllImport("StackLibrary")]
+        public static extern void DestroyStack(IntPtr stackWrapper);
+
+        [DllImport("StackLibrary")]
+        public static extern void Push(IntPtr stackWrapper, int value);
+
+        [DllImport("StackLibrary")]
+        public static extern int Pop(IntPtr stackWrapper);
+
+        [DllImport("StackLibrary")]
+        [return: MarshalAs(UnmanagedType.I1)]
+        public static extern bool IsEmpty(IntPtr stackWrapper);
+
+    }
+    
+    public class StackCPP
+    {
+        private IntPtr _stackPointer;
+        
+        public void StackCpp()
+        {
+            _stackPointer = StackDLL.CreateStack();
+        }
+
+        public void Push(int value)
+        {
+            StackDLL.Push(_stackPointer, value);
+        }
+
+        public int Pop()
+        {
+            return StackDLL.Pop(_stackPointer);
+        }
+
+        public bool IsEmpty()
+        {
+            return StackDLL.IsEmpty(_stackPointer);
+        }
+
+        public void DestroyStack()
+        {
+            StackDLL.DestroyStack(_stackPointer);
+        }
+    }
+    
+    public class StackCaller : MonoBehaviour
+    {
+      
+        void Start()
+        {
+         
+            Debug.Log("StackCaller start");
+            
+           
+            // 创建栈实例
+            StackCPP stackWrapper = new StackCPP();
+
+            // 入栈操作
+            stackWrapper.Push(10);
+            stackWrapper.Push(20);
+            stackWrapper.Push(30);
+
+            // 出栈操作并输出结果
+            while (!stackWrapper.IsEmpty())
+            {
+                int value = stackWrapper.Pop();
+                Debug.Log("Popped value: " + value);
+            }
+
+            // 销毁栈实例
+            stackWrapper.DestroyStack();
+        }
+    }
+}
+```
+
+## ⚠️注意事项
+
+- `unknown type name '__declspec' 和 unknown type name 'class' 错误`  https://blog.csdn.net/lc250123/article/details/81985336
