@@ -504,7 +504,7 @@ protected、private、protected internal只能用于嵌套的类
 1.1 基本原理
 伪随机数生成器通常基于以下公式：
 
-$$ X_{n + 1}  = (a ⋅ X_{n} + c) mod m$$
+$$ X_{n + 1}  = (a ⋅ X_{n} + c) \space mod \space m$$
 
 其中:
 - $X_{n}$ 当前随机数(种子)

@@ -194,6 +194,7 @@ OnRenderImage接口的官方描述如下：Unity在相机完成渲染后调用�
 - LightMode
 - CGINCLUDE CGPROGRAM
 - ObjSpaceLightDir
+- GrabPass
 
 
 # 问题记录
@@ -214,6 +215,16 @@ Tag中`LightMode`为`ShadowCaster`的Pass中的代码生效,要求挂载该Shade
 
 Unity Shader中可以使用`CGINCLUDE`的方法将一些数据结构、字段在不同的Pass中共享
 
-## 模型的数据结构中会存有每个顶点的法线信息,法线贴图中的法线信息又是用来干什么的?       
+## 模型的数据结构中会存有每个顶点的法线信息,法线贴图中的法线信息又是用来干什么的?   
+
+
+## Unity中有几种Shader?区别是什么?
+
+![](UnityShader问题杂记/image.png)
+- Standard Surface Shader
+- Unlit Shader
+- Image Effect Shader
+- Compute Shader
+- Ray Tracing Shader
 
 

@@ -863,3 +863,5 @@ https://github.com/applejag/Newtonsoft.Json-for-Unity/wiki/Install-official-via-
 # Unity中合并两个Mesh
 
 https://blog.csdn.net/qq_42980269/article/details/123064307
+
+# Unity中使用到的jar包、dll等必须放在Plugins目录下吗

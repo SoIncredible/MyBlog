@@ -585,3 +585,9 @@ namespace CPP
 ## ⚠️注意事项
 
 - `unknown type name '__declspec' 和 unknown type name 'class' 错误`  https://blog.csdn.net/lc250123/article/details/81985336
+
+## C++中实现模版Stack供C#调用
+
+### C++中的模版
+
+
