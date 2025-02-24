@@ -80,7 +80,9 @@ int main()
 比如一个cpp文件中引用了某一个头文件,在编译的时候就没必要把这个头文件列出来.
 
 https://stackoverflow.com/questions/23534362/warning-treating-c-header-input-as-c-header-when-in-c-mode-this-behavi
-# C++宏的使用 和C#宏的使用有什么区别?
+# C++宏的使用和C#宏的使用有什么区别?
+
+如何在脚本中使用宏,
 
 # C++模板和C#范型(generic)之间的区别
 
