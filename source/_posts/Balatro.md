@@ -1,5 +1,5 @@
 ---
-title: 小丑牌源码
+title: Balatro
 cover: 'https://www.notion.so/images/page-cover/woodcuts_15.jpg'
 abbrlink: 254a2567
 date: 2025-01-23 22:15:30

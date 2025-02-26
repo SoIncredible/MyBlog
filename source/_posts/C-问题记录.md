@@ -80,9 +80,22 @@ int main()
 比如一个cpp文件中引用了某一个头文件,在编译的时候就没必要把这个头文件列出来.
 
 https://stackoverflow.com/questions/23534362/warning-treating-c-header-input-as-c-header-when-in-c-mode-this-behavi
-# C++宏的使用和C#宏的使用有什么区别?
+# C++宏的使用
 
-如何在脚本中使用宏,
+在 C++ 中，除了系统相关的宏，其他宏的开关控制方式主要有编译器默认定义、构建系统设置、头文件包含等，以下是具体介绍：
+编译器默认定义
+一些编译器会根据自身特性和编译选项，默认定义某些宏。例如，GCC 编译器会定义__GNUC__宏，用于标识使用的是 GCC 编译器，其值表示 GCC 的版本号。
+对于 C++ 标准库相关的宏，如__cplusplus，它用于标识当前编译环境的 C++ 标准版本。在 C++11 环境下，__cplusplus的值通常被定义为201103L，在 C++20 环境下则为202002L等，编译器会根据所支持的 C++ 标准自动定义该宏。
+构建系统设置
+Makefile：可以在 Makefile 中通过CFLAGS（针对 C 语言）或CXXFLAGS（针对 C++ 语言）变量来定义宏。比如要定义一个名为MY_MACRO的宏，可以写成CFLAGS += -DMY_MACRO或CXXFLAGS += -DMY_MACRO。如果要为宏指定值，例如MY_MACRO的值为10，则可以写成CFLAGS += -DMY_MACRO=10或CXXFLAGS += -DMY_MACRO=10。
+CMake：使用add_definitions命令来定义宏，如add_definitions(-DMY_MACRO)或add_definitions(-DMY_MACRO=10)。也可以通过set命令结合CMAKE_C_FLAGS或CMAKE_CXX_FLAGS变量来设置，例如set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMY_MACRO=10")。
+Ninja：与 Makefile 类似，在生成 Ninja 构建文件时，可以通过相关的命令行参数或配置选项来添加宏定义。具体方式取决于生成 Ninja 文件的工具或脚本，例如使用 CMake 生成 Ninja 文件时，可以通过 CMake 的配置来间接影响 Ninja 构建时的宏定义。
+头文件包含
+许多库的头文件会根据自身的需求和条件定义一些宏。当包含这些头文件时，相应的宏就会被定义。例如，在包含<stdio.h>头文件时，可能会引入一些与标准输入输出相关的宏定义。
+一些跨平台的库会在头文件中根据不同的平台来定义特定的宏。以 OpenGL 库为例，在 Windows 平台下包含<windows.h>头文件后，可能会定义一些与 Windows 图形系统相关的宏，然后在 OpenGL 的头文件中会根据这些宏来进一步定义与 OpenGL 在 Windows 平台上相关的特定宏。
+命令行参数
+在使用编译器命令行进行编译时，可以通过命令行参数来定义宏。例如，使用 GCC 编译时，可以通过-D选项来定义宏，如gcc -D MY_MACRO main.c会在编译main.c文件时定义MY_MACRO宏。如果要为宏赋值，可使用-D MY_MACRO=10的形式。
+在使用 CMake 等构建系统时，也可以在命令行中通过-D选项来传递自定义的宏定义。例如cmake -D MY_MACRO=10..，这会在运行 CMake 配置项目时定义MY_MACRO宏，后续的编译过程中就可以使用该宏。
 
 # C++模板和C#范型(generic)之间的区别
 
