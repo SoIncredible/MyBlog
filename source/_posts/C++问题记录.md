@@ -97,6 +97,8 @@ Ninja：与 Makefile 类似，在生成 Ninja 构建文件时，可以通过相�
 在使用编译器命令行进行编译时，可以通过命令行参数来定义宏。例如，使用 GCC 编译时，可以通过-D选项来定义宏，如gcc -D MY_MACRO main.c会在编译main.c文件时定义MY_MACRO宏。如果要为宏赋值，可使用-D MY_MACRO=10的形式。
 在使用 CMake 等构建系统时，也可以在命令行中通过-D选项来传递自定义的宏定义。例如cmake -D MY_MACRO=10..，这会在运行 CMake 配置项目时定义MY_MACRO宏，后续的编译过程中就可以使用该宏。
 
+简单的使用可以看一下[这个仓库](https://github.com/SoIncredible/programming-practice)下的`Code/CPP/assertAndMacro`
+
 # C++模板和C#范型(generic)之间的区别
 
 C# 泛型和 C++ 模板均是支持参数化类型的语言功能。 但是，两者之间存在很多不同。 在语法层次，C# 泛型是参数化类型的一个更简单的方法，而不具有 C++ 模板的复杂性。 此外，C# 不试图提供 C++ 模板所具有的所有功能。 在实现层次，主要区别在于 C# 泛型类型的替换在运行时执行，从而为实例化对象保留了泛型类型信息.
