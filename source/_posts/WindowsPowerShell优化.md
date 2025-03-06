@@ -4,7 +4,7 @@ abbrlink: 7f20a787
 date: 2025-03-04 18:34:13
 tags:
 categories:
-cover:
+cover: https://public.ysjf.com/content/title-image/%E8%87%AA%E7%84%B6%E9%A3%8E%E6%99%AF-%E5%86%B7%E5%98%8E%E6%8E%AA-05-%E5%85%A8%E6%99%AF.jpg
 description:
 swiper_index:
 sticky:

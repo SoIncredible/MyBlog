@@ -1,7 +1,6 @@
 ---
 title: Unity ASE插件问题记录
-cover: >-
-  https://lh3.googleusercontent.com/proxy/nMIspgHzTUU0GzmiadmPphBelzF2xy9-tIiejZg3VvJTITxUb-1vILxf-IsCfyl94VSn6YvHa8_PiIyR9d3rwD8ZhNdQ1C1rnblP6zy3OaI=w3840-h2160-p-k-no-nd-mv
+cover: https://public.ysjf.com/mediastorm/material/material/%E4%B8%89%E4%BA%9A-13-%E5%85%A8%E6%99%AF-20250114.JPG
 abbrlink: 7552e7ac
 date: 2025-02-19 01:15:08
 tags:
