@@ -48,9 +48,6 @@ sticky: 100
 - [Games104](https://www.bilibili.com/video/BV1oU4y1R7Km)
 - Android
 - [IOS开发](https://developer.apple.com/documentation/)
-- C++
-- Java
-- Python
 - [OpenGL学习](https://learnopengl-cn.github.io/intro/)
 - 游戏逆向
 - Unreal
@@ -85,7 +82,8 @@ sticky: 100
 - [避障算法RVO](https://github.com/warmtrue/RVO2-Unity)
 - [xLua](https://github.com/Tencent/xLua)
 - [github游戏区](https://github.com/topics/game)
-- [YooAsset](https://www.yooasset.com/docs/Introduce)
+- [YooAsset](https://www.yooasset.com/docs/Introduce) 途游大佬写的
+
 # 博客
 - [Frog's Blog](https://frog-game.github.io/posts/blog/wufengdashijie/)
 - [烟雨迷离半世殇](https://www.lfzxb.top/)
@@ -95,6 +93,21 @@ sticky: 100
 - [CandyCat冯乐乐](https://candycat1992.github.io/)
 - [OWNSELF](https://www.ownself.org/)
 - [云风的Blog](https://blog.codingnow.com/)
+
+# 编程语言
+
+- C#
+- Lua 小丑牌Balatro
+- C++ Wesnoth
+- Python
+- Java 
+
+# 数学知识
+
+# 图形学
+
+# Unity
+
 
 
 # Categories

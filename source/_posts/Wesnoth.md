@@ -4,18 +4,19 @@ cover: 'https://www.notion.so/images/page-cover/woodcuts_16.jpg'
 abbrlink: d1d5504
 date: 2025-01-27 01:22:14
 tags:
-categories:
+categories: Wesnoth
 description:
 swiper_index:
-sticky:
+sticky: 10
 ---
 
 [Wesnoth社区](https://www.wesnoth.org/)
 [仓库地址](https://github.com/wesnoth/wesnoth)
 [WesnothDiscord频道](https://discord.com/channels/231976805987385345/channel-browser)
 
-- 构建Wesnoth
-- Wesnoth中的小地图如何实现?
+# 目录
+- 构建Wesnoth 也就是这篇博客
+- [Wesnoth中的小地图如何实现](https://soincredible.github.io/posts/9af50f63/)
 - Wesnoth中的AI
 - Wesnoth中的引导逻辑
 - Wesnoth中的战役逻辑

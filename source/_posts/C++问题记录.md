@@ -80,6 +80,9 @@ int main()
 比如一个cpp文件中引用了某一个头文件,在编译的时候就没必要把这个头文件列出来.
 
 https://stackoverflow.com/questions/23534362/warning-treating-c-header-input-as-c-header-when-in-c-mode-this-behavi
+
+在C++中可以较为自由地控制某一个对象是创建在堆上还是栈上，而在C#中，值类型只能创建在栈上，堆类型只能创建在堆上，在不考虑装拆箱类型强转的情况下。
+
 # C++宏的使用
 
 在 C++ 中，除了系统相关的宏，其他宏的开关控制方式主要有编译器默认定义、构建系统设置、头文件包含等，以下是具体介绍：
