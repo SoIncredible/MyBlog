@@ -1,5 +1,6 @@
 ---
 title: YooAsset
+abbrlink: ae5b3442
 date: 2025-03-17 14:09:58
 tags:
 categories:
