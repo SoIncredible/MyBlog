@@ -13,4 +13,4 @@ sticky:
 [解决运行Hexo报错hexo : 无法加载文件hexo.ps1，因为在此系统上禁止运行脚本](https://blog.csdn.net/qq_42951560/article/details/123678786)
 [打造好用的PowerShell媲美oh-my-zsh](https://blog.unclezs.com/pages/9b6e12)
 
-Windows PowerShell中git查看文件修改状态时文件名不显示中文的问题、
+Windows PowerShell中git查看文件修改状态时文件名不显示中文的问题，[这篇博客]()中已经记录解决方案了
