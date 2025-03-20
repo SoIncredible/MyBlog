@@ -3,7 +3,7 @@ title: ET框架
 categories: 硬技能
 cover: 'https://www.notion.so/images/page-cover/met_horace_pippin.jpg'
 abbrlink: 9c5dbe31
-date: 2024-12-14 17:50:31
+date: 2025-3-20 17:50:31
 tags:
 description:
 swiper_index:
@@ -11,7 +11,8 @@ sticky:
 ---
 这段时间笔者工作清闲，在工位也没有摸鱼，先是废寝忘食般速通了YooAsset的源码之后，感觉自己在看别人代码这件事上摸到了一些门路
 
-一上来先不用管什么帧同步状态同步之类的，先把Demo的源码看明白.
+一上来先不用管什么帧同步状态同步之类的，先把Demo的源码看明白.笔者尝试从游戏启动时，ET执行的第一行代码一直梳理到Demo中点击地板移动角色操作的所有逻辑。ET在初始化过程中涉及到了反射和属性的知识，那么结合ET与反射、属性的详细内容在[这篇博客](https://soincredible.github.io/posts/cd96d12/)中
+
 基本的继承结构
 
 - Object
