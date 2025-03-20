@@ -49,6 +49,7 @@ sticky:
                 - EntitySystemSingleton 里面维护着所有继承自`ISystemType`接口的的类型,或者说，被标记为`EntitySystemAttribute`属性的类型
                 - EventSystem 维护着allInvokers、allEvents
                 - MessageDispatcher : ISingleAwake
+                - MessageSessionDispatcher
                 - TimeInfo
     - ProtoObject : ISupportInitialize 继承该接口能够实现序列化Bson
         - MessageObject : IMessage
@@ -197,3 +198,131 @@ PathfindComponnetSystem
 驱动客户端Unit移动的逻辑看起来在`MoveComponentSystem`类中的`MoveForward`方法中,该方法由MoveTimer类中的Run方法调用
 
 真正在前端做表现的是通过`ChangePosition_SyncGameObjectPos`类
+
+# 流程梳理
+
+# 角色梳理
+
+- World 
+    - singletons : Dictionary<Type,ASingleton> Demo中所有的Singleton都被存入这个字典中，笔者认为需要在World中统一Dispose，毕竟都是Singleton了，任何地方都可以通过Instance直接访问到这些单例。
+
+
+在`CodeTypes`脚本的Awake方法中
+```
+public void Awake(Assembly[] assemblies)
+{
+    Dictionary<string, Type> addTypes = AssemblyHelper.GetAssemblyTypes(assemblies);
+    foreach ((string fullName, Type type) in addTypes)
+    {
+        this.allTypes[fullName] = type;
+        
+        if (type.IsAbstract)
+        {
+            continue;
+        }
+        
+        // 记录所有的有BaseAttribute标记的的类型
+        object[] objects = type.GetCustomAttributes(typeof(BaseAttribute), true);
+
+        foreach (object o in objects)
+        {
+            this.types.Add(o.GetType(), type);
+        }
+    }
+}
+```
+
+CodeLoader中的Start方法如下:
+```
+public void Start()
+{
+    if (!Define.IsEditor)
+    {
+        byte[] modelAssBytes = this.dlls["Unity.Model.dll"].bytes;
+        byte[] modelPdbBytes = this.dlls["Unity.Model.pdb"].bytes;
+        byte[] modelViewAssBytes = this.dlls["Unity.ModelView.dll"].bytes;
+        byte[] modelViewPdbBytes = this.dlls["Unity.ModelView.pdb"].bytes;
+        // 如果需要测试，可替换成下面注释的代码直接加载Assets/Bundles/Code/Unity.Model.dll.bytes，但真正打包时必须使用上面的代码
+        //modelAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "Unity.Model.dll.bytes"));
+        //modelPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "Unity.Model.pdb.bytes"));
+        //modelViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "Unity.ModelView.dll.bytes"));
+        //modelViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "Unity.ModelView.pdb.bytes"));
+
+        if (Define.EnableIL2CPP)
+        {
+            foreach (var kv in this.aotDlls)
+            {
+                TextAsset textAsset = kv.Value;
+                RuntimeApi.LoadMetadataForAOTAssembly(textAsset.bytes, HomologousImageMode.SuperSet);
+            }
+        }
+        this.modelAssembly = Assembly.Load(modelAssBytes, modelPdbBytes);
+        this.modelViewAssembly = Assembly.Load(modelViewAssBytes, modelViewPdbBytes);
+    }
+    else
+    {
+        if (this.enableDll)
+        {
+            byte[] modelAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "Unity.Model.dll.bytes"));
+            byte[] modelPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "Unity.Model.pdb.bytes"));
+            byte[] modelViewAssBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "Unity.ModelView.dll.bytes"));
+            byte[] modelViewPdbBytes = File.ReadAllBytes(Path.Combine(Define.CodeDir, "Unity.ModelView.pdb.bytes"));
+            this.modelAssembly = Assembly.Load(modelAssBytes, modelPdbBytes);
+            this.modelViewAssembly = Assembly.Load(modelViewAssBytes, modelViewPdbBytes);
+        }
+        else
+        {
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly ass in assemblies)
+            {
+                string name = ass.GetName().Name;
+                if (name == "Unity.Model")
+                {
+                    this.modelAssembly = ass;
+                }
+                else if (name == "Unity.ModelView")
+                {
+                    this.modelViewAssembly = ass;
+                }
+
+                if (this.modelAssembly != null && this.modelViewAssembly != null)
+                {
+                    break;
+                }
+            }
+        }
+    }
+    
+    (Assembly hotfixAssembly, Assembly hotfixViewAssembly) = this.LoadHotfix();
+
+    World.Instance.AddSingleton<CodeTypes, Assembly[]>(new[]
+    {
+        typeof (World).Assembly, typeof (Init).Assembly, this.modelAssembly, this.modelViewAssembly, hotfixAssembly,
+        hotfixViewAssembly
+    });
+
+    IStaticMethod start = new StaticMethod(this.modelAssembly, "ET.Entry", "Start");
+    start.Run();
+}
+```
+
+如果你是Editor模式下的话,你应该会走到`this.enableDll`为true的分支
+通过执行CodeLoader中的Start方法,被遍历到的程序集有`World`类所在的程序集`Unity.Core`、`Init`类所在的程序集`Unity.Loader`、modelAssemBly`Unity.Model`,modelViewAssembly`Unity.ModelView`,hotfixAssembly`Unity.Hotfix`,hotfixViewAssembly`Unity.HotfixView`
+
+代入一下就是,通过AddSingleton方法,创建了CodeTypes实例,并将上面提到的程序集作为参数传入CodeType的Awake方法中.
+
+然后在modelAssembly`Unity.Model`中,找到`ET.Entry`类中的Start方法,并执行该方法,然后在该方法中,执行了`CodeTypes.Instance.CreateCode`方法,该方法会在上面收集到的程序集中,找到所有被标记了CodeAttribute属性的类,并将这些类实例化出来,这些类分别是
+- EntitySystemSingleton
+- MessageDispatcher MessagePatcher中的Awake方法中实例化了所有被标记为MessageHandlerAttribute属性的类
+- EventSystem
+- HttpDispatcher
+- LSEntitySystemSingleton
+- AIDispatcherComponent
+- ConsoleDispatcher
+- MessageSessionDispatcher
+- NumericWatcherComponent
+- UIEventComponent
+也就是说,上面这十个类,通过执行ET的Entry方法之后就已经被创建出来了. 
+
+# 如何让一个类变得可以await？
+
