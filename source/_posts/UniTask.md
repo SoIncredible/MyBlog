@@ -4,7 +4,7 @@ abbrlink: 9955c97f
 date: 2025-03-20 22:03:33
 tags:
 categories:
-cover:
+cover: https://public.ysjf.com/mediastorm/material/material/%E5%AE%89%E5%85%8B%E9%9B%B7%E5%A5%87-03-%E8%BF%9C%E6%99%AF-20250107.JPG
 description:
 swiper_index:
 sticky:

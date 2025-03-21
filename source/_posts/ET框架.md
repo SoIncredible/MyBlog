@@ -9,7 +9,7 @@ description:
 swiper_index:
 sticky:
 ---
-这段时间笔者工作清闲，在工位也没有摸鱼，先是废寝忘食般速通了YooAsset的源码之后，感觉自己在看别人代码这件事上摸到了一些门路
+这段时间笔者工作清闲，在工位也没有摸鱼，先是废寝忘食般速通了YooAsset的源码之后，感觉自己在看别人代码这件事上摸到了一些门路, 不论ET、YooAsset还是UniTask它们都各自实现了自己的异步操作,对于异步操作更详细的介绍在[UniTask框架梳理]()这篇博客中.
 
 一上来先不用管什么帧同步状态同步之类的，先把Demo的源码看明白.笔者尝试从游戏启动时，ET执行的第一行代码开始，历经代码加载、资源加载、登录、跳转逻辑、一直梳理到Demo中点击地板移动角色操作的所有逻辑。ET在初始化过程中涉及到了反射和属性的知识，那么结合ET与反射、属性的详细内容在[这篇博客](https://soincredible.github.io/posts/cd96d12/)中
 
@@ -204,7 +204,9 @@ PathfindComponnetSystem
 # 角色梳理
 
 - World 
-    - singletons : Dictionary<Type,ASingleton> Demo中所有的Singleton都被存入这个字典中，笔者认为需要在World中统一Dispose，毕竟都是Singleton了，任何地方都可以通过Instance直接访问到这些单例。
+    - singletons : Dictionary<Type,ASingleton> Demo中所有的Singleton都被存入这个字典中，笔者认为该字段存在的目的主要是在World被销毁时统一将所有singleton Dispose，毕竟都是Singleton了，任何地方都可以通过Instance直接访问到这些单例。
+- FiberManager 
+  这是ET中一个比较重要的模块,
 
 
 在`CodeTypes`脚本的Awake方法中
@@ -326,3 +328,5 @@ public void Start()
 
 # 如何让一个类变得可以await？
 
+ThreadSynchronizationContext的作用?
+  - https://learn.microsoft.com/en-us/archive/msdn-magazine/2011/february/msdn-magazine-parallel-computing-it-s-all-about-the-synchronizationcontext
