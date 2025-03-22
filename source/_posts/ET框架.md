@@ -335,7 +335,15 @@ ThreadSynchronizationContext的作用?
 # 
 
 Invoke由EventSystem维护,Invoker的Handle在EventSystem中调用,**MailBoxType_OrderedMessageHandler**属于Invoker,因此MailBox在Event System中被Invoke,然后
-在MailBox中驱动MessageDispatcher调用Handle
+在**MailBox**中驱动MessageDispatcher调用Handle
+
+-----
+登录流程大概如下
+ClientSenderComponentSystem中的LoginAsync中的
+`self.fiberId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, 0, SceneType.NetClient, "");`
+调用了FiberManager中的`public async ETTask<int> Create(SchedulerType schedulerType, int fiberId, int zone, SceneType sceneType, string name)`方法，这个方法中执行了`await EventSystem.Instance.Invoke<FiberInit, ETTask>((long)sceneType, new FiberInit() {Fiber = fiber});` 然后**EventSystem驱动Invoker， Invoker驱动Dispatcher， Dispatcher驱动Handler** 登录流程处理完毕
+----
+
 MessageDispatcher维护messageHandlers,服务器处理登录逻辑的类是Main2NetClient_LoginHandler, 也就是由
 
 ProcessInnerSenderSystem
@@ -346,7 +354,8 @@ UpdateSystem在每一帧都会执行, UpdateSystem由谁驱动? 由**EntitySyste
 
 
 大概看明白了 登录的时候把登录请求放到一个队列里面 然后在Update的时候去这个队列里面拿登录请求进行处理. 但是对于上层 什么时候Update还需要再看一下,应该就是每一帧都会Update,但是因为这个登录算是同步的,
-就得看发起登录的 **ET_Client_UILoginComponent_AwakeSystem**和处理登录的**Main2NetClient_LoginHandler**谁先执行谁后执行了,先睡觉了
+就得看发起登录的 **ET_Client_UILoginComponent_AwakeSystem**和处理登录的**Main2NetClient_LoginHandler**谁先执行谁后执行了
+也就是看EntitySystem或者就叫AwakeSystem的Awake和MessageHandler的Handle在同一帧中的处理顺序了
 
 前一帧登录请求 
 
