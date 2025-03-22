@@ -141,3 +141,5 @@ sticky: 100
 
 # Cover
 - https://www.notion.so/images/page-cover/met_gerome_1890.jpg
+
+不知道从哪里听到的一句话 程序员只要能把云、水、草的Shader渲染搞明白就算过关了。

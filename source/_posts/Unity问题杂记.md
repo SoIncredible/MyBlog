@@ -1178,3 +1178,7 @@ Root
  - Config目录
 ```
 所以如果你要使用AssetDataBase加载某一个资源的话,资源的路径一定是"Assets/.."起手的
+
+# Unity关闭自动编译
+
+https://blog.csdn.net/qinglingLS/article/details/109480569
