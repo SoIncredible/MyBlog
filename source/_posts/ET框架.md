@@ -330,3 +330,25 @@ public void Start()
 
 ThreadSynchronizationContext的作用?
   - https://learn.microsoft.com/en-us/archive/msdn-magazine/2011/february/msdn-magazine-parallel-computing-it-s-all-about-the-synchronizationcontext
+
+
+# 
+
+Invoke由EventSystem维护,Invoker的Handle在EventSystem中调用,**MailBoxType_OrderedMessageHandler**属于Invoker,因此MailBox在Event System中被Invoke,然后
+在MailBox中驱动MessageDispatcher调用Handle
+MessageDispatcher维护messageHandlers,服务器处理登录逻辑的类是Main2NetClient_LoginHandler, 也就是由
+
+ProcessInnerSenderSystem
+MessageQueue
+**ET_ProcessInnerSender_UpdateSystem**被标记为了**EntitySystem**,由EntitySystemSingleton管理
+**ET_ProcessInnerSender_UpdateSystem**的Update中执行Fetch操作,看起来是要处理发送来的请求.
+UpdateSystem在每一帧都会执行, UpdateSystem由谁驱动? 由**EntitySystem**
+
+
+大概看明白了 登录的时候把登录请求放到一个队列里面 然后在Update的时候去这个队列里面拿登录请求进行处理. 但是对于上层 什么时候Update还需要再看一下,应该就是每一帧都会Update,但是因为这个登录算是同步的,
+就得看发起登录的 **ET_Client_UILoginComponent_AwakeSystem**和处理登录的**Main2NetClient_LoginHandler**谁先执行谁后执行了,先睡觉了
+
+前一帧登录请求 
+
+紧接着在Update中
+

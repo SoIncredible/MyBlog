@@ -1168,3 +1168,13 @@ namespace DDZ
 }
 
 ```
+
+# 在Unity工程中使用相对路径
+
+如果你在C#中看到这样的目录:` configFilePath = $"../Config/Excel/s/{Options.Instance.StartConfig}/{configType.Name}.bytes"; `,它代表的是跟Unity工程的根目录同级下有一个Config目录:
+```
+Root
+ - Unity工程目录
+ - Config目录
+```
+所以如果你要使用AssetDataBase加载某一个资源的话,资源的路径一定是"Assets/.."起手的
