@@ -13,6 +13,14 @@ sticky:
 
 一上来先不用管什么帧同步状态同步之类的，先把Demo的源码看明白.笔者尝试从游戏启动时，ET执行的第一行代码开始，历经代码加载、资源加载、登录、跳转逻辑、一直梳理到Demo中点击地板移动角色操作的所有逻辑。ET在初始化过程中涉及到了反射和属性的知识，那么结合ET与反射、属性的详细内容在[这篇博客](https://soincredible.github.io/posts/cd96d12/)中
 
+# ET客户端启动流程梳理
+
+FiberInit_Main:
+
+# ET服务端启动流程梳理
+
+
+
 基本的继承结构
 
 - ETTask<T>
@@ -354,7 +362,7 @@ UpdateSystem在每一帧都会执行, UpdateSystem由谁驱动? 由**EntitySyste
 
 
 大概看明白了 登录的时候把登录请求放到一个队列里面 然后在Update的时候去这个队列里面拿登录请求进行处理. 但是对于上层 什么时候Update还需要再看一下,应该就是每一帧都会Update,但是因为这个登录算是同步的,
-就得看发起登录的 **ET_Client_UILoginComponent_AwakeSystem**和处理登录的**Main2NetClient_LoginHandler**谁先执行谁后执行了
+就得看发起登录的 **ET_Client_UILoginComponent_AwakeSystem**和处理登录的**Main2NetClient_LoginHandler** **ET_ProcessInnerSender_UpdateSystem** 谁先执行谁后执行了
 也就是看EntitySystem或者就叫AwakeSystem的Awake和MessageHandler的Handle在同一帧中的处理顺序了
 
 前一帧登录请求 
@@ -363,5 +371,6 @@ UpdateSystem在每一帧都会执行, UpdateSystem由谁驱动? 由**EntitySyste
 
 # 参考资料
 
+[ET8框架的讲解视频](https://www.bilibili.com/video/BV1rhYyeKExP/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102)
 [一篇将服务器架构历史的博客](https://blog.csdn.net/Q540670228/article/details/123385080?spm=1001.2014.3001.5502)
 
