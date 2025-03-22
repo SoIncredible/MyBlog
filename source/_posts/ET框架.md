@@ -361,3 +361,7 @@ UpdateSystem在每一帧都会执行, UpdateSystem由谁驱动? 由**EntitySyste
 
 紧接着在Update中
 
+# 参考资料
+
+[一篇将服务器架构历史的博客](https://blog.csdn.net/Q540670228/article/details/123385080?spm=1001.2014.3001.5502)
+
