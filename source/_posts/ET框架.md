@@ -369,6 +369,11 @@ UpdateSystem在每一帧都会执行, UpdateSystem由谁驱动? 由**EntitySyste
 
 紧接着在Update中
 
+# 项目组织
+
+基本上重要的脚本都是在Unity工程下面,在ET.sln视角下,看到的Unity外面几个目录下有很多代码,这些代码都是类似超链接的东西连接到Unity工程中的.
+
+
 # 参考资料
 
 [ET8框架的讲解视频](https://www.bilibili.com/video/BV1rhYyeKExP/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102)
