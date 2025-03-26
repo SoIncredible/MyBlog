@@ -1,5 +1,5 @@
 ---
-title: ET中反射与属性的使用
+title: ET中反射与特性的使用
 tags:
   - ET
   - C#
