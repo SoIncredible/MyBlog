@@ -1,8 +1,9 @@
 ---
 title: ET框架前置知识总结
+abbrlink: a8cdc42b
 date: 2025-03-25 16:21:26
-tags:
-categories:
+tags: ET
+categories: ET
 cover:
 description:
 swiper_index:

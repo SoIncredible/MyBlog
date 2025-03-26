@@ -1,10 +1,10 @@
 ---
 title: ET框架
-categories: 硬技能
+categories: ET
 cover: 'https://www.notion.so/images/page-cover/met_horace_pippin.jpg'
 abbrlink: 9c5dbe31
 date: 2025-3-20 17:50:31
-tags:
+tags: ET
 description:
 swiper_index:
 sticky:

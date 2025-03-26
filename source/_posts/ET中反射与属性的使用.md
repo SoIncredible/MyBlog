@@ -1,12 +1,13 @@
 ---
-title: 反射委托和事件
+title: ET中反射与属性的使用
 tags:
+  - ET
   - C#
-categories: 学习笔记
+categories: ET
 abbrlink: cd96d12
 date: 2023-03-17 15:48:00
 cover: https://www.notion.so/images/page-cover/met_the_unicorn_in_captivity.jpg
-description: 主要介绍了委托
+description:
 swiper_index: 
 sticky: 
 ---
