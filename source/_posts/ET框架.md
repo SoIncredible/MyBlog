@@ -378,4 +378,5 @@ UpdateSystem在每一帧都会执行, UpdateSystem由谁驱动? 由**EntitySyste
 
 [ET8框架的讲解视频](https://www.bilibili.com/video/BV1rhYyeKExP/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102)
 [一篇将服务器架构历史的博客](https://blog.csdn.net/Q540670228/article/details/123385080?spm=1001.2014.3001.5502)
+[一篇介绍C#和ET异步方法的帖子](https://et-framework.cn/d/2067-fiber)
 
