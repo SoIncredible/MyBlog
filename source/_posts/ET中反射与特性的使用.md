@@ -178,6 +178,28 @@ public void Awake()
 
 这段代码中的`GetCustomAttributes(typeof(MessageSessionHandlerAttribute), true);`接口
 
+# AIHandlerAttribute
+# CodeAttribute
+# ConfigAttribute
+# ConsoleHandlerAttribute
+# EnableClassAttribute
+# EntitySystemAttribute
+# EntitySystemOfAttribute
+# EventAttribute
+# HttpHandlerAttribute
+# InvokeAttribute
+# LSEntitySystemAttribute
+# LSEntitySystemOfAttribute
+# MessageAttribute
+# MessageHandlerAttribute
+## MessageLocationHandlerAttribute
+# MessageSessionHandlerAttritube
+# NumericWAtcherAttribute
+# ResponseTypeAttribute
+# UIEventAttribute
+
+
+
 ---
 
 # 背景

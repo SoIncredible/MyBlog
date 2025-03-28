@@ -184,9 +184,6 @@ Entity中维护了一个`component`字典,表示这个entity上挂载的Entity�
 # Actor模型
 调用Activator.CreateInstance(type);难道不需要考虑带参数的构造方法吗?
 
-# ET框架看起来可以自动创建一些System的脚本,这是如何做到的 看起来并不是在Unity侧进行的操作
-
-
 # ICriticalNotifyCompletion接口的作用
 
 在Init的Update中执行着
@@ -211,10 +208,8 @@ PathfindComponnetSystem
 
 # 角色梳理
 
-- World 
-    - singletons : Dictionary<Type,ASingleton> Demo中所有的Singleton都被存入这个字典中，笔者认为该字段存在的目的主要是在World被销毁时统一将所有singleton Dispose，毕竟都是Singleton了，任何地方都可以通过Instance直接访问到这些单例。
-- FiberManager 
-  这是ET中一个比较重要的模块,
+## FiberManager 
+这是ET中一个比较重要的模块,
 
 
 在`CodeTypes`脚本的Awake方法中
@@ -334,10 +329,6 @@ public void Start()
 - UIEventComponent
 也就是说,上面这十个类,通过执行ET的Entry方法之后就已经被创建出来了. 
 
-# 如何让一个类变得可以await？
-
-ThreadSynchronizationContext的作用?
-  - https://learn.microsoft.com/en-us/archive/msdn-magazine/2011/february/msdn-magazine-parallel-computing-it-s-all-about-the-synchronizationcontext
 
 
 # 
@@ -372,6 +363,11 @@ UpdateSystem在每一帧都会执行, UpdateSystem由谁驱动? 由**EntitySyste
 # 项目组织
 
 基本上重要的脚本都是在Unity工程下面,在ET.sln视角下,看到的Unity外面几个目录下有很多代码,这些代码都是类似超链接的东西连接到Unity工程中的.
+
+# 客户端启动流程梳理
+
+`Init`脚本
+
 
 
 # 参考资料
