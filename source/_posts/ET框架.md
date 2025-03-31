@@ -364,6 +364,8 @@ UpdateSystem在每一帧都会执行, UpdateSystem由谁驱动? 由**EntitySyste
 
 基本上重要的脚本都是在Unity工程下面,在ET.sln视角下,看到的Unity外面几个目录下有很多代码,这些代码都是类似超链接的东西连接到Unity工程中的.
 
+ET中的HotFix、HotFixView、Model、ModelView四个程序集都是以dll的方式加载到内存中运行的，因此如果你修改了这四个程序集里面的代码，你可能需要重新遍历一下才能把更新的内容放进程序集中。
+
 # 客户端启动流程梳理
 
 `Init`脚本调用CodeLoader.Start();
