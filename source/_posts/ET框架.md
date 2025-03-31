@@ -366,7 +366,9 @@ UpdateSystem在每一帧都会执行, UpdateSystem由谁驱动? 由**EntitySyste
 
 # 客户端启动流程梳理
 
-`Init`脚本
+`Init`脚本调用CodeLoader.Start();
+Entry的Start
+
 
 
 

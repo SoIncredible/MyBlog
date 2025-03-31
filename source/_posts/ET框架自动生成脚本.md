@@ -15,3 +15,6 @@ ET框架仓库下其实是有两个工程的，虽然这两个工程里面的脚
 在Share这个模块中`ETSystemGenerator.cs`这个脚本里面！
 
 > 问题 这些代码自动生成的时机是什么时候？
+
+
+# GeneratorExecutionContext
