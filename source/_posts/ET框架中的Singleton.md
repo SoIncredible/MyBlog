@@ -4,7 +4,7 @@ abbrlink: 12f854cb
 date: 2025-03-28 14:23:01
 tags:
 categories:
-cover:
+cover: https://public.ysjf.com/content/title-image/%E8%88%AA%E6%8B%8D-%E9%98%BF%E8%A5%BF%E9%87%8C%E8%A5%BF%E5%A4%A7%E8%8D%89%E5%8E%9F12-%E7%A9%BA%E9%95%9C.jpg
 description:
 swiper_index:
 sticky:

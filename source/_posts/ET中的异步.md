@@ -10,6 +10,8 @@ swiper_index:
 sticky:
 ---
 
+YooAsset、ETTask、UniTask三者异步的实现方式的区别是什么？
+
 主要是一些异步的操作看起来比较吃力，因此在这边博客中对C#中的异步操作做一个简单的介绍。
 
 # 多线程系列
@@ -130,8 +132,6 @@ C#中有三种比较常用的返回类型: void、Task<TResult>和Task
 # TaskCompletionSource是什么？
 
 按照笔者的理解，TaskCompletionSource可以将一个基于回调的异步操作转换成一个可以被await的异步操作。
-
-在ET中
 
 
 抛开ET的一个例子，比如协程 协程是不可以被await的

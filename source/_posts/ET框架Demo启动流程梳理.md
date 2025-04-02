@@ -1,5 +1,5 @@
 ---
-title: ET框架
+title: ET框架Demo启动流程梳理
 categories: ET
 cover: 'https://www.notion.so/images/page-cover/met_horace_pippin.jpg'
 abbrlink: 9c5dbe31
@@ -9,15 +9,90 @@ description:
 swiper_index:
 sticky:
 ---
-这段时间笔者工作清闲，在工位也没有摸鱼，先是废寝忘食般速通了YooAsset的源码之后，感觉自己在看别人代码这件事上摸到了一些门路, 不论ET、YooAsset还是UniTask它们都各自实现了自己的异步操作,对于异步操作更详细的介绍在[UniTask框架梳理]()这篇博客中.
+这段时间笔者工作清闲，在工位也没有摸鱼，先是废寝忘食般速通了YooAsset的源码之后，感觉自己在看别人代码这件事上摸到了一些门路, 不论ET、YooAsset还是UniTask它们都各自实现了自己的异步操作,对于异步操作更详细的介绍在[UniTask框架梳理]()这篇博客中。ET的作者自称ETTask的实现是要比UniTask更加高效的。
 
 一上来先不用管什么帧同步状态同步之类的，先把Demo的源码看明白.笔者尝试从游戏启动时，ET执行的第一行代码开始，历经代码加载、资源加载、登录、跳转逻辑、一直梳理到Demo中点击地板移动角色操作的所有逻辑。ET在初始化过程中涉及到了反射和属性的知识，那么结合ET与反射、属性的详细内容在[这篇博客](https://soincredible.github.io/posts/cd96d12/)中
 
+> 注意 本篇博客侧重业务层的启动流程梳理，不会过多探讨ET如何实现进程间通讯、客户端服务端通讯等的具体实现。
+
 # ET客户端启动流程梳理
 
-FiberInit_Main:
+我们就从`Entry.cs`脚本中`StartAsync`方法的最后一行`FiberManager.Create`方法开始看吧，这个方法内部有如下代码：
+```
+fiber.ThreadSynchronizationContext.Post(async () =>
+{
+    try
+    {
+        await EventSystem.Instance.Invoke<FiberInit, ETTask>((long)sceneType, new FiberInit() {Fiber = fiber});
+        tcs.SetResult(true);
+    }
+    catch (Exception e)
+    {
+        Log.Error($"init fiber fail: {sceneType} {e}");
+    }
+});
+```
+这段代码会通过`EventSystem`触发参数为`FiberInit`、`SceneType为Main（因为调用FiberManager.Create方法的Entry传进来的SceneType就是Main)`的InvokeHandler的`Handler`方法，也就是`FiberInit_Main.cs`脚本中的的`Handle`方法，并且将`FiberInit`参数传递到了这个方法内。
+
+因为我们这里关心的是客户端部分，所以我们看`await EventSystem.Instance.PublishAsync(root, new EntryEvent3());`这一行，也就是说它会通过`EventSystem`触发参数是`EntryEvent3`、`SceneType是Main`的Event的`Run`方法，也就是`EntryEvent3_InitClient`中的`Run`方法。
+
+我们注意到，在该方法内先是给传进来的这个`Scene`类型的root字段添加了一些Component: `GlobalComponent`、`UIGlobalComponent`、`UIComponent`、`ResourcesLoaderComponent`、`PlayerComponent`、`CurrentScenesComponent`。然后根据加载的`GlobalConfig`中的`AppType`字段修改了传进来的`root`参数的`SceneType`字段，在`Demo`中该字段就是`Demo`。接着调用了`await EventSystem.Instance.PublishAsync(root, new AppStartInitFinish());`这一行，也就是通过`EventSystem`触发参数是`AppStartInitFinish`、`SceneType是Demo`的Event的`Run`方法，也就是`AppStartInitFinish_CreateLoginUI.cs`中的`Run`方法。
+
+到了`AppStartInitFinish_CreateLoginUI.cs`这里就不需要说太多了，顺着代码调用路径点下去就能找到`UILoginEvent.cs`这个脚本中的`OnCreate`方法，在这个方法的`ui.AddComponent<UILoginComponent>();`这一行触发了`UILoginComponentSystem`中的`Awake`方法，在这个`Awake`方法中，给登录按钮注册了`OnLogin`方法。由`OnLogin`方法我们执行到了`LoginHelper.cs`脚本中的`Login`方法，该方法要求你传一个类型为`Scene`的字段，这个字段就是从我们最一开始说的`Entry.cs`脚本中`StartAsync`方法的最后一行`FiberManager.Create`方法创建的那个Fiber里面的`Root`字段。**`LoginHelper.cs`脚本中的`Login`方法中执行客户端向服务器发送登录请求，并等待服务器的回应继续执行之后的逻辑**，也就是这一行`long playerId = await clientSenderComponent.LoginAsync(account, password);`，到此为止，客户端所有该做的事情就都做完了，现在客户端已经把请求发送给了服务端，等待着服务端的答复。
+
 
 # ET服务端启动流程梳理
+
+我们回到`FiberInit_Main.cs`这个脚本，这次我们要以`EntryEvent2`为线索来看一下服务端的启动流程，我们需要找到参数为`EntryEvent2`、`SecneType为Main`的`AEvent`，也就是`EntryEvent2_InitServer`。笔者直接把该类的Run方法贴在这里：
+```
+protected override async ETTask Run(Scene root, EntryEvent2 args)
+{
+    switch (Options.Instance.AppType)
+    {
+        case AppType.Server:
+        {
+            // AppType 的默认值就是Server
+            int process = root.Fiber.Process;
+            StartProcessConfig startProcessConfig = StartProcessConfigCategory.Instance.Get(process);
+            if (startProcessConfig.Port != 0)
+            {
+                await FiberManager.Instance.Create(SchedulerType.ThreadPool, ConstFiberId.NetInner, 0, SceneType.NetInner, "NetInner");
+            }
+
+            // 根据配置创建纤程
+            // 应该是会创建12个Scene 这些Scene中有重复的
+            var processScenes = StartSceneConfigCategory.Instance.GetByProcess(process);
+            foreach (StartSceneConfig startConfig in processScenes)
+            {
+                await FiberManager.Instance.Create(SchedulerType.ThreadPool, startConfig.Id, startConfig.Zone, startConfig.Type, startConfig.Name);
+            }
+
+            break;
+        }
+        case AppType.Watcher:
+        {
+            root.AddComponent<WatcherComponent>();
+            break;
+        }
+        case AppType.GameTool:
+        {
+            break;
+        }
+    }
+
+    if (Options.Instance.Console == 1)
+    {
+        root.AddComponent<ConsoleComponent>();
+    }
+}
+```
+
+# ET服务端与客户端的通信流程
+
+我们已经知道了客户端和服务端各自的启动流程了，客户端和服务端是从哪里建立起的连接呢？ 
+就看一下 客户端怎么知道往哪个IP地址发请求
+
+现在让我们回到`LoginHelper.cs`脚本中的`Login`方法的`long playerId = await clientSenderComponent.LoginAsync(account, password);`这一行。接下来我们要看一下，客户端是怎么把消息发出去的，服务端是怎么接收到来自客户端的消息、处理客户端的消息然后返回给客户端，客户端收到服务器返回的消息是怎么处理的以及客户端处理完服务器返回的消息之后又做了什么。本小节涉及到部分ET框架层面的实现。
 
 
 
@@ -50,6 +125,7 @@ FiberInit_Main:
             - TimerComponent
             - MoveComponent : IAwake, IDestroy
             - GameObjectComponent : IAwake, IDestroy
+            - NetComponent
         - ASingleton
             - Singleton<T>
                 - CodeLoader
@@ -77,6 +153,17 @@ FiberInit_Main:
         - MessageSessionHandler<Request,Response>
 - AEvent<S,A> : IEvent
     - ChangePosition_SyncGameObjectPos
+- AChanel
+  - KChannel
+  - TChannel
+  - WChannel
+- AService
+  - KService
+  - TService
+  - WService
+- IKcpTransport
+  - TcpTransport
+  - UdpTransport
 
 
 - Fiber
@@ -160,26 +247,8 @@ SystemObject
 AwakeSystem
 UpdateSystem
 
-# Fiber
 
-Fiber是ET中比较重要的一个角色
 
-ActorId
-Address
-Fiber
-
-# Entity
-
-目前我没有找到ET是如何往这个componnets里面添加东西的
-Entity中维护了一个`component`字典,表示这个entity上挂载的Entity组件,而且Entity中还维护了一套Entity的父子关系
-
-# ET中用到的其他Attribute
-
-[BsonIgnore]
-[UnityEngine.HideInInspector]
-[MemoryPackIgnore]
-
-有的Attribute比如ChildOf属性，由[ChildOf]和[ChildOf(SomeClass)]这两者有什么区别？
 
 # Actor模型
 调用Activator.CreateInstance(type);难道不需要考虑带参数的构造方法吗?
@@ -204,9 +273,6 @@ PathfindComponnetSystem
 
 真正在前端做表现的是通过`ChangePosition_SyncGameObjectPos`类
 
-# 流程梳理
-
-# 角色梳理
 
 ## FiberManager 
 这是ET中一个比较重要的模块,
@@ -331,34 +397,6 @@ public void Start()
 
 
 
-# 
-
-Invoke由EventSystem维护,Invoker的Handle在EventSystem中调用,**MailBoxType_OrderedMessageHandler**属于Invoker,因此MailBox在Event System中被Invoke,然后
-在**MailBox**中驱动MessageDispatcher调用Handle
-
------
-登录流程大概如下
-ClientSenderComponentSystem中的LoginAsync中的
-`self.fiberId = await FiberManager.Instance.Create(SchedulerType.ThreadPool, 0, SceneType.NetClient, "");`
-调用了FiberManager中的`public async ETTask<int> Create(SchedulerType schedulerType, int fiberId, int zone, SceneType sceneType, string name)`方法，这个方法中执行了`await EventSystem.Instance.Invoke<FiberInit, ETTask>((long)sceneType, new FiberInit() {Fiber = fiber});` 然后**EventSystem驱动Invoker， Invoker驱动Dispatcher， Dispatcher驱动Handler** 登录流程处理完毕
-----
-
-MessageDispatcher维护messageHandlers,服务器处理登录逻辑的类是Main2NetClient_LoginHandler, 也就是由
-
-ProcessInnerSenderSystem
-MessageQueue
-**ET_ProcessInnerSender_UpdateSystem**被标记为了**EntitySystem**,由EntitySystemSingleton管理
-**ET_ProcessInnerSender_UpdateSystem**的Update中执行Fetch操作,看起来是要处理发送来的请求.
-UpdateSystem在每一帧都会执行, UpdateSystem由谁驱动? 由**EntitySystem**
-
-
-大概看明白了 登录的时候把登录请求放到一个队列里面 然后在Update的时候去这个队列里面拿登录请求进行处理. 但是对于上层 什么时候Update还需要再看一下,应该就是每一帧都会Update,但是因为这个登录算是同步的,
-就得看发起登录的 **ET_Client_UILoginComponent_AwakeSystem**和处理登录的**Main2NetClient_LoginHandler** **ET_ProcessInnerSender_UpdateSystem** 谁先执行谁后执行了
-也就是看EntitySystem或者就叫AwakeSystem的Awake和MessageHandler的Handle在同一帧中的处理顺序了
-
-前一帧登录请求 
-
-紧接着在Update中
 
 # 项目组织
 

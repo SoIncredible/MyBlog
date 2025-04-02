@@ -12,6 +12,12 @@ swiper_index:
 sticky: 
 ---
 
+# ET中用到的其他Attribute
+
+[BsonIgnore]
+[UnityEngine.HideInInspector]
+[MemoryPackIgnore]
+
 > 2025.3.20更新
 
 笔者最近在看ET框架的Demo,里面有一个名为`CodeLoader`的脚本,里面用到了反射的东西
