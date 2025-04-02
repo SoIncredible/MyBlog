@@ -4,7 +4,7 @@ abbrlink: ef16867e
 date: 2025-03-28 19:09:03
 tags:
 categories:
-cover:
+cover: https://public.ysjf.com/mediastorm/material/material/%E6%97%B6%E4%BB%A3%E5%B9%BF%E5%9C%BA-01.JPG
 description:
 swiper_index:
 sticky:
