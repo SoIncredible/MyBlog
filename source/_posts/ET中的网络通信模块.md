@@ -9,6 +9,5 @@ swiper_index:
 sticky:
 ---
 
-https://blog.csdn.net/u011041241/article/details/109574509
-
+[内网和外网之间的通信（端口映射原理）](https://blog.csdn.net/u011041241/article/details/109574509)
 [KCP协议详解](https://luyuhuang.tech/2020/12/09/kcp.html)
