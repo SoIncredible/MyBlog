@@ -43,6 +43,12 @@ fiber.ThreadSynchronizationContext.Post(async () =>
 
 # ET服务端启动流程梳理
 
+服务端的几个角色
+
+- Router
+- Realm
+- Gate
+
 我们回到`FiberInit_Main.cs`这个脚本，这次我们要以`EntryEvent2`为线索来看一下服务端的启动流程，我们需要找到参数为`EntryEvent2`、`SecneType为Main`的`AEvent`，也就是`EntryEvent2_InitServer`。笔者直接把该类的Run方法贴在这里：
 ```
 protected override async ETTask Run(Scene root, EntryEvent2 args)
@@ -94,6 +100,9 @@ protected override async ETTask Run(Scene root, EntryEvent2 args)
 
 现在让我们回到`LoginHelper.cs`脚本中的`Login`方法的`long playerId = await clientSenderComponent.LoginAsync(account, password);`这一行。接下来我们要看一下，客户端是怎么把消息发出去的，服务端是怎么接收到来自客户端的消息、处理客户端的消息然后返回给客户端，客户端收到服务器返回的消息是怎么处理的以及客户端处理完服务器返回的消息之后又做了什么。本小节涉及到部分ET框架层面的实现。
 
+
+流程
+客户端发起连接请求->Router服务器返回Realm地址->客户端根据Realm地址向服务器发送申请->
 
 # ET中的配置表
 
