@@ -95,6 +95,15 @@ protected override async ETTask Run(Scene root, EntryEvent2 args)
 现在让我们回到`LoginHelper.cs`脚本中的`Login`方法的`long playerId = await clientSenderComponent.LoginAsync(account, password);`这一行。接下来我们要看一下，客户端是怎么把消息发出去的，服务端是怎么接收到来自客户端的消息、处理客户端的消息然后返回给客户端，客户端收到服务器返回的消息是怎么处理的以及客户端处理完服务器返回的消息之后又做了什么。本小节涉及到部分ET框架层面的实现。
 
 
+# ET中的配置表
+
+
+- StartProcessConfig
+- StartMachineConfig
+- StartSceneConfig
+- StartZoneConfig
+
+---
 
 基本的继承结构
 
@@ -247,12 +256,6 @@ SystemObject
 AwakeSystem
 UpdateSystem
 
-
-
-
-# Actor模型
-调用Activator.CreateInstance(type);难道不需要考虑带参数的构造方法吗?
-
 # ICriticalNotifyCompletion接口的作用
 
 在Init的Update中执行着
@@ -403,14 +406,6 @@ public void Start()
 基本上重要的脚本都是在Unity工程下面,在ET.sln视角下,看到的Unity外面几个目录下有很多代码,这些代码都是类似超链接的东西连接到Unity工程中的.
 
 ET中的HotFix、HotFixView、Model、ModelView四个程序集都是以dll的方式加载到内存中运行的，因此如果你修改了这四个程序集里面的代码，你可能需要重新遍历一下才能把更新的内容放进程序集中。
-
-# 客户端启动流程梳理
-
-`Init`脚本调用CodeLoader.Start();
-Entry的Start
-
-
-
 
 # 参考资料
 
