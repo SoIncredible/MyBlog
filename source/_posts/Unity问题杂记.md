@@ -1182,3 +1182,6 @@ Root
 # Unity关闭自动编译
 
 https://blog.csdn.net/qinglingLS/article/details/109480569
+
+# Unity中使用的API Level
+https://blog.csdn.net/qq_36303853/article/details/145187274

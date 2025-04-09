@@ -1,5 +1,6 @@
 ---
 title: ET中的网络通信模块
+abbrlink: 3613bb98
 date: 2025-04-02 18:14:58
 tags:
 categories:

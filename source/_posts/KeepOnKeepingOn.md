@@ -10,6 +10,18 @@ sticky: 100
 ---
 
 
+- ET框架
+- Animancer
+- 行为树
+- 技能编辑器
+- 模型提取
+- YooAsset
+- Slate
+- Odin
+- [MagicPhysX](https://github.com/Cysharp/MagicPhysX) C#绑定物理库
+- [WorldStreamer](https://assetstore.unity.com/packages/tools/terrain/world-streamer-2-176482#description) 大地图加载方案
+- [UniStorm]()
+
 # TODO
 - ⭕️ 场景如果打了AssetBundle是如何加载的？和普通资源一样吗？-> AssetBundle博客补全
 - ⭕️ 反编译入门
@@ -59,6 +71,7 @@ sticky: 100
 - Godot
 - 算法
 - 设计模式
+- [Blender教程](https://www.bilibili.com/video/BV14u41147YH/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102)
 - [Vim]()
 - [MarkDown文档编写技巧](https://github.com/LearnShare/Learning-Markdown)
 - [Piccolo游戏引擎社区](https://www.piccoloengine.com/topics/node/feed/all)
