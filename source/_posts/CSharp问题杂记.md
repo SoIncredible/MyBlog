@@ -594,3 +594,257 @@ obj = temp + 1;
 如此依赖，obj指向了堆上值为11的对象。堆上值为10的对象就等待GC的回收，从上面这个角度可以稍微理解，为什么装箱拆箱会引起GC。
 
 所以，值类型装箱后是不能改变它的值的，装箱后的值具有恒定性（Immutable）的特点，如果想给引用类型的变量赋予新的值，那就需要再堆上另开辟新的内存空间，一旦一个值类型被装箱，它的值就没有办法改变了。
+
+# public class ObjectPool<T> where T : IPoolObject, new() new()的含义是什么?
+
+在 C# 中，`where T : new()` 是一个**泛型约束**，它表示泛型类型参数 `T` 必须具有一个**无参数的公共构造函数**。这意味着使用 `new()` 约束的类型 `T` 必须满足以下条件：
+
+1. `T` 必须是一个非抽象类（即不能是抽象类或接口）。
+2. `T` 必须有一个无参数的公共构造函数（即 `public T()`）。
+
+在你的例子中：
+
+```csharp
+public class ObjectPool<T> where T : IPoolObject, new()
+```
+
+这段代码的含义是：
+- `T` 是一个泛型类型参数。
+- `T` 必须实现 `IPoolObject` 接口（`where T : IPoolObject`）。
+- `T` 必须具有一个无参数的公共构造函数（`where T : new()`）。
+
+---
+
+### **`new()` 的作用**
+使用 `new()` 约束后，代码中可以直接使用 `new T()` 来创建类型 `T` 的实例。因为编译器知道 `T` 满足无参数构造函数的约束，所以可以安全地生成实例。
+
+#### 示例代码
+```csharp
+public interface IPoolObject
+{
+    void Reset();
+}
+
+public class ObjectPool<T> where T : IPoolObject, new()
+{
+    private List<T> pool = new List<T>();
+
+    public T GetObject()
+    {
+        if (pool.Count > 0)
+        {
+            T obj = pool[0];
+            pool.RemoveAt(0);
+            return obj;
+        }
+        else
+        {
+            // 使用 new T() 创建一个新的实例
+            return new T();
+        }
+    }
+
+    public void ReturnObject(T obj)
+    {
+        obj.Reset();
+        pool.Add(obj);
+    }
+}
+
+public class MyPoolObject : IPoolObject
+{
+    public void Reset()
+    {
+        Console.WriteLine("Resetting object...");
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        ObjectPool<MyPoolObject> pool = new ObjectPool<MyPoolObject>();
+
+        // 获取对象
+        MyPoolObject obj = pool.GetObject();
+        Console.WriteLine("Object created");
+
+        // 返回对象
+        pool.ReturnObject(obj);
+    }
+}
+```
+
+#### 输出
+```
+Object created
+Resetting object...
+```
+
+#### 解释
+1. **`new T()`**：在 `GetObject()` 方法中，当池中没有可用对象时，直接通过 `new T()` 创建一个新的对象。
+2. **`where T : new()`**：确保泛型类型参数 `T` 有一个无参数的构造函数，因此 `new T()` 是合法的。
+3. **`where T : IPoolObject`**：确保 `T` 实现了 `IPoolObject` 接口，因此可以调用 `Reset()` 方法。
+
+---
+
+### **为什么需要 `new()` 约束？**
+在 C# 中，泛型类型参数是未知的类型，编译器无法确定类型 `T` 是否具有构造函数。如果你尝试在没有 `new()` 约束的情况下使用 `new T()`，编译器会报错。
+
+#### 错误示例
+```csharp
+public class ObjectPool<T>
+{
+    public T CreateObject()
+    {
+        // 编译错误：T 必须具有无参数构造函数
+        return new T();
+    }
+}
+```
+
+#### 错误信息
+```
+'new()' constraint must be used on type parameter 'T' to create instances of the type.
+```
+
+#### 解决方法
+添加 `new()` 约束：
+```csharp
+public class ObjectPool<T> where T : new()
+{
+    public T CreateObject()
+    {
+        return new T();
+    }
+}
+```
+
+---
+
+### **`new()` 的限制**
+虽然 `new()` 约束允许你使用 `new T()`，但它有以下限制：
+1. **只能调用无参数的构造函数**：
+   - 如果 `T` 只有带参数的构造函数（例如 `T(int value)`），则无法使用 `new()` 约束。
+   - 解决方案是通过工厂模式或委托来创建对象，而不是直接使用 `new T()`。
+
+   ```csharp
+   public class ObjectPool<T> where T : IPoolObject
+   {
+       private Func<T> objectFactory;
+
+       public ObjectPool(Func<T> factory)
+       {
+           objectFactory = factory;
+       }
+
+       public T CreateObject()
+       {
+           return objectFactory();
+       }
+   }
+   ```
+
+2. **不能用于抽象类或接口**：
+   - `new()` 约束要求类型 `T` 是可以实例化的（非抽象类），因此不能直接用于抽象类或接口。
+
+---
+
+### **总结**
+- `new()` 是一个泛型约束，表示泛型类型参数必须具有一个无参数的公共构造函数。
+- 它允许在泛型类或方法中通过 `new T()` 创建实例。
+- 常用于需要动态创建泛型类型实例的场景，比如对象池、工厂模式等。
+- 结合其他约束（如接口约束 `where T : IPoolObject`），可以更灵活地定义泛型类的行为。
+
+# 固定长度字符串
+
+如果你希望 `_moveStrus[posY, posX].moveDir` 的输出是一个固定长度的字符串，可以通过格式化字符串的方式来实现。`BrickMoveDir` 是一个枚举值，默认会通过 `ToString()` 输出枚举的名称。如果你希望将其输出为固定长度，可以通过以下方式处理：
+
+---
+
+### **方法 1：使用字符串格式化并填充空格**
+你可以用 `String.Format` 或插值字符串（C# 6.0 及以上支持）来对值进行格式化，并通过指定固定宽度填充空格。
+
+#### 示例代码
+```csharp
+sb.AppendFormat("{0,-10}", _moveStrus[posY, posX].moveDir);
+```
+
+- `{0,-10}` 表示将第一个参数的值左对齐，并确保占用 10 个字符的宽度。如果值的长度不足 10，则填充空格；如果值的长度超过 10，则不会截断。
+
+或者使用字符串插值的方式：
+```csharp
+sb.Append($"{_moveStrus[posY, posX].moveDir,-10}");
+```
+
+---
+
+### **方法 2：通过 `PadRight` 或 `PadLeft` 填充**
+你可以将 `moveDir` 转换为字符串后，使用 `PadRight`（左对齐）或 `PadLeft`（右对齐）来填充到固定长度。
+
+#### 示例代码
+```csharp
+sb.Append(_moveStrus[posY, posX].moveDir.ToString().PadRight(10));
+```
+
+- `PadRight(10)` 会将字符串填充到 10 个字符宽度，右侧补空格。
+- 如果需要右对齐，可以使用 `PadLeft(10)`。
+
+---
+
+### **方法 3：加上 `\t` 制表符**
+如果你希望使用制表符（`\t`）来对齐列，可以在每个值后面追加一个 `\t`。不过，制表符的宽度在不同环境下可能会有所不同（通常为 4 或 8 个字符），因此不推荐用于精确对齐。
+
+#### 示例代码
+```csharp
+sb.Append(_moveStrus[posY, posX].moveDir + "\t");
+```
+
+---
+
+### **方法 4：将枚举值转换为整数并格式化**
+如果你希望输出的值是固定宽度的数字（而不是枚举名称），可以将 `BrickMoveDir` 转换为整数，再进行格式化。例如，确保输出占用 4 个字符宽度：
+
+#### 示例代码
+```csharp
+sb.AppendFormat("{0,4}", (int)_moveStrus[posY, posX].moveDir);
+```
+
+- `{0,4}` 表示右对齐并占用 4 个字符宽度。
+
+---
+
+### **完整示例**
+以下是一个完整的示例，展示如何将 `_moveStrus` 的内容按固定宽度输出到 `StringBuilder` 中：
+
+```csharp
+StringBuilder sb = new StringBuilder();
+for (int posY = 0; posY < 8; posY++)
+{
+    for (int posX = 0; posX < 8; posX++)
+    {
+        // 将 moveDir 输出为固定宽度的字符串（左对齐，宽度 10）
+        sb.Append($"{_moveStrus[posY, posX].moveDir,-10}");
+    }
+    sb.AppendLine(); // 换行
+}
+Console.WriteLine(sb.ToString());
+```
+
+---
+
+### **输出示例**
+假设 `_moveStrus[posY, posX].moveDir` 的值为 `Up`、`Down`、`Left` 等，输出可能如下：
+
+```
+Up        Down      Left      Right     None      None      None      None      
+None      None      None      None      None      None      None      None      
+...
+```
+
+---
+
+### **总结**
+- 如果需要固定宽度的字符输出，推荐使用 **字符串格式化**（`String.Format` 或插值字符串）或 **PadRight/PadLeft**。
+- 如果需要使用制表符（`\t`），请注意它的宽度可能因环境而异，不适合精确对齐。
+- 如果需要输出数字而非字符串，可以将枚举转换为整数后格式化。

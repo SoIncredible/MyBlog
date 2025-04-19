@@ -520,3 +520,7 @@ public class TestCoroutine : MonoBehaviour
 我个人感觉这和直接写在Update中没有任何区别啊，这样写难道有什么别的好处么？🥲不过这样确实也达到了连续渐变的效果。
 
 当然最好用的肯定还是DOTWEEN啦！
+
+# 协程本质再探
+
+这次要深入到IL代码中,看一下yield语法糖究竟被翻译成了什么?

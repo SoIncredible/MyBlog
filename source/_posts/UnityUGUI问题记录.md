@@ -1,13 +1,33 @@
 ---
-title: Unity实现Text部分区域可响应点击
-tags: 
-  - UGUI
-abbrlink: 1de61da1
-categories: 硬技能
-date: 2024-11-29 22:53:16
-cover: https://www.notion.so/images/page-cover/met_fitz_henry_lane.jpg
-description: 
+title: UnityUGUI问题记录
+cover: 'https://www.notion.so/images/page-cover/met_fitz_henry_lane.jpg'
+abbrlink: 2b97ac4f
+date: 2025-04-19 06:25:47
+tags:
+categories:
+description:
+swiper_index:
+sticky:
 ---
+
+# 为什么会有`LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform)`接口? 什么时候用这个接口?
+
+我们在某一帧的Update或者EventInput中执行了一段代码, 这段代码会修改某一UGUI组件的某些属性,我们知道,当一个UGUI组件的属性发生变化时,这个UGUI组件下面的所有UGUI组件的属性也会连带着发生变化. 但是在一帧内,这种变化不是真的同时发生的,UGUI的数据更新发生在`LateUpdate`之后,`OnPreCull`之前. 这是笔者还亲自验证的. 具体验证过程在[这篇博客]()中.也就是说Unity会先执行完所有的代码逻辑, 然后再去更新这些UGUI组件的属性, 所以在这一帧中我们执行的修改UGUI组件属性的操作,只有在下一帧时,我们才能够拿到这个组件下UGUI组件的属性的正确值.
+如果我们想在当前这一帧就获得正确的UGUI组件的属性,那么`LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform)`接口就派上用场了. 这个接口会强制更新传入UGUI及其子UGUI的RectTransform组件的属性, 然后我们就可以在当前帧获得正确的属性值了. 在笔者的开发经验中, 该接口一般会在使用UGUI里的Layout相关组件的时候比较常用, 看一下具体的例子:
+
+# 几个LayoutGroup组件的实现原理
+
+一个例子就是让父UI组件的尺寸跟着子UI组件的尺寸变化
+
+# Coffee UIEffect这个UI扩展库 里面的UIShadow组件上的值的实现原理和不同是什么? Outline和Outline8的区别? Fit还有一个什么忘了的区别?
+
+# Screen接口中的width和height 和 currentResolution的区别?
+
+# 让UI变灰色
+
+给UI要变灰的UI组件挂载一个变灰材质
+
+# Unity实现Text部分区域可响应点击
 
 源码
 
