@@ -29,6 +29,28 @@
   ![](README/1.png)
 
 
-# NVM安装
+# 新设备上安装运行Hexo的过程
 
-// TODO 补充NVM的使用方法
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+```
+
+```
+source ~/.bashrc
+```
+
+```
+nvm install 16
+```
+
+```
+nvm use 16
+```
+
+```
+npm install -g hexo-cli
+```
+
+```
+npm install
+```
