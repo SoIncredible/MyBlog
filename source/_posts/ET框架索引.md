@@ -17,3 +17,12 @@ sticky:
 - [ET中反射与特性的使用]()
 - [ET框架自动生成脚本]()
 - [ET框架Demo启动流程梳理]()
+
+ET中的SceneType, 可以这样理解: 一个由ET框架开发的游戏就是一个World, 在这个world下会有各种个样的Scene, 这些Scene扮演不同的角色, 这些角色扮演一般都是不同的职责. 在ET中,有一个名叫Demo的SceneType, 还有叫Main的
+
+由World提供各种原材料, 供各个Scene下面的Entity使用
+
+每一个Entity都会标记自己被创建出来的Scene
+SceneType会影响Fiber的创建
+
+ET中的Entity 有Child和Component之分

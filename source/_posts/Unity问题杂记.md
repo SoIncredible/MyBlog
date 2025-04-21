@@ -273,12 +273,12 @@ https://blog.csdn.net/WGYHAPPY/article/details/116161817
 
 https://blog.csdn.net/qq_37179591/article/details/118148818
 
-
 # Mac下如何打出乘号
 https://www.zhihu.com/question/20367435
 
 # 查询资源引用
 
+对该工具进行扩充, 变成一个资产库工具, 能够方便开发者快速的管理资源
 见[GitHub](https://github.com/SoIncredible/UnityUtils)工具库
 
 # Unity中合并两个Mesh
@@ -297,8 +297,7 @@ Root
 
 # Unity关闭自动编译
 
-在设置General一栏中取消勾选`Auto Refresh`,但是在2022.3.15f1版本中笔者并没有找到该字段. 笔者在2020.3.48f1中找到了该字段
-
+在2020.3.48f1中`Preference`->General一栏中取消勾选`Auto Refresh`,但是在2022.3.15f1版本中笔者并没有找到该字段. 
 
 # 以下几个问题是相关联的
 

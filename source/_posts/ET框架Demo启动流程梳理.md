@@ -104,6 +104,12 @@ protected override async ETTask Run(Scene root, EntryEvent2 args)
 流程
 客户端发起连接请求->Router服务器返回Realm地址->客户端根据Realm地址向服务器发送申请->
 
+
+# EnterMap
+
+所有
+
+
 # ET中的配置表
 
 

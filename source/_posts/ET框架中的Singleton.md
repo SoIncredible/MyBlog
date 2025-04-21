@@ -67,6 +67,14 @@ sticky:
 
 # EventSystem
 
+EventSystem是所有业务能够跑起来的基础
+
+通过继承InvokeHandler, 在Handle方法里会操作其他单例或者component里面面的接口
+
+- MessageSessionHandler MessageSessionDispatcher
+- MessageLocationHandler MessageDispatcherSingleton
+- 
+
 EventSystem中维护了两个字段`allEvents`和`allInvokers`
 EventSystem在Invoke的时候会初始化这两个字段的内容
 allEvents字段中 记为Event特性的所有类型，创建这些类型的实例，被标记了Event特性的类必须要继承IEvent接口。
