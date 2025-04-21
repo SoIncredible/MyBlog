@@ -41,6 +41,9 @@ fiber.ThreadSynchronizationContext.Post(async () =>
 到了`AppStartInitFinish_CreateLoginUI.cs`这里就不需要说太多了，顺着代码调用路径点下去就能找到`UILoginEvent.cs`这个脚本中的`OnCreate`方法，在这个方法的`ui.AddComponent<UILoginComponent>();`这一行触发了`UILoginComponentSystem`中的`Awake`方法，在这个`Awake`方法中，给登录按钮注册了`OnLogin`方法。由`OnLogin`方法我们执行到了`LoginHelper.cs`脚本中的`Login`方法，该方法要求你传一个类型为`Scene`的字段，这个字段就是从我们最一开始说的`Entry.cs`脚本中`StartAsync`方法的最后一行`FiberManager.Create`方法创建的那个Fiber里面的`Root`字段。**`LoginHelper.cs`脚本中的`Login`方法中执行客户端向服务器发送登录请求，并等待服务器的回应继续执行之后的逻辑**，也就是这一行`long playerId = await clientSenderComponent.LoginAsync(account, password);`，到此为止，客户端所有该做的事情就都做完了，现在客户端已经把请求发送给了服务端，等待着服务端的答复。
 
 
+在ClientSenderComponentSystem的LoginAsync方法中, 创建了一个新的Fiber, 这个Fiber创建后, `FiberInit_NetClient`被触发
+
+
 # ET服务端启动流程梳理
 
 服务端的几个角色
