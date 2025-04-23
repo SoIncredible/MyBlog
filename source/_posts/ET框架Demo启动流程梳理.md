@@ -9,10 +9,10 @@ description:
 swiper_index:
 sticky:
 ---
-这段时间笔者工作清闲，在工位也没有摸鱼，先是废寝忘食般速通了YooAsset的源码之后，感觉自己在看别人代码这件事上摸到了一些门路, 不论ET、YooAsset还是UniTask它们都各自实现了自己的异步操作,对于异步操作更详细的介绍在[UniTask框架梳理]()这篇博客中。ET的作者自称ETTask的实现是要比UniTask更加高效的。
-
 
 # ET客户端启动流程梳理
+
+启动时, 客户端只有一个Fiber
 
 我们就从`Entry.cs`脚本中`StartAsync`方法的最后一行`FiberManager.Create`方法开始看吧，这个方法内部有如下代码：
 ```
