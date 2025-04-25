@@ -9,10 +9,10 @@ description:
 swiper_index:
 sticky:
 ---
-这段时间笔者工作清闲，在工位也没有摸鱼，先是废寝忘食般速通了YooAsset的源码之后，感觉自己在看别人代码这件事上摸到了一些门路, 不论ET、YooAsset还是UniTask它们都各自实现了自己的异步操作,对于异步操作更详细的介绍在[UniTask框架梳理]()这篇博客中。ET的作者自称ETTask的实现是要比UniTask更加高效的。
-
 
 # ET客户端启动流程梳理
+
+启动时, 客户端只有一个Fiber
 
 我们就从`Entry.cs`脚本中`StartAsync`方法的最后一行`FiberManager.Create`方法开始看吧，这个方法内部有如下代码：
 ```
@@ -37,8 +37,10 @@ fiber.ThreadSynchronizationContext.Post(async () =>
 
 到了`AppStartInitFinish_CreateLoginUI.cs`这里就不需要说太多了，顺着代码调用路径点下去就能找到`UILoginEvent.cs`这个脚本中的`OnCreate`方法，在这个方法的`ui.AddComponent<UILoginComponent>();`这一行触发了`UILoginComponentSystem`中的`Awake`方法，在这个`Awake`方法中，给登录按钮注册了`OnLogin`方法。由`OnLogin`方法我们执行到了`LoginHelper.cs`脚本中的`Login`方法，该方法要求你传一个类型为`Scene`的字段，这个字段就是从我们最一开始说的`Entry.cs`脚本中`StartAsync`方法的最后一行`FiberManager.Create`方法创建的那个Fiber里面的`Root`字段。**`LoginHelper.cs`脚本中的`Login`方法中执行客户端向服务器发送登录请求，并等待服务器的回应继续执行之后的逻辑**，也就是这一行`long playerId = await clientSenderComponent.LoginAsync(account, password);`，到此为止，客户端所有该做的事情就都做完了，现在客户端已经把请求发送给了服务端，等待着服务端的答复。
 
-
+所有的Scene都是由Fiber创建出来的 在客户端有两个Scene或者叫Fiber在跑一个是Main 另一个是NetClient
 在ClientSenderComponentSystem的LoginAsync方法中, 创建了一个新的Fiber, 这个Fiber创建后, `FiberInit_NetClient`被触发
+
+若一个Entity上挂载了一个ProcessInnerSender组件, 那么它就具备了向其他Fiber发送消息的能力
 
 
 # ET服务端启动流程梳理

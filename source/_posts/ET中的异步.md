@@ -139,6 +139,7 @@ C#中有三种比较常用的返回类型: void、Task<TResult>和Task
 ## 参考文档
 - https://blog.csdn.net/q__y__L/article/details/133905192
 
+# ICriticalNotifyCompletion
 
 # 一个类是如何变得可以被await的？
 
@@ -146,3 +147,6 @@ ETTask是可以被await的，如何做到的？
 
 ThreadSynchronizationContext的作用?
   - https://learn.microsoft.com/en-us/archive/msdn-magazine/2011/february/msdn-magazine-parallel-computing-it-s-all-about-the-synchronizationcontext
+
+
+# ETTask的原理是什么?
