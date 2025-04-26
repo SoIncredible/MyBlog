@@ -4,7 +4,7 @@ abbrlink: 906aab82
 date: 2025-04-19 16:46:20
 tags:
 categories:
-cover:
+cover: https://public.ysjf.com/mediastorm/material/material/%E8%87%AA%E7%84%B6%E9%A3%8E%E5%85%89_%E6%9C%9F%E6%9C%AB%E7%9A%84%E5%BB%B6%E6%97%B6_09_%E5%85%A8%E6%99%AF.jpg
 description:
 swiper_index:
 sticky:
