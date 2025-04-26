@@ -10,7 +10,9 @@ swiper_index:
 sticky: 99
 ---
 
-> 本系列基于ET8.1版本
+> 💡TIPS:本系列基于ET8.1版本
+
+本系列内容会十分繁杂, 因为不只是讨论ET的架构设计, 还有支持框架实现背后的技术: C#中的特性、反射、异步、代码检查、源代码生成、帧同步状态同步、网络通信、KCP、AOI等多个方面, 也只有具备了这些知识储备, 才能够更好的理解ET框架.
 
 - [帧同步与状态同步](https://soincredible.github.io/posts/50d23509/)
 - [ET中的网络通信模块](https://soincredible.github.io/posts/3613bb98/)
