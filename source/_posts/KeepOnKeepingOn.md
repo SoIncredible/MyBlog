@@ -48,7 +48,8 @@ sticky: 1000
 - [街霸导论](https://www.bilibili.com/opus/904636480410877954)
 
 # 资源
-
+- [Mac安装Windows虚拟机](https://zhuanlan.zhihu.com/p/452412091)
+- [能够在Mac上运行的ILSpy](https://github.com/icsharpcode/AvaloniaILSpy)
 - [MarkDown在线表格生成](https://tableconvert.com/zh-cn/markdown-generator)
 - [在线图书馆](https://zh.z-lib.gs/)
 - [Compiler Explorer 一个在线的查看C++代码对应汇编语言的工具](https://godbolt.org/) 
