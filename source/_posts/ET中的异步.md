@@ -15,6 +15,18 @@ sticky:
 - https://devblogs.microsoft.com/premier-developer/the-performance-characteristics-of-async-methods/
 - https://devblogs.microsoft.com/premier-developer//one-user-scenario-to-rule-them-all/
 
+# 关于协程
+
+## 关于`yield return`
+
+C#的yield return 能够返回任何类型, 并没有对其做任何限制
+
+Unity帮我们处理了协程的迭代, 你可以想一想, 在Unity里写`IEnumerator`, 不管嵌套多少个迭代器, 最顶层一定是调用MonoBehaviour下的StartCoroutine接口来驱动协程的, 在非Unity环境下, 我们就得自己编写代码来手动驱动IEnumerator的迭代, 也就是自己实现Start Coroutine的逻辑
+
+# ILSpy的使用
+
+使用ILSpy, 查看yield return和await生成的代码
+
 
 # 关于异步和多线程的讨论
 
