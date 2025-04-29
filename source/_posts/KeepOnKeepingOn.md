@@ -164,3 +164,7 @@ sticky: 1000
 不知道从哪里听到的一句话 程序员只要能把云、水、草的Shader渲染搞明白就算过关了。
 
 博客收录 https://zhuanlan.zhihu.com/p/100922816
+
+# Unity 插件合集
+
+[vFolders 2](https://assetstore.unity.com/packages/tools/utilities/vfolders-2-255470)

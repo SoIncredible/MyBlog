@@ -26,13 +26,11 @@ sticky:
 
 但是要注意的是, 我们Unity开发者调用Unity底层API的时候, 就拿网络请求和加载资源来说, Unity都会给我们提供两种类型的接口, 一种是异步, 一种是同步. 这两种接口都是I/O密集型操作, 因为Unity是单线程嘛. 如果你常常陷入纠结网络和资源加载的内部实现是怎样的 不利于你了解异步的本质, 
 
-
 所以妄图使用协程来做一些CPU密集型的工作是根本不可能的, 因为协程本质上还是运行在一个进程上, 协程反而适合那些I/O密集型的操作, 因为这类操作并不真的会占用CPU的执行时间, 这段时间的CPU只是在空转而已, 或者我们希望使用协程达成一种延时的效果
 
 yield和await都能实现异步, 区别是什么?
 
 而多线程我们往往会用多线程来做一些CPU密集型的任务, 我们会决定这些任务的具体实现, 或许会让你更好理解
-
 
 # 一个类是如何变得可以被await的？
 
@@ -41,20 +39,10 @@ yield和await都能实现异步, 区别是什么?
 ETTask是可以被await的，如何做到的？
 
 ThreadSynchronizationContext的作用?
-  - https://learn.microsoft.com/en-us/archive/msdn-magazine/2011/february/msdn-magazine-parallel-computing-it-s-all-about-the-synchronizationcontext
-
 
 # C#中要实现异步需要哪些角色
 
-
-
 YooAsset、ETTask、UniTask三者异步的实现方式的区别是什么？
-
-YooAsset、ETTask、UniTask三者异步的实现方式的区别是什么？
-
-# 多线程系列
-- https://www.cnblogs.com/eventhorizon/p/15316955.html#4991898
-- https://www.cnblogs.com/eventhorizon/p/15824541.html
 
 # SynchronizationContext
 
@@ -178,3 +166,6 @@ C#中有三种比较常用的返回类型: void、Task<TResult>和Task
 - https://www.cnblogs.com/wwkk/p/17814057.html
 - https://blog.csdn.net/shizuguilai/article/details/121236777
 - https://www.cnblogs.com/peterYong/p/16328187.html
+- https://learn.microsoft.com/en-us/archive/msdn-magazine/2011/february/msdn-magazine-parallel-computing-it-s-all-about-the-synchronizationcontext
+- https://www.cnblogs.com/eventhorizon/p/15316955.html#4991898
+- https://www.cnblogs.com/eventhorizon/p/15824541.html
