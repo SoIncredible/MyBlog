@@ -11,6 +11,202 @@ swiper_index:
 sticky:
 ---
 
+# Unity中的协程和真正的协程不是一回事吧?
+
+# 关于yield return
+
+```
+using System;
+using System.Collections;
+public class C {
+    public void M() {
+        
+    }
+    
+    public IEnumerator A(){
+        Console.WriteLine("SaySomething");
+        yield return new BClass(0); 
+        Console.WriteLine("SaySomething");
+        yield return new BClass(1);
+        Console.WriteLine("SaySomething");
+    }
+    
+    public class BClass{
+        public BClass(int idx){
+            
+        }
+    }
+}
+```
+在`SharpLab`中处理之后:
+```
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Security;
+using System.Security.Permissions;
+
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.Default | DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints | DebuggableAttribute.DebuggingModes.EnableEditAndContinue | DebuggableAttribute.DebuggingModes.DisableOptimizations)]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+[assembly: AssemblyVersion("0.0.0.0")]
+[module: UnverifiableCode]
+[module: RefSafetyRules(11)]
+
+public class C
+{
+    public class BClass
+    {
+        public BClass(int idx)
+        {
+        }
+    }
+
+
+    [CompilerGenerated]
+    private sealed class <A>d__1 : IEnumerator<object>, IEnumerator, IDisposable
+    {
+        private int <>1__state;
+
+        private object <>2__current;
+
+        public C <>4__this;
+
+        object IEnumerator<object>.Current
+        {
+            [DebuggerHidden]
+            get
+            {
+                return <>2__current;
+            }
+        }
+
+        object IEnumerator.Current
+        {
+            [DebuggerHidden]
+            get
+            {
+                return <>2__current;
+            }
+        }
+
+        [DebuggerHidden]
+        public <A>d__1(int <>1__state)
+        {
+            this.<>1__state = <>1__state;
+        }
+
+        [DebuggerHidden]
+        void IDisposable.Dispose()
+        {
+        }
+
+        private bool MoveNext()
+        {
+            switch (<>1__state)
+            {
+                default:
+                    return false;
+                case 0:
+                    <>1__state = -1;
+                    Console.WriteLine("SaySomething");
+                    <>2__current = new BClass(0);
+                    <>1__state = 1;
+                    return true;
+                case 1:
+                    <>1__state = -1;
+                    Console.WriteLine("SaySomething");
+                    <>2__current = new BClass(1);
+                    <>1__state = 2;
+                    return true;
+                case 2:
+                    <>1__state = -1;
+                    Console.WriteLine("SaySomething");
+                    return false;
+            }
+        }
+
+        bool IEnumerator.MoveNext()
+        {
+            //ILSpy generated this explicit interface implementation from .override directive in MoveNext
+            return this.MoveNext();
+        }
+
+        [DebuggerHidden]
+        void IEnumerator.Reset()
+        {
+            throw new NotSupportedException();
+        }
+    }
+
+    public void M()
+    {
+    }
+
+    [NullableContext(1)]
+    [IteratorStateMachine(typeof(<A>d__1))]
+    public IEnumerator A()
+    {
+        <A>d__1 <A>d__ = new <A>d__1(0);
+        <A>d__.<>4__this = this;
+        return <A>d__;
+    }
+}
+
+```
+
+我曾经以为, 只有WaitForSeconds、资源的异步操作等才可以被yield return, 但我是对yield return的理解出现偏差了. 任何数据结构都可以被yield return, 看过上面的代码我想你应该就清楚了, yield return只是在状态机里面一个新增一个状态, 然后在这个状态的分支中执行从上一个`yield return`(不包含), 到这一个`yield return`(包含)之间的代码
+
+而在MonoBehaviour中, 实现可能是这样的:
+```
+class MyMonoBehaviour
+{
+    private List<IEnumerator> _coroutineLists = new List<IEnumerator>();
+    public Coroutine StartCoroutine(IEnumerator coroutine)
+    {
+        // 某种手段 将IEnumerator转换成Coroutine
+        return Coroutine;
+    }
+
+    void CoroutineUpdate()
+    {
+        foreach (var coroutine in _coroutineLists)
+        {
+            if (coroutine.Current is AsyncOperation asyncOperation)
+            {
+                if (asyncOperation.isDone)
+                {
+                    coroutine.MoveNext();
+                }
+            }
+            else
+            {
+                coroutine.MoveNext();
+            }
+        }
+    }
+}
+```
+
+
+yield return语法糖 编译器背后会帮我们生成代码
+
+在Unity中迭代器多用来实现异步, Unity要使用迭代器来实现异步, 是基于Unity的MonoBehaviour和UnityEngine命名空间下的`YieldInstruction`基类的
+
+我们首先来看一下, 在一个迭代器中, 对一个被yield return的对象干了什么?
+
+在Unity中, StartCoroutine里面的代码可能是这样的:
+
+![](IEnumerator与IEnumerable理解与辨析/image.png)
+
+# Unity开发者视角下的IEnumerator
+
+笔者对迭代器的理解是有所偏差的, 源自迭代器在Unity中的使用, Unity为我们实现了一个名为`YieldInstruction`的类, 
+
 # 背景
 
 编写的几乎所有程序都需要循环访问集合，因此需要编写代码来检查集合中的每一项。
@@ -195,23 +391,6 @@ namespace learnIEnumerator
 ```
 
 以上代码中有三个不太理解的点：
-
-- 对象（Object）类型
-
-  对象类型是C#通用类型系统中所有数据类型的终极基类。Object是System.Object类的别名。所以对象（Object）类型可以被分配其他类型（值类型、引用类型、预定义类型或者用户自定义类型）的值。但是在分配之前需要先进行类型转换。
-
-  当一个值类型转换成对象类型时，则被称为`装箱`；另一方面，当一个对象类型转换为值类型时，则被称为`拆箱`。
-
-  ```C#
-  object obj;
-  obj = 100;
-  ```
-
-  **知识点补充： 值类型和引用类型**
-
-  值类型：值类型变量可以直接分配给一个值，它们是从类`System.ValueType`中派生的。值类型直接包含数据，比如int、char、float，它们分别存储数字、字符和浮点数。
-
-  引用类型：引用类型不包含存储在变量中的实际数据，但它们包含对变量的引用。换句话说，它们指的是一个内存位置，使用多个变量时，引用类型可以指向一个内存位置。如果内存位置的数据是由一个变量改变的，其他变量会自动反映这种值的变化。**内置**的引用类型有：`object`、`dynamic`、`string`
 
 - 属性（Property）
 
@@ -421,8 +600,6 @@ public static IEnumerable<int> Fibonacci(int count)
 
 最后再来看看使用了yield语句后我们可以少写哪些代码，我们首先不需要自己编写具体的迭代器类了，相对应的抽象迭代器类也不需要了，我们现在只需要在具体聚合类中定义一下获取迭代器的方法就可以了。所以真的好省事啊！
 
-好！然后我们再来看一下unity中的协程！现在整篇博客的逻辑已经十分混乱了，五一需要整理博客喔！
-
 一般我们会在协程中处理各种各样的业务嘛，比如下图：
 
 ![](IEnumerator与IEnumerable理解与辨析/image-20230421111245324.png)
@@ -489,57 +666,6 @@ AuthManager.Create();
 那我想协程到此应该就理解了，比如我们定义了一个`IEnumerator Func()`，那么我们会使用`StartCoroutine(Func());`，因此，`Func()`就是一个具体聚合角色（一个集合）而StartCoroutine就是一个迭代器，它去遍历整个`Func()`集合，所以说协程的本质是迭代器好像没什么问题。
 
 关于`IEnumerator`、`IEnumerable`和`yield`的探讨就先告一段落了。
-
-下面这段内容是我在看到int类型继承自`System.ValueType`的时候突然想到的，和装箱拆箱没有太大关系，下面主要想说明子类和父类中一些调用关系。
-
-`System.ValueType`是int类型的父类，我们现在把`System.ValueType`类更抽象成Father类，将int类抽象成Child，看一段代码：
-
-```C#
-public class Father
-  {
-      public virtual void funcBase()
-      {
-          Console.WriteLine("这是虚函数基类");
-      }
-
-      public void funcFather()
-      {
-          Console.WriteLine("这是父类中的函数");
-      }
-  }
-
-  public class Child : Father
-  {
-      public override void funcBase()
-      {
-          // base.funcBase();
-          Console.WriteLine("这是子类中对虚函数的重写");
-      }
-
-      public void funcChild()
-      {
-          Console.WriteLine("这是子类中的函数");
-      }
-  }
-```
-
-调用一下：
-
-```C#
-Father f1 = new Father();
-Father f2 = new Child();
-```
-
-其中`Father f2 = new Child();`虽然f2是Father类，但是它本质还是一个Child的类，所以说Child的方法f2是可以调用的。
-
-但是反过来
-
-```C#
-Child c1 = new Father();
-Child c2 = new Child();
-```
-
-c1会报错。父亲可以变成儿子，儿子不能变成父亲。
 
 # 小结
 
