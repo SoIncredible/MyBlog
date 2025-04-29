@@ -10,24 +10,9 @@ swiper_index:
 sticky:
 ---
 
-- https://devblogs.microsoft.com/premier-developer/dissecting-the-async-methods-in-c/
-- https://devblogs.microsoft.com/premier-developer/extending-the-async-methods-in-c/
-- https://devblogs.microsoft.com/premier-developer/the-performance-characteristics-of-async-methods/
-- https://devblogs.microsoft.com/premier-developer//one-user-scenario-to-rule-them-all/
+本篇博客不止讨论ETTask如何实现, 更想探讨C#底层是如何支持异步实现的. 如果读者像笔者一样, 通过Unity接触到的C#语言, 可能对协程和异步概念的理解上有偏差, **因为我们在Unity中使用的协程并不是操作系统层次下讨论的与线程、进程、协程中的协程概念**, Unity的协程是Unity基于IEnumerator和Unity事件更新框架实现的伪协程、伪异步, Unity的协程限制非常多, 如果读者对Unity的协程、IEnumerator和`yield return`语法糖有疑惑, 欢迎参考[这篇博客](https://soincredible.github.io/posts/133a9667/), 希望能帮助你理解.
 
-# 关于协程
-在Unity的视角下看
-
-## 关于`yield return`
-
-C#的yield return 能够返回任何类型, 并没有对其做任何限制
-
-Unity帮我们处理了协程的迭代, 你可以想一想, 在Unity里写`IEnumerator`, 不管嵌套多少个迭代器, 最顶层一定是调用MonoBehaviour下的StartCoroutine接口来驱动协程的, 在非Unity环境下, 我们就得自己编写代码来手动驱动IEnumerator的迭代, 也就是自己实现Start Coroutine的逻辑
-
-# ILSpy的使用
-
-使用ILSpy, 查看yield return和await生成的代码
-
+本篇博客首先会讨论C#中异步的实现思路, 然后会讨论ETTask的实现思路
 
 # 关于异步和多线程的讨论
 
@@ -170,17 +155,9 @@ namespace Learn
 }
 ```
 
-## 参考资料
-- https://www.cnblogs.com/wwkk/p/17814057.html
-- https://blog.csdn.net/shizuguilai/article/details/121236777
-- https://www.cnblogs.com/peterYong/p/16328187.html
-
 # C# 中几种异步的返回类型
 
 C#中有三种比较常用的返回类型: void、Task<TResult>和Task
-
-## 参考资料
-- https://www.cnblogs.com/liqingwen/p/6218994.html?tdsourcetag=s_pcqq_aiomsg
 
 # TaskCompletionSource是什么？
 
@@ -189,7 +166,15 @@ C#中有三种比较常用的返回类型: void、Task<TResult>和Task
 
 抛开ET的一个例子，比如协程 协程是不可以被await的
 
+# ICriticalNotifyCompletion
+
 ## 参考文档
 - https://blog.csdn.net/q__y__L/article/details/133905192
-
-# ICriticalNotifyCompletion
+- https://devblogs.microsoft.com/premier-developer/dissecting-the-async-methods-in-c/
+- https://devblogs.microsoft.com/premier-developer/extending-the-async-methods-in-c/
+- https://devblogs.microsoft.com/premier-developer/the-performance-characteristics-of-async-methods/
+- https://devblogs.microsoft.com/premier-developer//one-user-scenario-to-rule-them-all/
+- https://www.cnblogs.com/liqingwen/p/6218994.html?tdsourcetag=s_pcqq_aiomsg
+- https://www.cnblogs.com/wwkk/p/17814057.html
+- https://blog.csdn.net/shizuguilai/article/details/121236777
+- https://www.cnblogs.com/peterYong/p/16328187.html
