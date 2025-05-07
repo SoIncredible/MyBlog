@@ -11,7 +11,7 @@ swiper_index:
 sticky:
 ---
 
-# Unity中的协程和真正的协程不是一回事吧?
+# Unity中的协程和真正的协程并不是一回事
 
 Unity中的协程（Coroutines）并不是严格意义上的“真协程”，而是基于C#迭代器（IEnumerator）和Unity引擎的帧调度机制实现的一种协程模拟
 
