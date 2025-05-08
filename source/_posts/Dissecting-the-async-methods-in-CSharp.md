@@ -298,6 +298,14 @@ __this._stocks.TryGetValue(companyId, out result);
 
 2. 错误处理
 
+当前逻辑并未专门处理任务处于故障状态或已取消状态的情况。状态机通过调用awaiter.GetResult()方法，当任务被取消时将抛出TaskCancelledException，若任务失败则抛出其他异常。这种设计十分优雅，因为GetResult()在错误处理机制上与task.Wait()或task.Result有本质区别。
+
+无论是task.Wait()还是task.Result，即便任务因单一异常导致失败，它们都会抛出AggregateException。这背后的逻辑很简单：任务不仅可能代表通常只有单一故障的IO操作，也可能是并行计算的结果。后者可能产生多个错误，而AggregateException正是为聚合所有错误而设计。
+
+但async/await模式专为异步操作设计，这类操作通常最多只会产生一个错误。因此语言设计者认为，若awaiter.GetResult()能对AggregateException进行解包并仅抛出首个异常，将更符合使用场景。这一设计并非完美，我们将在后续文章中看到这种抽象方案可能存在的漏洞。
+
+异步状态机只是整个拼图的一部分。要完整理解其运作机制，我们还需了解状态机实例如何与TaskAwaiter<T>和AsyncTaskMethodBuilder<T>进行交互。
+
 # 这些模块是如何被联系到一起的呢?
 
 [](https://devblogs.microsoft.com/wp-content/uploads/sites/31/2019/06/Async_sequence_state_machine_thumb.png)
