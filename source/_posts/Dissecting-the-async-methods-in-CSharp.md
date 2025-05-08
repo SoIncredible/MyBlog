@@ -1,8 +1,9 @@
 ---
 title: Dissecting the async methods in CSharp
-date: 2025-05-07 20:44:20
 tags: 异步
 categories: C#
+abbrlink: 72dba58e
+date: 2025-05-07 20:44:20
 cover:
 description:
 swiper_index:
@@ -26,6 +27,8 @@ C#开发者在第一次接触异步的概念, 应该是通过Task类型. Task是
 class StockPrices
 {
     private Dictionary<string, decimal> _stockPrices;
+    // 被标记了async的方法, Compiler会在背后将其内部的逻辑转调用一个状态机
+    // 而这个异步方法中原来的逻辑会全部转移到Compiler自动生成的状态机的MoveNext方法中 
     public async Task<decimal> GetStockPriceForAsync(string companyId)
     {
         await InitializeMapIfNeededAsync();
@@ -33,6 +36,8 @@ class StockPrices
         return result;
     }
  
+    // 被标记了async的方法, Compiler会在背后将其转换成状态机
+    // 而这个异步方法中原来的逻辑会全部转移到Compiler自动生成的状态机的MoveNext方法中 
     private async Task InitializeMapIfNeededAsync()
     {
         if (_stockPrices != null)
@@ -302,10 +307,103 @@ __this._stocks.TryGetValue(companyId, out result);
 
 无论是task.Wait()还是task.Result，即便任务因单一异常导致失败，它们都会抛出AggregateException。这背后的逻辑很简单：任务不仅可能代表通常只有单一故障的IO操作，也可能是并行计算的结果。后者可能产生多个错误，而AggregateException正是为聚合所有错误而设计。
 
-但async/await模式专为异步操作设计，这类操作通常最多只会产生一个错误。因此语言设计者认为，若awaiter.GetResult()能对AggregateException进行解包并仅抛出首个异常，将更符合使用场景。这一设计并非完美，我们将在后续文章中看到这种抽象方案可能存在的漏洞。
+但`async/await`模式专为异步操作设计，这类操作通常最多只会产生一个错误。因此语言设计者认为，若`awaiter.GetResult()`能对AggregateException进行解包并仅抛出首个异常，将更符合使用场景。这一设计并非完美，我们将在后续文章中看到这种抽象方案可能存在的漏洞。
 
-异步状态机只是整个拼图的一部分。要完整理解其运作机制，我们还需了解状态机实例如何与TaskAwaiter<T>和AsyncTaskMethodBuilder<T>进行交互。
+异步状态机只是整个拼图的一部分。要完整理解其运作机制，我们还需了解状态机实例如何与`TaskAwaiter<T>`和`AsyncTaskMethodBuilder<T>`进行交互。
 
 # 这些模块是如何被联系到一起的呢?
 
 [](https://devblogs.microsoft.com/wp-content/uploads/sites/31/2019/06/Async_sequence_state_machine_thumb.png)
+
+图表看似过于复杂，但每个组件都经过精心设计且扮演着重要角色。最有趣的协作发生在等待的任务尚未完成时（图中用棕色矩形标记）：
+
+状态机注册任务延续
+
+状态机调用 `__builder.AwaitUnsafeOnCompleted(ref awaiter, ref this)`，将自身注册为任务的延续。
+`AsyncTaskMethodBuilder` 确保任务完成后调用 `IAsyncStateMachine.MoveNext` 方法：
+捕获当前 执行上下文（ExecutionContext），创建一个 MoveNextRunner 实例，将其与当前状态机实例关联。
+从 MoveNextRunner.Run 创建一个 Action 委托，用于在捕获的执行上下文中推进状态机。
+调用 TaskAwaiter.UnsafeOnCompleted(action)，将上述 Action 委托调度为等待任务的延续。
+任务完成后的恢复
+
+当等待的任务完成时，注册的回调（Action 委托）被触发，状态机继续执行异步方法的下一段代码块。
+
+# 执行上下文
+问题：什么是执行上下文？为何需要这种复杂的设计？
+在同步代码中，每个线程通过 `线程本地存储（Thread-Local Storage）` 维护环境信息，例如：安全凭据（如 SecurityContext）区域性设置（如 CultureInfo）或者其他上下文数据（如 AsyncLocal<T> 的值）
+当三个方法在同一个线程中依次调用时，这些信息会自动在方法间流动。但是对于异步方法来说就不再是这样了. 异步方法的每个代码段（如 await 前后的代码）可能在不同线程上执行，`线程本地存储(Thread-Local Storage`失效。
+因此执行上下文派上用场, 它为 一个逻辑控制流 维护上下文信息，即使该控制流跨越多线程。
+例如，Task.Run 或 ThreadPool.QueueUserWorkItem 会 自动捕获调用线程的执行上下文，并将其与任务绑定。
+当任务执行时，调度器（如 TaskScheduler）通过 ExecutionContext.Run 在捕获的上下文中运行委托，确保环境信息（如安全凭据）无缝延续。
+
+通过下面这个例子理解一下:
+```
+static Task ExecutionContextInAction()
+{
+    var li = new AsyncLocal<int>();
+    li.Value = 42;
+ 
+    return Task.Run(() =>
+    {
+        // Task.Run restores the execution context
+        Console.WriteLine("In Task.Run: " + li.Value);
+    }).ContinueWith(_ =>
+    {
+        // The continuation restores the execution context as well
+        Console.WriteLine("In Task.ContinueWith: " + li.Value);
+    });
+}
+```
+
+在这个例子中, 执行上下文通过`Task.Run`流向了`Task.ContinueWith`. 因此上面这段代码的执行结果如下:
+```
+In Task.Run: 42
+In Task.ContinueWith: 42
+```
+
+但是不是所有在BCL中的方法都会自动捕获并恢复执行上下文. 两个例外是: `TaskAwaiter<T>.UnsafeOnCompledte`和`AsyncMethodBuilder<T>.AwaitUnsafeOnComplete`. 这看起来十分奇怪, 语言设计者决定添加不安全的方法手动使用`AsyncMethodBuilder<T>`和`MoveNetRunner`而不是依赖于内建的类似`AwaitTaskContinuation`这样的机制驱动执行上下文, 猜测这是出于性能问题考虑或者是对现有实现的另一个妥协.
+
+```
+static async Task ExecutionContextInAsyncMethod()
+{
+    var li = new AsyncLocal<int>();
+    li.Value = 42;
+    await Task.Delay(42);
+
+    // The context is implicitely captured. li.Value is 42
+    Console.WriteLine("After first await: " + li.Value);
+
+    var tsk2 = Task.Yield();
+    tsk2.GetAwaiter().UnsafeOnCompleted(() =>
+    {
+        // The context is not captured: li.Value is 0
+        Console.WriteLine("Inside UnsafeOnCompleted: " + li.Value);
+    });
+
+    await tsk2;
+
+    // The context is captured: li.Value is 42
+    Console.WriteLine("After second await: " + li.Value);
+}
+```
+
+输出结果是:
+```
+After first await: 42
+Inside UnsafeOnCompleted: 0
+After second await: 42
+```
+
+# 结论
+
+- 异步方法（async）的底层行为与同步方法截然不同，其核心机制依赖于编译器生成的 状态机（State Machine）：
+
+- 编译器会为每个异步方法生成一个独立的状态机，将原方法的全部逻辑转移至状态机中。 状态机负责跟踪执行进度（通过状态值）、挂起（await 时）与恢复（任务完成时）的逻辑流转。
+- 对同步完成的深度优化. 若所有等待的任务（await 的任务）已同步完成（如缓存命中、内存计算等无阻塞操作），异步方法的性能开销极低，几乎与同步方法无异。
+此优化避免了不必要的上下文切换或调度，是异步编程高性能的关键保障。
+异步场景的复杂性
+
+- 当等待的任务未完成（需异步等待）时，状态机依赖一系列辅助类型（如 AsyncTaskMethodBuilder<T>、TaskAwaiter<T>、MoveNextRunner 等）协作完成：
+  - 注册任务延续（Continuation）。
+  - 维护执行上下文（ExecutionContext）。
+跨线程调度时的状态安全流转。
