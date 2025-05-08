@@ -102,7 +102,7 @@ class GetStockPriceForAsync_StateMachine
                 {
                     // The code between first await and the rest of the method
  
-                    @this._store.TryGetValue(_companyId, out var result);
+                    @this._stockPrices.TryGetValue(_companyId, out var result);
                     _tcs.SetResult(result);
                 }
             }
