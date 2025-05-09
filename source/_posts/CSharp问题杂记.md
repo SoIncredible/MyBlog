@@ -783,3 +783,12 @@ None      None      None      None      None      None      None      None
 - 如果需要固定宽度的字符输出，推荐使用 **字符串格式化**（`String.Format` 或插值字符串）或 **PadRight/PadLeft**。
 - 如果需要使用制表符（`\t`），请注意它的宽度可能因环境而异，不适合精确对齐。
 - 如果需要输出数字而非字符串，可以将枚举转换为整数后格式化。
+
+
+# 浮点数精度问题
+
+https://blog.csdn.net/weixin_42186870/article/details/106086671
+
+```
+int expPlus = Mathf.FloorToInt((DoushenMgr.Instance.GetTasksExpPlus() - 1.0f) * 100f);
+```
