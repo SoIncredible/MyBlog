@@ -322,11 +322,124 @@ __this._stocks.TryGetValue(companyId, out result);
 状态机调用 `__builder.AwaitUnsafeOnCompleted(ref awaiter, ref this)`，将自身注册为任务的延续。
 `AsyncTaskMethodBuilder` 确保任务完成后调用 `IAsyncStateMachine.MoveNext` 方法：
 捕获当前 执行上下文（ExecutionContext），创建一个 MoveNextRunner 实例，将其与当前状态机实例关联。
+
 从 MoveNextRunner.Run 创建一个 Action 委托，用于在捕获的执行上下文中推进状态机。
 调用 TaskAwaiter.UnsafeOnCompleted(action)，将上述 Action 委托调度为等待任务的延续。
 任务完成后的恢复
 
 当等待的任务完成时，注册的回调（Action 委托）被触发，状态机继续执行异步方法的下一段代码块。
+
+在`AsyncTaskMethodBuilder`的Start接口中调用了传入状态机的`MoveNext`的方法
+
+```
+/// <summary>Initiates the builder's execution with the associated state machine.</summary>
+/// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
+/// <param name="stateMachine">The state machine instance, passed by reference.</param>
+[SecuritySafeCritical]
+[DebuggerStepThrough]
+public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
+{
+    // See comment on AsyncMethodBuilderCore.Start
+    // AsyncMethodBuilderCore.Start(ref stateMachine);
+
+    if (stateMachine == null) throw new ArgumentNullException("stateMachine");
+    Contract.EndContractBlock();
+
+    // Run the MoveNext method within a copy-on-write ExecutionContext scope.
+    // This allows us to undo any ExecutionContext changes made in MoveNext,
+    // so that they won't "leak" out of the first await.
+
+    ExecutionContextSwitcher ecs = default(ExecutionContextSwitcher);
+    RuntimeHelpers.PrepareConstrainedRegions();
+    try
+    {
+        ExecutionContext.EstablishCopyOnWriteScope(ref ecs);
+        stateMachine.MoveNext();
+    }
+    finally
+    {
+        ecs.Undo();
+    }
+}
+```
+
+在状态机的MoveNext方法里, 调用了` __builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);`
+
+在`AsyncTaskMethodBuilder`内部`AwaitOnCompleted`接口的逻辑如下:
+```
+/// <summary>
+/// Schedules the specified state machine to be pushed forward when the specified awaiter completes.
+/// </summary>
+/// <typeparam name="TAwaiter">Specifies the type of the awaiter.</typeparam>
+/// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
+/// <param name="awaiter">The awaiter.</param>
+/// <param name="stateMachine">The state machine.</param>
+[SecuritySafeCritical]
+public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(
+    ref TAwaiter awaiter, ref TStateMachine stateMachine)
+    where TAwaiter : ICriticalNotifyCompletion
+    where TStateMachine : IAsyncStateMachine
+{
+    try
+    {
+        AsyncMethodBuilderCore.MoveNextRunner runnerToInitialize = null;
+        var continuation = m_coreState.GetCompletionAction(AsyncCausalityTracer.LoggingOn ? this.Task : null, ref runnerToInitialize);
+        Contract.Assert(continuation != null, "GetCompletionAction should always return a valid action.");
+
+        // If this is our first await, such that we've not yet boxed the state machine, do so now.
+        if (m_coreState.m_stateMachine == null)
+        {
+            // Force the Task to be initialized prior to the first suspending await so 
+            // that the original stack-based builder has a reference to the right Task.
+            var builtTask = this.Task;
+
+            // Box the state machine, then tell the boxed instance to call back into its own builder,
+            // so we can cache the boxed reference.
+            Contract.Assert(!Object.ReferenceEquals((object)stateMachine, (object)stateMachine), "Expected an unboxed state machine reference");
+            m_coreState.PostBoxInitialization(stateMachine, runnerToInitialize, builtTask);
+        }
+
+        awaiter.UnsafeOnCompleted(continuation);
+    }
+    catch (Exception e)
+    {
+        AsyncMethodBuilderCore.ThrowAsync(e, targetContext: null);
+    }
+}
+```
+
+在这段代码内部会调用`awaiter.UnSafeOnCompleted`接口, 在我们的实例中这个Awaiter是一个`TaskAwaiter`, 其`UnsafeOnCompleted`接口的实现如下:
+
+```
+/// <summary>Schedules the continuation onto the <see cref="System.Threading.Tasks.Task"/> associated with this <see cref="TaskAwaiter"/>.</summary>
+/// <param name="continuation">The action to invoke when the await operation completes.</param>
+/// <exception cref="System.ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
+/// <exception cref="System.InvalidOperationException">The awaiter was not properly initialized.</exception>
+/// <remarks>This method is intended for compiler user rather than use directly in code.</remarks>
+[SecurityCritical]
+public void UnsafeOnCompleted(Action continuation)
+{
+    OnCompletedInternal(m_task, continuation, continueOnCapturedContext:true, flowExecutionContext:false);
+}
+
+internal static void OnCompletedInternal(Task task, Action continuation, bool continueOnCapturedContext, bool flowExecutionContext)
+{
+    if (continuation == null) throw new ArgumentNullException("continuation");
+    StackCrawlMark stackMark = StackCrawlMark.LookForMyCaller;
+
+    // If TaskWait* ETW events are enabled, trace a beginning event for this await
+    // and set up an ending event to be traced when the asynchronous await completes.
+    if ( TplEtwProvider.Log.IsEnabled() || Task.s_asyncDebuggingEnabled)
+    {
+        continuation = OutputWaitEtwEvents(task, continuation);
+    }
+
+    // Set the continuation onto the awaited task.
+    task.SetContinuationForAwait(continuation, continueOnCapturedContext, flowExecutionContext, ref stackMark);
+}
+```
+
+然后需要看一下`task.SetContinuationForAwait(continuation, continueOnCapturedContext, flowExecutionContext, ref stackMark);`接口的实现
 
 # 执行上下文
 问题：什么是执行上下文？为何需要这种复杂的设计？
