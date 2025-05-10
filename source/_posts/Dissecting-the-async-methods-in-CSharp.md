@@ -23,7 +23,7 @@ C#开发者在第一次接触异步的概念, 应该是通过Task类型. Task是
 （*）我们定义的 “异步方法” 是指用 async 上下文关键字标记的方法。这并不一定意味着该方法会异步执行，甚至完全不意味着它是异步的。它仅表示 编译器会对该方法进行某些特殊转换。
 
 看一下下面这个异步方法:
-```
+```C#
 class StockPrices
 {
     private Dictionary<string, decimal> _stockPrices;
@@ -59,7 +59,7 @@ TPL（任务并行库）提供了两大核心构建模块，帮助我们构造�
 - 任务延续（Task Continuation）-> 通过 `Task.ContinueWith`实现
 - 手动构建任务 -> 通过 `TaskCompletionSource<T>` 类实现
 （注：前者用于链式编排任务，后者用于手动控制任务生命周期。）
-```
+```C#
 class GetStockPriceForAsync_StateMachine
 {
     enum State { Start, Step1, }
@@ -131,7 +131,7 @@ public Task<decimal> GetStockPriceForAsync(string companyId)
 - 第二个代码块：从第一个 await 到第二个 await 之间的代码
 - 第三个代码块：从第二个 await 到第三个 await 或方法结束的代码 以此类推
 
-```
+```C#
 // Step 1 of the generated state machine:
  
 if (string.IsNullOrEmpty(_companyId)) throw new ArgumentNullException();
@@ -147,7 +147,7 @@ _initializeMapIfNeededTask.ContinueWith(_ => Start());
 
 随后，当任务完成时，Start方法会被回调，并通过检查_state字段来确定当前执行阶段。接着，状态机会判断任务是成功完成、被取消还是出现异常。如果是成功完成的情况，状态机就会继续执行下一个代码块。当所有操作都完成后，状态机会设置TaskCompletionSource<T>实例的结果值，此时从GetStockPricesForAsync返回的任务状态就会变更为已完成。
 
-```
+```C#
 // The code between first await and the rest of the method
  
 @this._stockPrices.TryGetValue(_companyId, out var result);
@@ -187,7 +187,7 @@ _tcs.SetResult(result); // The caller gets the result back
 
 原始的异步方法会创建一个状态机实例, 用捕获的状态（如果方法非静态，则包括 this 指针）初始化该实例, 通过传递状态机实例的引用并调用`AsyncTaskMethodBuilder<T>.Start`来启动执行
 
-```
+```C#
 [AsyncStateMachine(typeof(_GetStockPriceForAsync_d__1))]
 public Task<decimal> GetStockPriceFor(string companyId)
 {
@@ -204,7 +204,7 @@ public Task<decimal> GetStockPriceFor(string companyId)
 
 传递引用是一个重要的优化, 因为一个状态机往往是相对大的结构(大于100bytes), 因此传递引用会避免冗余拷贝.
 状态机代码如下:
-```
+```C#
 struct _GetStockPriceForAsync_d__1 : IAsyncStateMachine
 {
     public StockPrices __this;
@@ -277,7 +277,7 @@ struct _GetStockPriceForAsync_d__1 : IAsyncStateMachine
 1. "Hot Path" 优化
 
 不像我们原生的方式, 生成的状态机知道一个被awaited的task可能已经完成了
-```
+```C#
 awaiter = __this.InitializeLocalStoreIfNeededAsync().GetAwaiter();
  
 // Hot path optimization: if the task is completed,
@@ -293,7 +293,7 @@ if (!awaiter.IsCompleted)
 ```
 
 如果这个被await的task已经完成了(无论成功与否), 状态机会向前直行下一步
-```
+```C#
 // GetResult returns void, but it'll throw if the awaited task failed.
 // This exception is catched later and changes the resulting task.
 awaiter.GetResult();
@@ -326,7 +326,7 @@ __this._stocks.TryGetValue(companyId, out result);
   - 从`MoveNextRunner.Run`创建一个 Action 委托，用于在捕获的执行上下文中推进状态机。调用 TaskAwaiter.UnsafeOnCompleted(action)，将上述 Action 委托调度为等待任务的延续(译注: 可以去看一下C#源码中的`MoveNextRunner`和`AsyncMethodBuilderCore`的实现, 其中清晰地展示了如何捕获当前执行上下文、将`IAsyncStateMachine.MoveNext`方法和执行上下文一起包装进`MoveNextRunner.Run`生成的Action中)。
 当等待的任务完成时，注册的回调（Action 委托）被触发，状态机继续执行异步方法的下一段代码块。
 
-```
+```C#
 /// <summary>
 /// Schedules the specified state machine to be pushed forward when the specified awaiter completes.
 /// </summary>
@@ -374,7 +374,7 @@ public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(
 
 在`AsyncTaskMethodBuilder`的Start接口中调用了传入状态机的`MoveNext`的方法
 
-```
+```C#
 /// <summary>Initiates the builder's execution with the associated state machine.</summary>
 /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
 /// <param name="stateMachine">The state machine instance, passed by reference.</param>
@@ -409,7 +409,7 @@ public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMac
 在状态机的MoveNext方法里, 调用了` __builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);`
 
 在`AsyncTaskMethodBuilder`内部`AwaitOnCompleted`接口的逻辑如下:
-```
+```C#
 /// <summary>
 /// Schedules the specified state machine to be pushed forward when the specified awaiter completes.
 /// </summary>
@@ -453,7 +453,7 @@ public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(
 
 在这段代码内部会调用`awaiter.UnSafeOnCompleted`接口, 在我们的实例中这个Awaiter是一个`TaskAwaiter`, 其`UnsafeOnCompleted`接口的实现如下:
 
-```
+```C#
 /// <summary>Schedules the continuation onto the <see cref="System.Threading.Tasks.Task"/> associated with this <see cref="TaskAwaiter"/>.</summary>
 /// <param name="continuation">The action to invoke when the await operation completes.</param>
 /// <exception cref="System.ArgumentNullException">The <paramref name="continuation"/> argument is null (Nothing in Visual Basic).</exception>
@@ -487,13 +487,13 @@ internal static void OnCompletedInternal(Task task, Action continuation, bool co
 # 执行上下文
 问题：什么是执行上下文？为何需要这种复杂的设计？
 在同步代码中，每个线程通过 `线程本地存储（Thread-Local Storage）` 维护环境信息，例如：安全凭据（如 SecurityContext）区域性设置（如 CultureInfo）或者其他上下文数据（如 AsyncLocal<T> 的值）
-当三个方法在同一个线程中依次调用时，这些信息会自动在方法间流动。但是对于异步方法来说就不再是这样了. 异步方法的每个代码段（如 await 前后的代码）可能在不同线程上执行，`线程本地存储(Thread-Local Storage`失效。
+当三个方法在同一个线程中依次调用时，这些信息会自动在方法间流动。但是对于异步方法来说就不再是这样了. 异步方法的每个代码段（如 await 前后的代码）可能在不同线程上执行，`线程本地存储(Thread-Local Storage)`失效。
 因此执行上下文派上用场, 它为 一个逻辑控制流 维护上下文信息，即使该控制流跨越多线程。
 例如，Task.Run 或 ThreadPool.QueueUserWorkItem 会 自动捕获调用线程的执行上下文，并将其与任务绑定。
 当任务执行时，调度器（如 TaskScheduler）通过 ExecutionContext.Run 在捕获的上下文中运行委托，确保环境信息（如安全凭据）无缝延续。
 
 通过下面这个例子理解一下:
-```
+```C#
 static Task ExecutionContextInAction()
 {
     var li = new AsyncLocal<int>();
@@ -519,7 +519,7 @@ In Task.ContinueWith: 42
 
 但是不是所有在BCL中的方法都会自动捕获并恢复执行上下文. 两个例外是: `TaskAwaiter<T>.UnsafeOnCompledte`和`AsyncMethodBuilder<T>.AwaitUnsafeOnComplete`. 这看起来十分奇怪, 语言设计者决定添加不安全的方法手动使用`AsyncMethodBuilder<T>`和`MoveNetRunner`而不是依赖于内建的类似`AwaitTaskContinuation`这样的机制驱动执行上下文, 猜测这是出于性能问题考虑或者是对现有实现的另一个妥协.
 
-```
+```C#
 static async Task ExecutionContextInAsyncMethod()
 {
     var li = new AsyncLocal<int>();
@@ -566,7 +566,7 @@ After second await: 42
 
 通过SharpLab, 我们生成了本篇示例中所有的经编译器处理过的异步代码:
 
-```
+```C#
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -698,6 +698,12 @@ internal class StockPrices
                         <>u__1 = awaiter;
                         <InitializeMapIfNeededAsync>d__2 stateMachine = this;
                         <>t__builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
+                        // 从这里返回回去干嘛了呢?
+                        // 程序会继续执行下面的语句
+                        // Task(Awaiter)何时结束、如何调度都是TaskScheduler做的, 我们没有太多权限干预 我们能做的只是
+                        // 告诉Task 等你的任务完成之后 你需要调用stateMachiner的MoveNext方法
+                        // 如果我要实现自己的类似ETTask的功能, 我希望我能自己决定如何调度这些ETTask, 要不然实现自己的ETTask的意义就没有了.
+                        // C#中异步操作到这里就已经揭示地比较清楚了, 只是Task的调度目前对我们来说还是黑盒, 最好它也只是黑盒
                         return;
                     }
                     goto IL_007c;
@@ -762,8 +768,8 @@ internal class StockPrices
         stateMachine.<>t__builder = AsyncTaskMethodBuilder.Create();
         stateMachine.<>4__this = this;
         stateMachine.<>1__state = -1;
-        stateMachine.<>t__builder.Start(ref stateMachine);
-        return stateMachine.<>t__builder.Task;
+        stateMachine.<>t__builder.Start(ref stateMachine); // 这里面会第一次调用StateMachine的MoveNext方法
+        return stateMachine.<>t__builder.Task; // 会立刻返回Task回去 
     }
 }
 
