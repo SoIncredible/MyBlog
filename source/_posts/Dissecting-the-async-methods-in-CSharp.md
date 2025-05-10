@@ -50,6 +50,7 @@ class StockPrices
 }
 ```
 
+>> 上面这段代码中的两个方法都使用了`async`标记, 到头来都只是为了`await Task.Delay(42)`这一行代码服务的. 
 为了更好的理解编译器做了或者能做什么, 让我们尝试着手写一下转换过程
 
 # 手动解构异步方法
@@ -319,15 +320,57 @@ __this._stocks.TryGetValue(companyId, out result);
 
 状态机注册任务延续
 
-状态机调用 `__builder.AwaitUnsafeOnCompleted(ref awaiter, ref this)`，将自身注册为任务的延续。
-`AsyncTaskMethodBuilder` 确保任务完成后调用 `IAsyncStateMachine.MoveNext` 方法：
-捕获当前 执行上下文（ExecutionContext），创建一个 MoveNextRunner 实例，将其与当前状态机实例关联。
-
-从 MoveNextRunner.Run 创建一个 Action 委托，用于在捕获的执行上下文中推进状态机。
-调用 TaskAwaiter.UnsafeOnCompleted(action)，将上述 Action 委托调度为等待任务的延续。
-任务完成后的恢复
-
+- 状态机调用 `__builder.AwaitUnsafeOnCompleted(ref awaiter, ref this)`，将自身注册为任务的延续。
+- `AsyncTaskMethodBuilder` 确保任务完成后调用 `IAsyncStateMachine.MoveNext` 方法(译注:这句话的意思是说, 只要你, 更准确地说这段代码是编译器生成的, 调用了`AwaitUnsafeOnCompleted`接口, 那么编译器就能保证任务完成后会调用`IAsyncStateMachine.MoveNext`方法了)：
+  - 捕获当前 执行上下文（ExecutionContext），创建一个 MoveNextRunner 实例，将其与当前状态机实例关联。
+  - 从`MoveNextRunner.Run`创建一个 Action 委托，用于在捕获的执行上下文中推进状态机。调用 TaskAwaiter.UnsafeOnCompleted(action)，将上述 Action 委托调度为等待任务的延续(译注: 可以去看一下C#源码中的`MoveNextRunner`和`AsyncMethodBuilderCore`的实现, 其中清晰地展示了如何捕获当前执行上下文、将`IAsyncStateMachine.MoveNext`方法和执行上下文一起包装进`MoveNextRunner.Run`生成的Action中)。
 当等待的任务完成时，注册的回调（Action 委托）被触发，状态机继续执行异步方法的下一段代码块。
+
+```
+/// <summary>
+/// Schedules the specified state machine to be pushed forward when the specified awaiter completes.
+/// </summary>
+/// <typeparam name="TAwaiter">Specifies the type of the awaiter.</typeparam>
+/// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
+/// <param name="awaiter">The awaiter.</param>
+/// <param name="stateMachine">The state machine.</param>
+// 状态机调用 `__builder.AwaitUnsafeOnCompleted(ref awaiter, ref this)`，将自身注册为任务的延续。
+[SecuritySafeCritical]
+public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(
+    ref TAwaiter awaiter, ref TStateMachine stateMachine)
+    where TAwaiter : ICriticalNotifyCompletion
+    where TStateMachine : IAsyncStateMachine
+{
+    try
+    {
+        // 捕获当前 执行上下文（ExecutionContext），创建一个 MoveNextRunner 实例，将其与当前状态机实例关联。
+        AsyncMethodBuilderCore.MoveNextRunner runnerToInitialize = null;
+        var continuation = m_coreState.GetCompletionAction(AsyncCausalityTracer.LoggingOn ? this.Task : null, ref runnerToInitialize);
+        Contract.Assert(continuation != null, "GetCompletionAction should always return a valid action.");
+
+        // If this is our first await, such that we've not yet boxed the state machine, do so now.
+        if (m_coreState.m_stateMachine == null)
+        {
+            // Force the Task to be initialized prior to the first suspending await so 
+            // that the original stack-based builder has a reference to the right Task.
+            var builtTask = this.Task;
+
+            // Box the state machine, then tell the boxed instance to call back into its own builder,
+            // so we can cache the boxed reference.
+            Contract.Assert(!Object.ReferenceEquals((object)stateMachine, (object)stateMachine), "Expected an unboxed state machine reference");
+            // 捕获当前 执行上下文（ExecutionContext），创建一个 MoveNextRunner 实例，将其与当前状态机实例关联。 这行代码内部将传入的stateMachine传递给MoveNextRunner的StateMachine
+            m_coreState.PostBoxInitialization(stateMachine, runnerToInitialize, builtTask);
+        }
+
+        // 调用 TaskAwaiter.UnsafeOnCompleted(action)，将上述 Action 委托调度为等待任务的延续。
+        awaiter.UnsafeOnCompleted(continuation);
+    }
+    catch (Exception e)
+    {
+        AsyncMethodBuilderCore.ThrowAsync(e, targetContext: null);
+    }
+}
+```
 
 在`AsyncTaskMethodBuilder`的Start接口中调用了传入状态机的`MoveNext`的方法
 
@@ -520,3 +563,208 @@ After second await: 42
   - 注册任务延续（Continuation）。
   - 维护执行上下文（ExecutionContext）。
 跨线程调度时的状态安全流转。
+
+通过SharpLab, 我们生成了本篇示例中所有的经编译器处理过的异步代码:
+
+```
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Security;
+using System.Security.Permissions;
+using System.Threading.Tasks;
+
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: Debuggable(DebuggableAttribute.DebuggingModes.Default | DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints | DebuggableAttribute.DebuggingModes.EnableEditAndContinue | DebuggableAttribute.DebuggingModes.DisableOptimizations)]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+[assembly: AssemblyVersion("0.0.0.0")]
+[module: UnverifiableCode]
+[module: RefSafetyRules(11)]
+
+[NullableContext(1)]
+[Nullable(0)]
+internal class StockPrices
+{
+    [CompilerGenerated]
+    private sealed class <GetStockPriceForAsync>d__1 : IAsyncStateMachine
+    {
+        public int <>1__state;
+
+        [Nullable(0)]
+        public AsyncTaskMethodBuilder<decimal> <>t__builder;
+
+        [Nullable(0)]
+        public string companyId;
+
+        [Nullable(0)]
+        public StockPrices <>4__this;
+
+        private decimal <result>5__1;
+
+        private TaskAwaiter <>u__1;
+
+        private void MoveNext()
+        {
+            int num = <>1__state;
+            decimal result;
+            try
+            {
+                TaskAwaiter awaiter;
+                if (num != 0)
+                {
+                    awaiter = <>4__this.InitializeMapIfNeededAsync().GetAwaiter();
+                    if (!awaiter.IsCompleted)
+                    {
+                        num = (<>1__state = 0);
+                        <>u__1 = awaiter;
+                        <GetStockPriceForAsync>d__1 stateMachine = this;
+                        <>t__builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
+                        return;
+                    }
+                }
+                else
+                {
+                    awaiter = <>u__1;
+                    <>u__1 = default(TaskAwaiter);
+                    num = (<>1__state = -1);
+                }
+                awaiter.GetResult();
+                <>4__this._stockPrices.TryGetValue(companyId, out <result>5__1);
+                result = <result>5__1;
+            }
+            catch (Exception exception)
+            {
+                <>1__state = -2;
+                <>t__builder.SetException(exception);
+                return;
+            }
+            <>1__state = -2;
+            <>t__builder.SetResult(result);
+        }
+
+        void IAsyncStateMachine.MoveNext()
+        {
+            //ILSpy generated this explicit interface implementation from .override directive in MoveNext
+            this.MoveNext();
+        }
+
+        [DebuggerHidden]
+        private void SetStateMachine(IAsyncStateMachine stateMachine)
+        {
+        }
+
+        void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
+        {
+            //ILSpy generated this explicit interface implementation from .override directive in SetStateMachine
+            this.SetStateMachine(stateMachine);
+        }
+    }
+
+
+    [CompilerGenerated]
+    private sealed class <InitializeMapIfNeededAsync>d__2 : IAsyncStateMachine
+    {
+        public int <>1__state;
+
+        public AsyncTaskMethodBuilder <>t__builder;
+
+        [Nullable(0)]
+        public StockPrices <>4__this;
+
+        private TaskAwaiter <>u__1;
+
+        private void MoveNext()
+        {
+            int num = <>1__state;
+            try
+            {
+                TaskAwaiter awaiter;
+                if (num == 0)
+                {
+                    awaiter = <>u__1;
+                    <>u__1 = default(TaskAwaiter);
+                    num = (<>1__state = -1);
+                    goto IL_007c;
+                }
+                if (<>4__this._stockPrices == null)
+                {
+                    awaiter = Task.Delay(42).GetAwaiter();
+                    if (!awaiter.IsCompleted)
+                    {
+                        num = (<>1__state = 0);
+                        <>u__1 = awaiter;
+                        <InitializeMapIfNeededAsync>d__2 stateMachine = this;
+                        <>t__builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
+                        return;
+                    }
+                    goto IL_007c;
+                }
+                goto end_IL_0007;
+                IL_007c:
+                awaiter.GetResult();
+                StockPrices stockPrices = <>4__this;
+                Dictionary<string, decimal> dictionary = new Dictionary<string, decimal>();
+                dictionary.Add("MSFT", 42m);
+                stockPrices._stockPrices = dictionary;
+                end_IL_0007:;
+            }
+            catch (Exception exception)
+            {
+                <>1__state = -2;
+                <>t__builder.SetException(exception);
+                return;
+            }
+            <>1__state = -2;
+            <>t__builder.SetResult();
+        }
+
+        void IAsyncStateMachine.MoveNext()
+        {
+            //ILSpy generated this explicit interface implementation from .override directive in MoveNext
+            this.MoveNext();
+        }
+
+        [DebuggerHidden]
+        private void SetStateMachine(IAsyncStateMachine stateMachine)
+        {
+        }
+
+        void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
+        {
+            //ILSpy generated this explicit interface implementation from .override directive in SetStateMachine
+            this.SetStateMachine(stateMachine);
+        }
+    }
+
+    private Dictionary<string, decimal> _stockPrices;
+
+    [AsyncStateMachine(typeof(<GetStockPriceForAsync>d__1))]
+    [DebuggerStepThrough]
+    public Task<decimal> GetStockPriceForAsync(string companyId)
+    {
+        <GetStockPriceForAsync>d__1 stateMachine = new <GetStockPriceForAsync>d__1();
+        stateMachine.<>t__builder = AsyncTaskMethodBuilder<decimal>.Create();
+        stateMachine.<>4__this = this;
+        stateMachine.companyId = companyId;
+        stateMachine.<>1__state = -1;
+        stateMachine.<>t__builder.Start(ref stateMachine);
+        return stateMachine.<>t__builder.Task;
+    }
+
+    [AsyncStateMachine(typeof(<InitializeMapIfNeededAsync>d__2))]
+    [DebuggerStepThrough]
+    private Task InitializeMapIfNeededAsync()
+    {
+        <InitializeMapIfNeededAsync>d__2 stateMachine = new <InitializeMapIfNeededAsync>d__2();
+        stateMachine.<>t__builder = AsyncTaskMethodBuilder.Create();
+        stateMachine.<>4__this = this;
+        stateMachine.<>1__state = -1;
+        stateMachine.<>t__builder.Start(ref stateMachine);
+        return stateMachine.<>t__builder.Task;
+    }
+}
+
+```

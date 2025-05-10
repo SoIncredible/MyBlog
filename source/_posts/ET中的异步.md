@@ -13,11 +13,11 @@ sticky:
 本篇博客不止讨论ETTask如何实现, 更想探讨C#底层是如何支持异步实现的. 如果读者像笔者一样, 通过Unity接触到的C#语言, 可能对协程和异步概念的理解上有偏差, **因为我们在Unity中使用的协程并不是操作系统层次下讨论的与线程、进程、协程中的协程概念**, Unity的协程是Unity基于IEnumerator和Unity事件更新框架实现的伪协程、伪异步, Unity的协程限制非常多, 如果读者对Unity的协程、IEnumerator和`yield return`语法糖有疑惑, 欢迎参考[这篇博客](https://soincredible.github.io/posts/133a9667/), 希望能帮助你理解.
 
 本篇博客首先会讨论C#中异步的实现思路, 然后会讨论ETTask的实现思路
-[对Task的概述]()
+[对Task的概述](https://soincredible.github.io/posts/323f6783/)
 
 另外, 如果读者对C#中的异步不是很了解, 推荐先看一下下面四篇翻译的文章:
 [Dissecting the async methods in C#](https://soincredible.github.io/posts/72dba58e)
-[Extending the async methods in C#]()
+[Extending the async methods in C#](https://soincredible.github.io/posts/40aca622/)
 [The performance characteristics of the async methods in C#]()
 [One user scenario to rule them all]()
 

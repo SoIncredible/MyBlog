@@ -47,6 +47,7 @@ sticky: 1000
 - [街霸导论](https://www.bilibili.com/opus/904636480410877954)
 
 # 资源
+- [一个能在线查看经过C#编译器处理过后C#代码的网站](https://sharplab.io/)
 - [C#源码](https://referencesource.microsoft.com/)
 - [Mac安装Windows虚拟机](https://zhuanlan.zhihu.com/p/452412091)
 - [能够在Mac上运行的ILSpy](https://github.com/icsharpcode/AvaloniaILSpy)
