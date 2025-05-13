@@ -56,6 +56,8 @@ Func<int> 的签名是 int Func()，而 () => 42 是一个无参且返回 int �
 
 这是探索底层转换原理和了解运行时情况的绝佳方式：
 
+必须要注意, 这种方式你必须将你的builder定义在`System.Runtime.CompilerServices`命名空间下
+
 ```C#
 namespace System.Runtime.CompilerServices
 {
@@ -77,15 +79,34 @@ namespace System.Runtime.CompilerServices
             stateMachine.MoveNext();
         }
  
-        // AwaitOnCompleted, AwaitUnsafeOnCompleted, SetException 
-        // and SetStateMachine are empty
+        public void SetStateMachine(IAsyncStateMachine stateMachine)
+        {
+            
+        }
+        
+        public void SetException(Exception exception) { }
+
+        public void AwaitOnCompleted<TAwaiter, TStateMachine>(
+            ref TAwaiter awaiter, ref TStateMachine stateMachine)
+            where TAwaiter : INotifyCompletion
+            where TStateMachine : IAsyncStateMachine
+        {
+            stateMachine.MoveNext();
+        }
+
+        public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(
+            ref TAwaiter awaiter, ref TStateMachine stateMachine)
+            where TAwaiter : ICriticalNotifyCompletion
+            where TStateMachine : IAsyncStateMachine
+        {
+            stateMachine.MoveNext();
+        }
     }   
 }
 ```
 
 现在, 你项目中所有的异步方法都会使用这个自定义版本的`AsyncVoidMethodBuilder`. 我们可以用下面的异步方法简单测试一下:
 ```C#
-[Test]
 public void RunAsyncVoid()
 {
     Console.WriteLine("Before VoidAsync");
@@ -108,8 +129,6 @@ After VoidAsync
 您可以实现 UnsafeAwaitOnComplete 方法来测试带有 await 子句的异步方法在返回未完成任务时的行为。完整示例可以在 GitHub 上找到。
 
 要修改 async Task 和 async Task<T> 方法的行为，您需要提供自己的 AsyncTaskMethodBuilder 和 AsyncTaskMethodBuilder<T> 实现。完整的实现示例可以在我的 GitHub 项目 EduAsync(*) 中找到，分别对应文件 AsyncTaskBuilder.cs 和 AsyncTaskMethodBuilderOfT.cs。
-
-(*) 特别感谢 Jon Skeet 对这个项目的启发。这是深入理解异步机制的绝佳方式。
 
 # Custom awaiters
 
@@ -203,8 +222,6 @@ public async Task Test()
 
 类任务类型是指具有关联构建器类型的类或结构体，该构建器类型通过 AsyncMethodBuilderAttribute(**) 标识。要使类任务类型真正有用，它必须满足前一节描述的"可等待"条件。本质上，类任务类型整合了前文所述的两种扩展机制，并将第一种方式转化为官方支持方案。
 
-(**) 目前您需要自行定义此特性，示例可在我的 GitHub 代码库中找到。
-
 以下是一个定义为结构体的自定义类任务类型简单示例：
 
 ```C#
@@ -275,3 +292,37 @@ C# 编译器为扩展异步方法提供了多种方式：
 [类任务类型详解](Task-like types)
 
 下一篇博客, 我们将探讨异步方法的性能特征，并分析新型值类型 System.ValueTask 如何影响性能表现。
+
+# 总结
+
+笔者暂且认为第三种 Task-Like Types是当前主流的C#中实现自定义异步的方式. 想要用这种方式实现异步, 你需要:
+
+你有很多的操作, 无论是C#提供给你的Task还是你自己基于C#实现的类Task都是把你想要用异步方式执行的操作包装起来. 
+
+构建自己的异步有三个重要角色:
+- 自己的AsyncMethodBuilder
+- 自己的Awaiter
+- 自己的TaskLike类型 这里注意`awaiter`是`awaiter`, `tasklike`是`tasklike`, 但是ETTask将既是tasklike又是awaiter
+
+1. 有一个名为`TaskLikeMethodBuilder`的method builder, 这个Builder里面需要如下接口
+   - public static TaskLikeMethodBuilder **Create**()接口
+   - public void **Start**<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine接口
+   - public void **SetException**(Exception e)接口
+   - public void **SetResult**() 接口
+   - public void **AwaitOnCompleted**<TAwaiter, TStateMachine>(
+            ref TAwaiter awaiter, ref TStateMachine stateMachine)
+            where TAwaiter : INotifyCompletion
+            where TStateMachine : IAsyncStateMachine 接口
+   - public void **AwaitUnsafeOnCompleted**<TAwaiter, TStateMachine>(
+            ref TAwaiter awaiter, ref TStateMachine stateMachine)
+            where TAwaiter : ICriticalNotifyCompletion
+            where TStateMachine : IAsyncStateMachine 接口
+   - public void **SetStateMachine**(IAsyncStateMachine stateMachine) 接口
+   - public TaskLike **Task** // 名字必须是Task
+2. 有一个实现了ICriticalNotifyCompletion接口的类
+   - OnCompleted(Action continuation)
+   - UnsafeOnCompleted(Action continuation)
+3. 一个Tasklike类
+   - 有一个GetAwaiter
+   - GetResult()接口
+   - IsCompleted属性 注意必须是属性(Property)

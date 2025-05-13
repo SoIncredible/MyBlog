@@ -52,7 +52,7 @@ sticky: 1000
 - [Mac安装Windows虚拟机](https://zhuanlan.zhihu.com/p/452412091)
 - [能够在Mac上运行的ILSpy](https://github.com/icsharpcode/AvaloniaILSpy)
 - [MarkDown在线表格生成](https://tableconvert.com/zh-cn/markdown-generator)
-- [在线图书馆](https://zh.z-lib.gs/)
+- [在线图书馆](https://z-library.sk/)
 - [Compiler Explorer 一个在线的查看C++代码对应汇编语言的工具](https://godbolt.org/) 
 - [开源的C++资产导入库(OpenGL学习模型导入一节提及)](https://assimp.org/) 
 - [OpenGL教程中使用的数学库](https://glm.g-truc.net/0.9.8/index.html) 
@@ -113,6 +113,7 @@ sticky: 1000
 - [CandyCat冯乐乐](https://candycat1992.github.io/)
 - [OWNSELF](https://www.ownself.org/)
 - [云风的Blog](https://blog.codingnow.com/)
+- [L's Blog](https://www.liuocean.com/)
 
 # 编程语言
 

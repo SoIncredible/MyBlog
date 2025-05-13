@@ -21,26 +21,57 @@ sticky:
 [The performance characteristics of the async methods in C#]()
 [One user scenario to rule them all]()
 
-请思考这句话: Task是Task, Async是Async. 有Task并不一定意味着异步操作, 有Async也并不意味着一定有异步操作. 也就是说, 并不是只有在异步的场景下我们才可以使用Task, Task依然可以在同步场景下使用, 而`async`关键字也不能完全和异步绑定, 因为`async`关键字的作用只是告诉编译器对这个方法做一些特殊的处理: 每一个被标记为async的方法, Compiler在背后都会在其内部生成一个状态机.
+在理解了上面博客中的内容后, 请思考这句话: Task是Task, Async是Async. 有Task并不一定意味着异步操作, 有Async也并不意味着一定有异步操作. 也就是说, 并不是只有在异步的场景下我们才可以使用Task, Task依然可以在同步场景下使用, 而`async`关键字也不能完全和异步绑定, 因为`async`关键字的作用只是告诉编译器对这个方法做一些特殊的处理: 每一个被标记为async的方法, Compiler在背后都会在其内部生成一个状态机.
+
+# 为什么ET框架要设计自己的异步返回类型? 和Task相比, ET自己设计的异步返回类型有哪些优势.
+
+> ⚠️Task有冷热之分
+> 冷任务（Cold Task）不会自动执行，必须显式调用 Start()、RunSynchronously() 或通过任务调度器触发。
+> 热任务（Hot Task）无需手动启动，任务在被创建时已经处于 Running 状态。
+
+```C#
+private void Start()
+{
+    var s = Func2();
+    s.Start();
+}
+
+private async Task Func2()
+{
+    await Task.Delay(42);
+}
+```
+上面代码运行会报错:
+```
+InvalidOperationException: Start may not be called on a promise-style task.
+```
+因为s是一个热任务, 不能调用Start接口.
 
 
-# 关于异步和多线程的讨论
+ET作者猫大说: ETTask说自己是单线程的, 不支持多线程, 不像Task要支持多线程 ETTask做了什么?
 
-我们看一下 这个例子
+请读者们想一想, 自己在用Task的时候, 从来没有调用过`TaskAwaiter`或者说`AsyncTaskMethodBuilder`的SetResult接口吧? 这是因为有TaskScheduler的存在, 在背后有一套自己的调度机制.
+一个返回类型为Task的方法, 返回的是一个热任务, 该任务在被创建出来的那一刻就已经要给到`TaskScheduler`进行管理了
+Task可能一层一层地嵌套上来, 在业务使用上, 开发者最底层一般`Task.Run()`或者`Task.Delay`这样的接口, 上层的这些Task, 该任务在被创建出来的那一刻就已经要给到`TaskScheduler`进行管理了, Task如何调度完全不受我们开发者的控制, 我们来回想一下我们是在哪一步将控制权转交给TaskScheduler的. 
 
-ThreadSynchronizationContext的作用?
+由于Task由TaskScheduler调度, 我们无法控制, 有可能涉及到多线程、出现上下文跨线程传递的开销, 因此ETTask的目标是自主控制调度、单线程作业, 你可以这么理解Task是C#的TaskScheduler, 来调用SetResult, 既然ETTask决定使用自己的异步机制, 那么就需要自己实现一个像TaskScheduler一样的调度机制, 在`ProcessInnerSender`组件中, 就有一套ETTask的调度机制, 有一个requestCallback
 
-# C#中要实现异步需要哪些角色
+ET框架中一共实现了三种用于异步操作的返回类型:`ETVoid`、`ETTask`和`ETTask<T>`
 
-YooAsset、ETTask、UniTask三者异步的实现方式的区别是什么？
+> 💡ETTask既是Awaiter又是可以被await的TaskLike类型, 希望不要对各位刚接触异步或ET的读者造成困扰
+
+# 为什么ETTask里面有一个`Coroutine`方法, 它的作用是什么?
+
+
 
 # SynchronizationContext
 
+SynchronizationContext和ExecutionContext有什么联系吗?
 SynchronizationContext中存储了一些能够标识线程身份的信息，现在你有一个方法，你可以通过`SynchronizationContext.Send()`或者`SynchronizationContext.Post`方法把你要执行的这个方法丢给你想要让他执行的线程里面去，可以把他理解为是一种跨线程的方法调用的方式。
 在一般单线程里，方法的调用都是直来直去，而在多线程里面，可以通过SynchronizationContext来实现线程间的函数调用。
 要注意一下Send和Post的区别，如果使用Send的方式把一个方法丢给某一个上下文，如果这个方法恰好很耗时，那么就会卡住调用Send处之后代码的执行，而如果使用Post方法的话，则不会阻塞调用处之后代码的执行。根据需求选择用Send还是Post。示例如下👇👇
 
-```
+```C#
 using System.Threading;
 using UnityEngine;
 
@@ -133,16 +164,15 @@ namespace Learn
 }
 ```
 
-# C# 中几种异步的返回类型
-
-C#中有三种比较常用的返回类型: void、Task<TResult>和Task
-
 # TaskCompletionSource是什么？
 
 按照笔者的理解，TaskCompletionSource可以将一个基于回调的异步操作转换成一个可以被await的异步操作。
 
+# ETTask与UniTask对比
 
-抛开ET的一个例子，比如协程 协程是不可以被await的
+# 扩展
+
+- [YooAsset资源异步加载机制](https://soincredible.github.io/posts/ae5b3442)
 
 ## 参考文档
 - https://blog.csdn.net/q__y__L/article/details/133905192
