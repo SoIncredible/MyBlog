@@ -1,5 +1,6 @@
 ---
 title: The performance characteristics of async methods in C#
+abbrlink: 4b84508e
 date: 2025-05-13 08:59:38
 tags:
 categories:
