@@ -45,7 +45,7 @@ private async Task Func2()
 ```
 InvalidOperationException: Start may not be called on a promise-style task.
 ```
-因为s是一个热任务, 不能调用Start接口.
+因为s是一个热任务, 在返回该任务时已经隐式Start了, 不必调用Start接口. 或者就按照它的报错信息理解, 通过非直接调用Task构造方法拿到的Task实例都是`promise-style`的, 这种Task都不能调用Start.
 
 
 ET作者猫大说: ETTask说自己是单线程的, 不支持多线程, 不像Task要支持多线程 ETTask做了什么?
