@@ -1,5 +1,6 @@
 ---
 title: ProjectO
+abbrlink: 8a8aad75
 date: 2025-05-14 16:08:18
 tags:
 categories:
