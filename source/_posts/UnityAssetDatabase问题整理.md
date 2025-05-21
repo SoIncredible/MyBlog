@@ -24,6 +24,7 @@ sticky:
 
 # 查询资源引用
 
+AssetDataBase.FindAssets接口 对于预制体来说, 必须传进去的是预制体所在的目录, 是文件夹, 不能是具体的预制体, 但是对于Texture来说, 传入Texture路径却是没问题的.
 
 
 # 案例
