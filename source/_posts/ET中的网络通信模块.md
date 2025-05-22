@@ -11,6 +11,12 @@ sticky:
 ---
 
 
+ET框架中的协议可以分成三种类型:
+- 客户端内部的通讯协议
+- 客户端和服务器之间的通讯协议
+- 服务器内部的通讯协议
+
+
 Realm Session
 Router Session
 Gate Session

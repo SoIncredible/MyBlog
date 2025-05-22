@@ -49,7 +49,7 @@ fiber.ThreadSynchronizationContext.Post(async () =>
 
 - Router
 - Realm
-- Gate
+- Gate 最终处理玩家数据的就是Gate
 
 我们回到`FiberInit_Main.cs`这个脚本，这次我们要以`EntryEvent2`为线索来看一下服务端的启动流程，我们需要找到参数为`EntryEvent2`、`SecneType为Main`的`AEvent`，也就是`EntryEvent2_InitServer`。笔者直接把该类的Run方法贴在这里：
 ```
