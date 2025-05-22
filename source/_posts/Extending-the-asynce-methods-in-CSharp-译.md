@@ -293,6 +293,135 @@ C# 编译器为扩展异步方法提供了多种方式：
 
 下一篇博客, 我们将探讨异步方法的性能特征，并分析新型值类型 System.ValueTask 如何影响性能表现。
 
+# 学以致用
+
+将Unity异步操作类型变得可以await
+笔者今天找到的应用场景: 在Unity中, 如果你在Editor模式下执行某些异步操作, 你是没有办法通过MonoBehaviour开启协程来驱动异步操作的, 当然有一些奇技淫巧, 比如I2那个多语言插件, 笔者记得好像是通过在场景中创建一个挂在了其异步操作的MonoBehaviour的节点, 在那个节点上执行异步操作, 但是笔者觉得还是不太优雅, 需要Unity协程驱动的异步操作变成可以被Task await的操作.
+
+代码如下:
+```C#
+public struct UnityWebRequestAsyncOperationAwaiter : ICriticalNotifyCompletion
+{
+    private readonly UnityWebRequestAsyncOperation _asyncOperation;
+
+    public UnityWebRequestAsyncOperationAwaiter(UnityWebRequestAsyncOperation asyncOperation)
+    {
+        _asyncOperation = asyncOperation;
+    }
+
+    public void OnCompleted(Action continuation)
+    {
+        _asyncOperation.completed += _ => continuation();
+    }
+
+    public void UnsafeOnCompleted(Action continuation)
+    {
+        _asyncOperation.completed += _ => continuation();
+    }
+
+    public void GetResult()
+    {
+        if (_asyncOperation.webRequest.result != UnityWebRequest.Result.Success)
+        {
+            throw new UnityWebRequestException(_asyncOperation.webRequest);
+        }
+    }
+
+    public bool IsCompleted => _asyncOperation.isDone;
+}
+
+public class UnityWebRequestException : Exception
+{
+    public UnityWebRequestException(UnityWebRequest request) 
+        : base($"Error: {request.error}\nURL: {request.url}")
+    {
+    }
+}
+public static class UnityWebRequestAsyncOperationExtensions
+{
+    public static UnityWebRequestAsyncOperationAwaiter GetAwaiter(this UnityWebRequestAsyncOperation asyncOperation)
+    {
+        return new UnityWebRequestAsyncOperationAwaiter(asyncOperation);
+    }
+}
+
+public static class AIDebugger
+{
+    [Command("SetAIMatch", QuickName = "设置匹配AI")]
+    public static void SetAIMatch([CommandParameter("是否开启AI匹配")]bool enableAI)
+    {
+        AIMatchDebugger.PostRequest(UserData.Instance.userId, enableAI);
+    }
+}
+
+public class AIMatchDebugger
+{
+    [Header("UI Elements")]
+    public InputField userIdInput;
+    public Toggle needAIToggle;
+    public Toggle needAIOnlyToggle;
+    public Button submitButton;
+    public Text statusText;
+
+    [Header("Server Config")]
+    public const string serverURL = "http://fhdz3dfzwss.nalrer.cn:8016/gtest/dizhu/aiMatch";
+
+    void Start()
+    {
+        submitButton.onClick.AddListener(SubmitForm);
+        LoadDefaultValues();
+    }
+
+    void LoadDefaultValues()
+    {
+        userIdInput.text = "72087";
+        needAIToggle.isOn = true;
+        needAIOnlyToggle.isOn = true;
+    }
+
+    public void SubmitForm()
+    {
+        // PostRequest();
+    }
+
+    public static async Task PostRequest(int userId, bool enableAI)
+    {
+        try
+        {
+            // 准备表单数据
+            WWWForm form = new WWWForm();
+            form.AddField("userId", userId.ToString());
+            form.AddField("needAI", enableAI ? 1 : 0);
+            form.AddField("needAIOnly", enableAI ? 1 : 0);
+
+            QDebug.Log("请求发出去了");
+            // 发送请求
+            using (UnityWebRequest www = UnityWebRequest.Post(serverURL, form))
+            {
+                await www.SendWebRequest();
+
+                if (www.result != UnityWebRequest.Result.Success)
+                {
+                    // statusText.text = $"Error: {www.error}";
+                    QDebug.LogError(www.error);
+                }
+                else
+                {
+                    // statusText.text = "修改成功";
+                    QDebug.Log("Form upload complete!");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            QDebug.LogError("发生异常了");
+            throw; // TODO handle exception
+        }
+    }
+}
+```
+
+
 # 总结
 
 笔者暂且认为第三种 Task-Like Types是当前主流的C#中实现自定义异步的方式. 想要用这种方式实现异步, 你需要:
