@@ -16,6 +16,22 @@ ET框架中的协议可以分成三种类型:
 - 客户端和服务器之间的通讯协议
 - 服务器内部的通讯协议
 
+ET中负责模块间通信的组件有哪些?
+
+ClientSenderComponent
+
+ProcessInnerSender
+ProcessOuterSender
+Session
+
+MessageSender
+
+MessageLocationSenderComponent
+MessageLocationSenderOneType
+MessageLocationSender
+
+看起来有很多Sender, 可以归根结底只有ProcessInnerSender和MessageQueueSingleton这几个Sender
+
 
 Realm Session
 Router Session
@@ -25,3 +41,4 @@ Gate Session
 
 [内网和外网之间的通信（端口映射原理）](https://blog.csdn.net/u011041241/article/details/109574509)
 [KCP协议详解](https://luyuhuang.tech/2020/12/09/kcp.html)
+[Unity+ET6.0网络框架的网络开发基础理论](https://blog.csdn.net/Q540670228/article/details/123385080?spm=1001.2014.3001.5502)
