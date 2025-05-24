@@ -97,3 +97,14 @@ Event和Invoker的区别是什么
 EntitySystemSingleton里面维护了一个TypeSystems字段
 
 AwakeSystem和Component的IAwake接口之间的关系.
+
+#
+
+ProcessInnerSender、MailBoxComponent、MessageDispatcherSingleton、MessageHandler
+
+# 
+
+EntitySystemSingleton、IUpdateSystem
+
+#
+EventSystemSingleton、AEvent、AInvokeHandler

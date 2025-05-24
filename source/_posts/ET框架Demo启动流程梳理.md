@@ -424,6 +424,8 @@ public void Start()
 
 ET中的HotFix、HotFixView、Model、ModelView四个程序集都是以dll的方式加载到内存中运行的，因此如果你修改了这四个程序集里面的代码，你可能需要重新遍历一下才能把更新的内容放进程序集中。
 
+# 
+
 # 参考资料
 
 [ET8框架的讲解视频](https://www.bilibili.com/video/BV1rhYyeKExP/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102)
