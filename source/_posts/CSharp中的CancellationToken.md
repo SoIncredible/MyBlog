@@ -9,3 +9,6 @@ description:
 swiper_index:
 sticky:
 ---
+
+# 参考资料
+[A Deep Dive into C#’s CancellationToken](https://medium.com/@mitesh_shah/a-deep-dive-into-c-s-cancellationtoken-44bc7664555f)
