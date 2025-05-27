@@ -10,6 +10,10 @@ sticky: 1000
 ---
 
 
+# ProjectO
+
+https://soincredible.github.io/posts/8a8aad75
+
 - ET框架
 - Animancer
 - 行为树
