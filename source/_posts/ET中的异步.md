@@ -15,11 +15,12 @@ sticky:
 本篇博客首先会讨论C#中异步的实现思路, 然后会讨论ETTask的实现思路, UniTask和YooAsset中的异步也在本系列的讨论之中.
 [对Task的概述](https://soincredible.github.io/posts/323f6783/)
 
-另外, 如果读者对C#中的异步不是很了解, 推荐先看一下下面四篇翻译的文章:
+另外, 如果读者对C#中的异步不是很了解, 推荐先看一下下面五篇翻译的文章:
 [Dissecting the async methods in C#](https://soincredible.github.io/posts/72dba58e)
 [Extending the async methods in C#](https://soincredible.github.io/posts/40aca622/)
 [The performance characteristics of the async methods in C#]()
 [One user scenario to rule them all]()
+[A Deep Dive into C#'s Cancellation](https://soincredible.github.io/posts/7331d0f1)
 
 在理解了上面博客中的内容后, 请思考这句话: Task是Task, Async是Async. 有Task并不一定意味着异步操作, 有Async也并不意味着一定有异步操作. 也就是说, 并不是只有在异步的场景下我们才可以使用Task, Task依然可以在同步场景下使用, 而`async`关键字也不能完全和异步绑定, 因为`async`关键字的作用只是告诉编译器对这个方法做一些特殊的处理: 每一个被标记为async的方法, Compiler在背后都会在其内部生成一个状态机.
 
