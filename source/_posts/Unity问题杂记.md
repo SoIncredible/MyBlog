@@ -16,7 +16,7 @@ sticky: 3
 # Unity Scriptable Object踩坑
 
 下面是一个名为`EntityBaseProperty.cs`的脚本，但是在创建一个`PlayerEntityProperty`SO的时候会提示你找不到这个脚本。你必须让脚本的名字和SO的类名保持一致，所以每一个SO都要新建一个和SO类命一样的脚本来写。
-```
+```C#
 public class EntityBaseProperty : ScriptableObject
 {
     
@@ -124,7 +124,7 @@ Animation中有一个Legacy字段，如果不勾选这个选项，在Animation�
 
 定义需要从XML中读取的数据结构
 
-```
+```C#
 [XmlRoot("AssetBundleConfig")]
 public class AssetBundleConfig
 {
@@ -149,7 +149,7 @@ public class AtlasRule
 }
 ```
 定义XML文件内容
-```
+```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <AssetBundleConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:noNamespaceSchemaLocation="AssetBundleConfigSchema.xsd">
@@ -198,7 +198,7 @@ public class AtlasRule
 ```
 
 C#脚本读取该XML文件
-```
+```C#
 public static T LoadXmlConfig<T>(string path) where T : class
 {
     XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
@@ -216,7 +216,7 @@ public static T LoadXmlConfig<T>(string path) where T : class
 
 # 写一个假的进度条
 
-```
+```C#
 using System;
 using UnityEngine;
 using UnityEngine.UI;

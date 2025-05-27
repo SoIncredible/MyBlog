@@ -21,6 +21,8 @@ sticky:
 `OnDestroy`方法在跟随预制体被删除的时候调用. 整个组件的生命周期只会调用一次 **注意,如果在这个预制体被实例化到销毁的这一生命周期内,挂载该脚本的节点的active一直都是false,那么就不会触发Awake,也不会触发OnDestroy,只要该节点被active过,即便被销毁的时候该节点处在not active状态,也会触发OnDestroy**
 
 
+- ExecuteAlways Property的使用 https://blog.csdn.net/alexhu2010q/article/details/105437083
+
 - `yield WaitForEndOfFrame`是在干嘛?
 
 在非PlayMode下,有哪些生命周期内的方法会被执行?

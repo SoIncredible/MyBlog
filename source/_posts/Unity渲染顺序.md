@@ -12,6 +12,8 @@ sticky:
 
 在开始学习Unity渲染顺序之前, 我们最好对Unity事件执行顺序有一定的了解, 也就是下面这张图
 
+[Gamma、Linear、sRGB 和Unity Color Space，你真懂了吗？](https://zhuanlan.zhihu.com/p/66558476)
+
 # 如何理解UI的渲染 
 
 # 如何理解Mesh的渲染

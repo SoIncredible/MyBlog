@@ -136,3 +136,8 @@ Canvas Renderer 组件将一个Canvas中的一个图像UI渲染出来，该组�
 在Unity的菜单中可以创建的标准的UI组件上不论你需不需要都挂载有Canvas Renderer组件，但是当我们开发我们自定义的UI组件的时候，我们需要手动将该组件挂载到自定义UI上，尽管在Inspector窗口中没有任何的属性，但是有一些属性和功能还是可以通过代码的形式来控制
 
 # GraphicRaycaster
+
+
+
+# 参考资料
+- [【UGUI源码分析】目录](http://warmcat.org/chai/blog/?p=4414#more-4414)
