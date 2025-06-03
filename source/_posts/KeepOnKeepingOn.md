@@ -180,3 +180,9 @@ https://soincredible.github.io/posts/8a8aad75
 # Unity 插件合集
 
 [vFolders 2](https://assetstore.unity.com/packages/tools/utilities/vfolders-2-255470)
+
+
+直接使用Mac命令行比较两个文件是否一模一样 基于hash值
+```shell
+shasum filename
+```
