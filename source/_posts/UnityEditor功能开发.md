@@ -14,6 +14,8 @@ sticky:
 
 # EditorSingleton
 
+
+
 # 拓展UnityInspector窗口
 
 ```
@@ -330,6 +332,12 @@ EditorUtility.DisplayDialog( "", "Board64中不存在对Board100的依赖", "OK"
 ```
 
 # 资源导入管线处理
+
+# Unity 内建图标列表
+
+通过`EditorGUIUtility.FindTexture`接口可以拿到UnityEditor中内置的图标
+
+https://www.cnblogs.com/CloudLiu/p/9957335.html
 
 # 参考资料
 - https://blog.csdn.net/yx314636922/article/details/126872839

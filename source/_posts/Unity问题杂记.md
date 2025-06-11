@@ -316,9 +316,3 @@ https://github.com/applejag/Newtonsoft.Json-for-Unity/wiki/Install-official-via-
 
 # Unity 颜色十六进制和RGB之间的转换方式
 https://blog.csdn.net/f_957995490/article/details/120727626
-
-# Unity 内建图标列表
-
-通过`EditorGUIUtility.FindTexture`接口可以拿到UnityEditor中内置的图标
-
-https://www.cnblogs.com/CloudLiu/p/9957335.html
