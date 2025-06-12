@@ -3,7 +3,7 @@ title: UnityEditor功能开发
 abbrlink: 2e6b555f
 date: 2025-04-19 06:22:15
 tags:
-categories:
+categories: UnityEditor开发
 cover: https://public.ysjf.com/mediastorm/material/material/%E8%87%AA%E7%84%B6%E9%A3%8E%E5%85%89_%E6%9C%9F%E6%9C%AB%E7%9A%84%E5%BB%B6%E6%97%B6_02_%E5%85%A8%E6%99%AF.jpg
 description:
 swiper_index:
@@ -12,13 +12,21 @@ sticky:
 
 # GUI、EditorGUI、GUILayout、EditorGUILayout、EditorGUIUtility、GUIUtility
 
-# EditorSingleton
+# 在Editor下使用异步
+
+## 多线程方式
+
+插件Figma Convert Unity中就使用了多线程的方式
+
+## 使用协程
+
+Unity提供的一些运行时I/O向的操作, 可以通过使其支持await的方式在Editor模式下使用
 
 
 
 # 拓展UnityInspector窗口
 
-```
+```C#
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -319,7 +327,7 @@ namespace DDZ
 ```
 
 # UnityEditor下的加载弹窗或者弹窗
-```
+```C#
 private static void ShowProgress(float progress, int total, int current)
 {
     EditorUtility.DisplayProgressBar("Searching",
@@ -327,7 +335,7 @@ private static void ShowProgress(float progress, int total, int current)
 }
 ```
 
-```
+```C#
 EditorUtility.DisplayDialog( "", "Board64中不存在对Board100的依赖", "OK" );
 ```
 
