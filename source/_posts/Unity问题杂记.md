@@ -99,9 +99,45 @@ public void Play (int stateNameHash, int layer= -1, float normalizedTime= float.
 > 最近尝试了一种新的延时方法,以前在处理当某一动画播放完毕后,执行一段逻辑的时候,都是用
 > 下面这两种方法都可以对当前的Animator播放动画的normalizedTime做调整
 > ![](Unity问题杂记/image-1.png)
-> 2024.12.28更新
-> 我们更近一步,使用UniTask来实现
-> 
+> 2025.6.18更新
+> 更健壮的版本
+>
+```C#
+m_ddz_zhounianqing_JY12_zhuanchang_GameObject.SetActiveEx(true);
+yield return null;
+m_ddz_zhounianqing_JY12_zhuanchang_Animator.Play("ddz_jiyang_12nian_zhuanchang", 0, 0);
+
+// 等待进入动画状态
+float waitAnimStateTimeout = 2f, timer = 0f;
+while (!m_ddz_zhounianqing_JY12_zhuanchang_Animator.GetCurrentAnimatorStateInfo(0)
+            .IsName("ddz_jiyang_12nian_zhuanchang"))
+{
+    yield return null;
+    timer += Time.deltaTime;
+    if (timer > waitAnimStateTimeout) {
+        QDebug.LogError("动画没有切换到目标状态！");
+        break;
+    }
+}
+
+// 等待动画非循环情况下正常播放结束
+timer = 0f;
+float waitAnimPlayTimeout = 10f;
+while (m_ddz_zhounianqing_JY12_zhuanchang_Animator.GetCurrentAnimatorStateInfo(0)
+            .normalizedTime < 1.0f)
+{
+    yield return null;
+    timer += Time.deltaTime;
+    if (timer > waitAnimPlayTimeout) {
+        QDebug.LogError("动画播放超时，可能动画clip循环/没切到/速度很慢！");
+        break;
+    }
+}
+QDebug.Log("转场结束");
+m_ddz_zhounianqing_JY12_zhuanchang_GameObject.SetActiveEx(false);
+```
+
+
 # DOTweenAnimation组件使用
 
 DOTweenAnimation组件挂载在节点上，调用播放的时候只播第一次，之后不播了，需要搞清楚为什么
