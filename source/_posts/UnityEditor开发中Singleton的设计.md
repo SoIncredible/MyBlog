@@ -1,8 +1,9 @@
 ---
 title: UnityEditor开发中Singleton的设计
-date: 2025-06-11 16:14:28
-tags: 
 categories: UnityEditor开发
+abbrlink: 1477ebaf
+date: 2025-06-11 16:14:28
+tags:
 cover:
 description:
 swiper_index:
