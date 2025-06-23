@@ -13,7 +13,9 @@ swiper_index:
 sticky:
 ---
 
-以实现冒泡排序功能为例记录如何在C-Sharp和C-PlusPlus中编写、生成和调用DLL
+> C#和C++虽然都能生成DLL, 如果DLL的调用者是C#语言, 那么这两种DLL是有分别的: C#生成的DLL类型是托管类型的DLL, C++生成的DLL是非托管的(原生的)DLL, 前者的DLL导入到C#工程中编译器就能够自动的识别DLL中的成员类型, 后者生成的DLL导入到C#工程中则需要使用`[DLLImport]`Attribute来做一些额外的处理, 并且在C++侧也需要对于要在C#侧调用的方法签名上添加`extern "C"`标识
+
+以实现冒泡排序功能为例记录如何在`C#`和`C++`中编写、生成和调用DLL
 
 # CPP中的DLL
 
@@ -181,12 +183,6 @@ g++ Main.cpp -o a
 ./a
 ```
 
-## GitBash环境
-
-
-
-
-
 # CS中的DLL
 
 ## Mac环境
@@ -330,12 +326,12 @@ dotnet run
 
 # Unity中C#和C++协同
 
-如果想在C#侧使用C++中的一个类的话,需要将这个类的每一个public成员方法封装一个静态方法供C#测调用,然后C#侧做一个中间层的封装,即在C#侧将这些静态方法重新封装成类.
+如果想在C#侧使用C++中的一个类的话,需要将这个类的每一个public成员方法封装一个**静态方法**供C#测调用,然后C#侧做一个中间层的封装,即在C#侧将这些静态方法重新封装成类.
 
 以一个Stack结构为例:
 ## C++侧
 
-```
+```C++
 // StackLib.h
 #ifndef STACKLIBRARY_H
 #define STACKLIBRARY_H
@@ -401,7 +397,7 @@ class Stack{
 #endif // STACKLIBRARY_H
 ```
 
-```
+```C++
 // StackLib.cpp
 #include "StackLib.h"
 
@@ -452,7 +448,7 @@ bool Stack::IsEmpty(Stack *stackWrapper)
 }
 ```
 
-```
+```C++
 // StackUtils.cpp
 #include "StackLib.h"
 
@@ -488,13 +484,13 @@ extern "C" {
 
 在Mac上,导出dylib:
 
-```
+```shell
 g++ -shared -o StackLibrary.dylib StackLib.cpp StackUtils.cpp   
 ```
 
 ## C#侧
 
-```
+```C#
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -585,9 +581,3 @@ namespace CPP
 ## ⚠️注意事项
 
 - `unknown type name '__declspec' 和 unknown type name 'class' 错误`  https://blog.csdn.net/lc250123/article/details/81985336
-
-## C++中实现模版Stack供C#调用
-
-### C++中的模版
-
-

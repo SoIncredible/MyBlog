@@ -32,3 +32,5 @@ ProviderBase
 - 获取远端最新的Manifest的信息
 - 比较当前和远端Manifest的信息，如果可以更新，则需要更新到最新的Manifest
 - 创建ResourcePackage，根据最新的Manifest创建运行时的AssetSystem
+
+分帧加载是什么意思?

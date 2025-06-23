@@ -347,7 +347,5 @@ https://blog.csdn.net/qq_36303853/article/details/145187274
 
 https://github.com/applejag/Newtonsoft.Json-for-Unity/wiki/Install-official-via-UPM
 
-# .Net .NetFramework .NetStandard C#版本之间的关系
-
 # Unity 颜色十六进制和RGB之间的转换方式
 https://blog.csdn.net/f_957995490/article/details/120727626

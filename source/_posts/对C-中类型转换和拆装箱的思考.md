@@ -105,7 +105,7 @@ public void SomeFunc()
 按照GPT的说法, 泛型是一种能够规避类型转换、且保证类型安全的双赢方法, 泛型的类型转换并不是在运行时做的, 而是在编译时编译器静默地进行了类型转换, 因此泛型在运行时是没有额外开销的. 
 
 下面看两组代码的对比:
-```
+```C#
 // 非泛型接口
 public interface IUILogic
 {
@@ -160,7 +160,7 @@ var param = new PlayPageShowData();
 UIMgr.Instance.ShowUI(typeof(PlayPage), param); // 需显式传递 Type
 ```
 
-```
+```C#
 // 泛型接口（类型安全）
 public interface IUILogic<TUIShowData> where TUIShowData : struct
 {
