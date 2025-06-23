@@ -12,6 +12,8 @@ sticky:
 
 # 索引
 
+[代码热更新](https://soincredible.github.io/posts/20505312)
+[资源加载](https://soincredible.github.io/posts/ae5b3442)
 [ET框架8.1](https://soincredible.github.io/posts/ff09e316)
 [物理模拟](https://soincredible.github.io/posts/6f4ce0cc)
 [动画]()

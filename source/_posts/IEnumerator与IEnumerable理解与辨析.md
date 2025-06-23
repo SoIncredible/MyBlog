@@ -597,33 +597,6 @@ namespace learnIEnumerator
 }
 ```
 
-以上代码中有三个不太理解的点：
-
-- 属性（Property）
-
-  属性是类、结构和接口的命名成员。类或结构中的成员变量或者方法称为域（Field）。属性是域的扩展，并且可以使用相同的语法来访问。它们使用访问器（Accessors）让私有域的值可以被读写或者操作。属性不会确定存储位置，相反，它们具有可读写或计算它们值的访问器。例如，有一个名为Student的类，带有age、name和code的私有域。我们不能在类的范围以外直接访问这些域，但是我们可以拥有访问这些私有域的属性。在IEnumerator中，我们需要重写一个object类型的Current属性：
-
-    ```C#
-    // Current 的真实数据类型应该和 _people[poistion]的数据类型一致
-    public object Current
-    {
-        get
-        {
-            try
-            {
-                return _people[position];
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new InvalidOperationException();
-            }
-        }
-    }
-    ```
-
-在对上面三点进行了了解之后，我现在对IEnumerator和IEnumerable做一个总结：
-
 如果我们要实现枚举我们自己定义的数据结构的功能，我们总共要实现三个类：
 
 1. 我们自己定义的数据结构的类，也就是我们要枚举的每一个元素的类

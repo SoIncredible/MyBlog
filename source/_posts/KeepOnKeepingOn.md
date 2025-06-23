@@ -28,11 +28,11 @@ https://soincredible.github.io/posts/8a8aad75
 
 # TODO
 
+- 游戏行业报告
 - ⭕️ 正则表达式
 - ⭕️ LinQ表达式
 - ⭕️ 场景如果打了AssetBundle是如何加载的？和普通资源一样吗？-> AssetBundle博客补全
 - ⭕️ 反编译入门
-- ⭕️ 华佗Hybrid入门
 - ⭕️ 依赖注入博客
 - ⭕️ [搞清楚Unity TextureImporter中几种压缩格式的使用](https://docs.unity3d.com/2022.3/Documentation/Manual/class-TextureImporterOverride.html)
 - ⭕️ Unity粒子系统的使用 -> UI框架博客+实现
@@ -132,44 +132,6 @@ https://soincredible.github.io/posts/8a8aad75
 - C++ Wesnoth
 - Python
 - Java 
-
-# 数学知识
-
-# 图形学
-
-# Unity
-
-
-
-# Categories
-
-- 软技能
-- 硬技能
-- 读万卷书
-
-# Tags
-- 环境配置
-- AssetBundle
-- 性能优化
-- Shader
-- 工作流水线
-- 设计模式
-- 项目经验总结
-- 技术文档
-- 问题杂记
-- Android开发
-- IOS开发
-- 数学
-- C#
-- C++
-- Java
-- Unity
-- Git
-- OpenGL
-- MarkDown
-- 开发日志
-- Hexo
-
 # Cover
 - https://www.notion.so/images/page-cover/met_gerome_1890.jpg
 
@@ -180,7 +142,6 @@ https://soincredible.github.io/posts/8a8aad75
 # Unity 插件合集
 
 [vFolders 2](https://assetstore.unity.com/packages/tools/utilities/vfolders-2-255470)
-
 
 直接使用Mac命令行比较两个文件是否一模一样 基于hash值
 ```shell
