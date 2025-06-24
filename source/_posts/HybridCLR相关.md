@@ -10,15 +10,43 @@ swiper_index:
 sticky:
 ---
 
-# 先讲点历史
+> 《CLR via C#》这本书帮助读者建立起了C#的知识框架, 是笔者职业生涯中功不可没的好书, 不过本书的作者Jeffrey Richter是以.Net Framework框架在Windows平台进行开发的视角上介绍.Net的一些特性的, 而笔者作为一个Unity入门C#的半吊子在最初阅读本书的很长一段时间内是没有真正理解.Net的核心特性的. 在本篇博客中, 笔者尝试基于这本书, 加上笔者对Unity的理解, 站在Unity开发者的视角上, 诠释.Net中的一些关键性概念.
 
-> CLR via C#是本好书, 可以在这本书里面并没有详细解释过.Net、.NetCore、.Net Standard、.Net Framework一系列的概念, 之所以有这么多的概念, 也是有历史原因的, 了解.Net的发言史能帮我们更好地理解这些概念
+# .NET往事
 
-## 先来介绍一下C#
+以在这本书里面并没有详细解释过.Net、.NetCore、.Net Standard、.Net Framework一系列的概念, 之所以有这么多的概念, 也是有历史原因的, 了解.Net的发言史能帮我们更好地理解这些概念、
+.Net是.Net C#是C#, .Net是一套支持C#代码运行的框架体系, 除此之外.Net还支持F#、VB等语言 
 
-## Unity的发展史
+.Net Framework、 .NetCore、 .Net这三者是对同一个对象在不同发展时期的不同称谓, 这一对象在不同发展时期
 
-## Mono
+## .Net Framework是啥
+此时的.Net只能够运行在Windows上
+
+## .Net Core是啥
+
+.Net Core在原来.NetFramework的基础上, 增加了对于跨平台的支持
+
+## .Net 是啥
+
+经过一段时间的演变, .Net Core就变成了.Net
+
+| 组件名称                                  | 作用                          | 说明                                      |   |   |   |   |   |   |   |
+|---------------------------------------|-----------------------------|-----------------------------------------|---|---|---|---|---|---|---|
+| CoreCLR / .NET Runtime                | 托管运行时/虚拟机，负责执行IL，中间语言JIT，GC | https://github.com/dotnet/runtime（已开源）  |   |   |   |   |   |   |   |
+| CoreFX / 基类库（Base Class Library, BCL） | 常用系统API：IO、网络、集合、字符串等       | 现代叫runtime中的“libraries”                 |   |   |   |   |   |   |   |
+| ASP.NET Core                          | Web开发框架                     | 支持Web服务器、API、MVC、Blazor、SignalR、gRPC等平台 |   |   |   |   |   |   |   |
+| Entity Framework Core                 | 对象关系映射（ORM）数据库组件            | 支持SQLServer、SQLite、MySQL等主流数据库          |   |   |   |   |   |   |   |
+| WinForms、WPF（Windows Only）            | 桌面GUI开发                     | .NET 5+支持基本移植，但仅限Windows                |   |   |   |   |   |   |   |
+| MSBuild                               | 构建系统                        | dotnet build 就是用的这个                     |   |   |   |   |   |   |   |
+| Roslyn                                | C#、VB.NET编译器和代码分析器          | https://github.com/dotnet/roslyn        |   |   |   |   |   |   |   |
+| NuGet                                 | 包管理工具                       | 在线/本地包管理                                |   |   |   |   |   |   |   |
+| CLI                                   | 命令行工具（dotnet）               | 包括dotnet、dotnet build、dotnet run等基础命令   |   |   |   |   |   |   |   |
+
+## Mono是啥
+
+上面也提到了, 由于最初.Net Framework只支持Windows平台, 而且还是不开源的. 有一批人希望
+
+由于.Net最初并不开源, 而且跨平台支持不好, 因此有一个团队根据.Net开放的接口, 一比一还原了CLR运行时, 这是真的造轮子, 也就是说, C#这个代码既可以跑在CLR环境中, Mono也提供了一个运行C#脚本的环境. 
 
 Mono自2001年启动, Mono是第一个在Android、IOS、Linux等其他非Windows平台上实现的.Net项目. 现在Mono已经渐渐退出历史舞台了
 
@@ -29,13 +57,22 @@ Unity最初选择的是Unity Script语言作为Editor的开发语言, 但是后�
 2010年之前, C#的这一套东西叫做.Net Framework, 这个.Net Framework是只支持Windows平台的.
 2010年之后, .Net开源, 并且舍弃了之前的.Net Framework, 并且支持了跨平台, 现在就叫.Net或者.NetCore了
 
+还有就是.Net升级是.Net C# language升级是language
+一般来说, 先是C#的语言有更新, 必须新增了某种语法或者语言特性 那么配套的.Net中就需要支持能够识别并驱动这些语法, 因此一般C#有新特性增加对应的.Net也有新的升级
+
+说白了 .Net、.NetCore、.NetFramework、Mono每一个都是一套让C#代码能够运行跑起来的平台. 这就好比各家虚拟机平台, 而C#就像是你在微软官网上下载的Windows操作系统的镜像文件, 你可以将这个镜像文件挂载在VMWare平台上, 也可以挂载在Parallel Desktop平台上, 即便平台的底层实现不同, 但是因为它们都遵循同样的规范, 因此同样的一操作系统镜像文件可以跑在不同的虚拟机平台上, 这些平台遵循的规范, 类比到.Net中也就是`.Net Standard`
+
+## .Net Standard
+
+.Net Standard 是针对多个 .Net实现推出的一套正式的.Net API规范. 推出.NetStandard的背后动机是要提高.Net生态系统中的一致性. 但是 .Net5采用的不同的方法来建立一致性, 这种新方法在很多情况下都不需要使用到.Net Standard.
+
+## Unity的发展史
+
+## Unity何时引入的Mono
+
 # .Net构成
 
-.Net由以下几个部分构成
-- CorCLR/.NET Runtime运行时环境, 托管运行时/虚拟机, 负责执行IL 中间语言JIT GC
-- 基类库
-- ASP.Net Core Web开发框架
-- WinForms、WPF（Windows Only）
+
 
 # C#代码是怎么跑起来的?
 
@@ -58,15 +95,12 @@ JIT方式打包, 在打包阶段, 我们编写的C#代码会被编译成IL, 打�
 解释器模式可以理解为是在Unity开发中代码热更新场景下, 业内开发者为了能够执行热更代码(dll)而开发的一种迷你版的CLR(虚拟机).
 我再理解一下解释器的角色, 解释器就是在AOT打包方式下, 主包的.Net的虚拟机被剔除丧失了解析编译IL(dll)的能力, 需要一个迷你版的虚拟机(也就是解释器)来执行IL代码
 
-# DLL种类
+# DLL
 
 > C#和C++虽然都能生成DLL, 如果DLL的调用者是C#语言, 那么这两种DLL是有分别的: C#生成的DLL类型是托管类型的DLL, C++生成的DLL是非托管的(原生的)DLL, 前者的DLL导入到C#工程中编译器就能够自动的识别DLL中的成员类型, 后者生成的DLL导入到C#工程中则需要使用`[DLLImport]`Attribute来做一些额外的处理, 并且在C++侧也需要对于要在C#侧调用的方法签名上添加`extern "C"`标识
 
 # 一个C#工程使用的.Net版本怎么看? 
 # 一个C#工程使用的.Net版本怎么修改? 
-
-# 前置知识
-
 
 ## AOT JIT
 
@@ -74,14 +108,19 @@ AOT和JIT是C#(当然别的基于CLR的语言也可以)代码运行的两种方�
 - AOT Ahead of Time
 什么是AOT?
 
+# 代码热更新
 
-ILRuntime中提到了它的机制是Interpret代码, 为什么会是Interpret呢?
+## Lua、XLua
 
-# 而Unity中 Mono方式打包对应的就是JIT的方式, IL2CPP方式打包对应的就是AOT的方式, 
-正是由于IOS系统上不允许使用JIT的方式运行App, 所以Unity团队才给出了IL2CPP的解决方案
+## ILRuntime
 
-# .Net .NetFramework .NetStandard C#版本之间的关系
+## HybridCLR
+## .sln .csproj .dll .asmdef的区别和联系
 
+.sln 是
+.csproj 一个sln下会有多个csproj
+.asmdef 这是Unity中的一个概念, 每创建一个asmdef, Unity都会自动生成这个asmdef对应的csproj
+.dll dll一般有两种: 使用C#编译生成的dll, 这类dll属于托管类dll, 导入Unity能够直接被Unity编译器识别; 还有一类是使用c/c++等非托管类语言编译生成的dll, 这类dll需要C#具有能够调用原生(native)代码的能力, 需要使用`[DLLImport]`属性来导入方法
 
 # JIT和解释器的区别是啥呢? 不都是运行时编译代码嘛?
 
@@ -92,10 +131,6 @@ JIT方式是有完整的Mono或者CLR虚拟机的机制, 而解释器则是一�
 C#代码会被编译成IL语言, 在运行的时候, 通过一个Interpreter(解释器)逐行解释IL指令运行
 在IOS上, 是不允许JIT的方式运行代码的, 只能使用AOT的方式运行
 在Android等其他设备上AOT和JIT都是可以的
-
-# Mono是什么 扮演什么角色
-
-由于.Net最初并不开源, 而且跨平台支持不好, 因此有一个团队根据.Net开放的接口, 一比一还原了CLR运行时, 这是真的造轮子, 也就是说, C#这个代码既可以跑在CLR环境中, Mono也提供了一个运行C#脚本的环境. 
 
 # Unity PlayerSettings中有一个APICompatibilityLevel选项 是干嘛的
 
@@ -137,6 +172,11 @@ AOT程序集 就是底包程序集 AOT是一种代码编译方式 它会
 
 什么是streaming path? 什么是persistent path?
 
+# 一直有个问题是如果我区分程序集的话 我只修改了其中某一个程序集的代码 C#的编译器会不会只编译那个被修改代码的程序集而提高编译速度呢?
+
 # 参考
+- [.net 温故知新：【2】 .Net Framework 、.Net 、 .NET Standard的概念与区别](https://www.cnblogs.com/SunSpring/p/15047424.html)
 - [AOT 和 JIT、 IL2CPP和Mono、 CLR、 ILRuntime热更新原理](https://blog.csdn.net/codywangziham01/article/details/123689658)
 - [Unity跨平台原理](https://www.cnblogs.com/fly-100/p/4594380.html)
+- [Unity从发布到流行经历了什么重大变化（2）](https://zhuanlan.zhihu.com/p/88692056)
+- [Unity将来时：IL2CPP是什么？有了Mono为什么还需要IL2CPP?](https://blog.csdn.net/gz_huangzl/article/details/52486255)
