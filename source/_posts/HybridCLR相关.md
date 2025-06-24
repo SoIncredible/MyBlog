@@ -12,7 +12,17 @@ sticky:
 
 # 先讲点历史
 
-> CLR via C#是本好书, 可以在这本书里面并没有详细解释过.Net、.NetCore、 .Net Standard、 .Net Framework一系列的概念, 之所以有这么多的概念, 也是有历史原因的, 了解.Net的发言史能帮我们更好地理解这些概念
+> CLR via C#是本好书, 可以在这本书里面并没有详细解释过.Net、.NetCore、.Net Standard、.Net Framework一系列的概念, 之所以有这么多的概念, 也是有历史原因的, 了解.Net的发言史能帮我们更好地理解这些概念
+
+## 先来介绍一下C#
+
+## Unity的发展史
+
+## Mono
+
+Mono自2001年启动, Mono是第一个在Android、IOS、Linux等其他非Windows平台上实现的.Net项目. 现在Mono已经渐渐退出历史舞台了
+
+Mono官网描述如下:Mono由微软赞助，是微软.NET框架的开源实现，是.NET基金会的一部分，基于C#和通用语言运行时的ECMA标准。不断发展壮大的解决方案系列和积极热情的贡献社区正帮助 Mono 成为开发跨平台应用程序的主要选择。
 
 Unity最初选择的是Unity Script语言作为Editor的开发语言, 但是后来考虑跨平台, 选择了C#语言, 但是又因为微软本身提供的C#的运行环境(或者叫CLR)是闭源的, 有授权和跨平台的各种限制, 于是就选择了Mono作为C#的运行环境.
 
@@ -83,8 +93,9 @@ C#代码会被编译成IL语言, 在运行的时候, 通过一个Interpreter(解
 在IOS上, 是不允许JIT的方式运行代码的, 只能使用AOT的方式运行
 在Android等其他设备上AOT和JIT都是可以的
 
-Mono是什么 扮演什么角色
-Interpreter和Compiler 扮演什么角色
+# Mono是什么 扮演什么角色
+
+由于.Net最初并不开源, 而且跨平台支持不好, 因此有一个团队根据.Net开放的接口, 一比一还原了CLR运行时, 这是真的造轮子, 也就是说, C#这个代码既可以跑在CLR环境中, Mono也提供了一个运行C#脚本的环境. 
 
 # Unity PlayerSettings中有一个APICompatibilityLevel选项 是干嘛的
 
