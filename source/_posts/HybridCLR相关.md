@@ -17,7 +17,8 @@ sticky:
 以在这本书里面并没有详细解释过.Net、.NetCore、.Net Standard、.Net Framework一系列的概念, 之所以有这么多的概念, 也是有历史原因的, 了解.Net的发言史能帮我们更好地理解这些概念、
 .Net是.Net C#是C#, .Net是一套支持C#代码运行的框架体系, 除此之外.Net还支持F#、VB等语言 
 
-.Net Framework、 .NetCore、 .Net这三者是对同一个对象在不同发展时期的不同称谓, 这一对象在不同发展时期
+.Net Framework、 .NetCore、 .Net这三者是对同一个对象在不同发展时期的不同称谓, 这一对象在不同发展时期具有不同的特点. 
+
 
 ## .Net Framework是啥
 此时的.Net只能够运行在Windows上
@@ -44,18 +45,11 @@ sticky:
 
 ## Mono是啥
 
-上面也提到了, 由于最初.Net Framework只支持Windows平台, 而且还是不开源的. 有一批人希望
+Mono 项目始于 2001 年，由 Ximian 公司的创始人 Miguel de Icaza 领导。Ximian 是一家专注于 Linux 和开源软件的公司。Miguel de Icaza 的目标是创建一个.NET 框架的开源实现，以便在 Linux 上运行。
 
-由于.Net最初并不开源, 而且跨平台支持不好, 因此有一个团队根据.Net开放的接口, 一比一还原了CLR运行时, 这是真的造轮子, 也就是说, C#这个代码既可以跑在CLR环境中, Mono也提供了一个运行C#脚本的环境. 
+.NET 框架最初由微软开发，主要用于构建 Windows 应用程序。由于.NET 框架的闭源性，它无法直接在其他操作系统上运行。Mono 项目的出现打破了这一限制，使得.NET 开发者的代码能够在多种平台上运行。
 
-Mono自2001年启动, Mono是第一个在Android、IOS、Linux等其他非Windows平台上实现的.Net项目. 现在Mono已经渐渐退出历史舞台了
-
-Mono官网描述如下:Mono由微软赞助，是微软.NET框架的开源实现，是.NET基金会的一部分，基于C#和通用语言运行时的ECMA标准。不断发展壮大的解决方案系列和积极热情的贡献社区正帮助 Mono 成为开发跨平台应用程序的主要选择。
-
-Unity最初选择的是Unity Script语言作为Editor的开发语言, 但是后来考虑跨平台, 选择了C#语言, 但是又因为微软本身提供的C#的运行环境(或者叫CLR)是闭源的, 有授权和跨平台的各种限制, 于是就选择了Mono作为C#的运行环境.
-
-2010年之前, C#的这一套东西叫做.Net Framework, 这个.Net Framework是只支持Windows平台的.
-2010年之后, .Net开源, 并且舍弃了之前的.Net Framework, 并且支持了跨平台, 现在就叫.Net或者.NetCore了
+随着时间的推移，Mono 项目得到了广泛的社区支持，并且不断发展和完善。它支持多种编程语言，包括 C#、Visual Basic.NET 和 F#，并且实现了许多.NET 框架的功能。Mono 项目在开源社区中的成功也促进了.NET 技术在非 Windows 平台上的普及。
 
 还有就是.Net升级是.Net C# language升级是language
 一般来说, 先是C#的语言有更新, 必须新增了某种语法或者语言特性 那么配套的.Net中就需要支持能够识别并驱动这些语法, 因此一般C#有新特性增加对应的.Net也有新的升级
@@ -69,10 +63,6 @@ Unity最初选择的是Unity Script语言作为Editor的开发语言, 但是后�
 ## Unity的发展史
 
 ## Unity何时引入的Mono
-
-# .Net构成
-
-
 
 # C#代码是怎么跑起来的?
 
@@ -180,3 +170,6 @@ AOT程序集 就是底包程序集 AOT是一种代码编译方式 它会
 - [Unity跨平台原理](https://www.cnblogs.com/fly-100/p/4594380.html)
 - [Unity从发布到流行经历了什么重大变化（2）](https://zhuanlan.zhihu.com/p/88692056)
 - [Unity将来时：IL2CPP是什么？有了Mono为什么还需要IL2CPP?](https://blog.csdn.net/gz_huangzl/article/details/52486255)
+- [.NET 发展历程与未来](https://blog.csdn.net/Funniyuan/article/details/136002603)
+- [Mono 软件发展历程详解](https://my.oschina.net/emacs_9244658/blog/18230886)
+- [.NET 的发展简史](https://www.cnblogs.com/willick/p/15038133.html)

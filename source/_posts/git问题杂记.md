@@ -40,7 +40,7 @@ fatal: unable to access 'https://github.com/xxxxx/xxxxxx.git/': Failed to connec
 # Git仓库太大拉取不下来
 
 一些比较大的仓库,拉取的时候会有如下报错:
-```
+```shell
 remote: Enumerating objects: 1315604, done.
 remote: Counting objects: 100% (1362/1362), done.
 remote: Compressing objects: 100% (850/850), done.
@@ -52,7 +52,7 @@ fatal: fetch-pack: invalid index-pack output
 ```
 
 因为仓库非常大，一次性拉取可能会导致网络压力过大。可以尝试使用 --depth 参数进行浅克隆，只拉取最近的提交记录：
-```
+```shell
 git clone --depth 1 <repository-url>
 ```
 或者尝试将缓存增大为1G:
@@ -61,7 +61,7 @@ git config --global http.postBuffer 1048576000
 ```
 
 如果还是不行,那就尝试暴力拉取,编写一个shell脚本重复执行拉取仓库直到拉取成功:
-```
+```shell
 #!/bin/bash
 
 # 检查是否提供了仓库目录作为参数

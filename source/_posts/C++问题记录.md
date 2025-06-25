@@ -15,7 +15,7 @@ sticky: 3
 在使用了一年多C#之后,回头看C++时,有很多疑惑.首先是,在C#中,所有的对象都是需要new的.
 
 看下面代码:
-```
+```C++
 #include <iostream>
 #include <string>
 

@@ -15,7 +15,7 @@ sticky:
 启动时, 客户端只有一个Fiber
 
 我们就从`Entry.cs`脚本中`StartAsync`方法的最后一行`FiberManager.Create`方法开始看吧，这个方法内部有如下代码：
-```
+```C#
 fiber.ThreadSynchronizationContext.Post(async () =>
 {
     try
