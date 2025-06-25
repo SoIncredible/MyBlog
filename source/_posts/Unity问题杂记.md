@@ -335,10 +335,6 @@ Root
 在2020.3.48f1中`Preference`->General一栏中取消勾选`Auto Refresh`,但是在2022.3.15f1版本中笔者并没有找到该字段. 
 
 # 以下几个问题是相关联的
-
-
-# Unity中使用的API Level
-https://blog.csdn.net/qq_36303853/article/details/145187274
 # Unity中使用到的jar包、dll等必须放在Plugins目录下吗
 # Unity中安装的NuGet包
 使用Rider的时候,如果在代码中用到了一些第三方的.Net库,在提示里面会有一个选项是从NuGet中安装该第三方库.但是这个第三方库
