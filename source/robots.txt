@@ -1,0 +1,12 @@
+# hexo robots.txt
+User-agent: *
+Allow: /
+Allow: /about/
+Allow: /archives/
+Allow: /categories/
+
+Disallow: /js/
+Disallow: /css/
+
+Sitemap: http://soincredible.github.io/sitemap.xml
+Sitemap: http://soincredible.github.io/baidusitemap.xml

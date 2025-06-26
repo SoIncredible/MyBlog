@@ -14,6 +14,31 @@ sticky: 1000
 
 [C#]()
 [Unity]()
+  - [Animation]()
+  - [资源加载管理]()
+  - [代码热更]()
+  - [网络通信]()
+  - [设计模式]()
+  - [工具开发]()
+  - [性能优化]()
+  - [UGUI]()
+  - [Shader]()
+  - [URP]()
+  - [HDRP]()
+  - [插件合集]()
+[设计模式]()
+[算法]()
+[渲染]()
+[建模]()
+[云服务器]()
+[AI]()
+[阅读]()
+[迷思]()
+[Jekins]()
+
+Obsidian + Git + Hexo + PigGo + 云服务器 + 云存储的方案 https://zhuanlan.zhihu.com/p/554333805
+图床方案 https://tbed.hellohao.cn/
+PicGo https://github.com/Molunerfinn/PicGo
 
 
 # ProjectO
@@ -131,20 +156,15 @@ https://soincredible.github.io/posts/8a8aad75
 - [云风的Blog](https://blog.codingnow.com/)
 - [L's Blog](https://www.liuocean.com/)
 - [Stephen Cleary](https://blog.stephencleary.com/) C#专家
+- [行尸走油](https://walkingfat.com/)
 
-# 编程语言
-
-- C#
-- Lua 小丑牌Balatro
-- C++ Wesnoth
-- Python
-- Java 
 # Cover
 - https://www.notion.so/images/page-cover/met_gerome_1890.jpg
 
 不知道从哪里听到的一句话 程序员只要能把云、水、草的Shader渲染搞明白就算过关了。
 
 博客收录 https://zhuanlan.zhihu.com/p/100922816
+https://javahikers.github.io/2019/06/16/personal-blog-being-included-in-google/
 
 # Unity 插件合集
 

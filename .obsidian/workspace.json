@@ -1,0 +1,212 @@
+{
+  "main": {
+    "id": "c50c18753853b9bc",
+    "type": "split",
+    "children": [
+      {
+        "id": "f734d27b42664d85",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "54ceb84f05aa2b1f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "source/_posts/VSCode配置UnityC#开发环境.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "VSCode配置UnityC#开发环境"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "0c2a8d608d68d262",
+    "type": "split",
+    "children": [
+      {
+        "id": "d56b75078fd10643",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4357caf17ddb8932",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "6d5fd345a4f736f4",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "ce09e040fb58dafb",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "9825549501b6bbe3",
+    "type": "split",
+    "children": [
+      {
+        "id": "cba3a99ab379d601",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "dc026c6c797f8b7f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "source/_posts/VSCode配置UnityC#开发环境.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "VSCode配置UnityC#开发环境 的反向链接列表"
+            }
+          },
+          {
+            "id": "4d1f740f315bb046",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "source/_posts/VSCode配置UnityC#开发环境.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "VSCode配置UnityC#开发环境 的出链列表"
+            }
+          },
+          {
+            "id": "1e720af225915cec",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "70bae66bbbf6d040",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "source/_posts/VSCode配置UnityC#开发环境.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "VSCode配置UnityC#开发环境 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false
+    }
+  },
+  "active": "54ceb84f05aa2b1f",
+  "lastOpenFiles": [
+    "db.json",
+    "public/posts/370bdedc/2022_12_15_cover.png",
+    "public/img/favourite_anime.png",
+    "public/img/bg.jpg",
+    "public/img/like_music.PNG",
+    "public/posts/b2c547d7/image-6.png",
+    "public/posts/8d920ebf/image.png",
+    "public/posts/e57f243c/image-20220707015057151.png",
+    "public/posts/370bdedc/image-20221010191820950.png",
+    "public/posts/e52a9ff3/image4.png",
+    "public/posts/b2c547d7/image-7.png",
+    "public/js/tw_cn.js",
+    "public/js/main.js",
+    "public/css/index.css",
+    "public/css/var.css",
+    "public/js/utils.js",
+    "public/tags/Unity/index.html",
+    "public/tags/Shader/index.html",
+    "public/posts/1f15053a/index.html",
+    "public/posts/1408599b/index.html",
+    "public/posts/e57f243c/index.html",
+    "VSCode配置UnityC.md",
+    "source/_posts/VSCode配置UnityC#开发环境.md",
+    "source/_posts/UnityShader问题杂记.md",
+    "source/_posts/UnityShader实现云的效果.md",
+    "source/_posts/UnityShader实现水的效果.md",
+    "source/_posts/UnityShader实现草的效果.md",
+    "source/_posts/UnityShader入门精要笔记-15-使用噪声.md",
+    "node_modules/to-regex-range/README.md",
+    "source/_posts/帧同步与状态同步.md",
+    "source/_posts/Extending-the-asynce-methods-in-CSharp-译.md",
+    "source/_posts/MarkDown-LaTeX符号整理.md",
+    "source/_posts/UnityShader入门精要笔记-6-Unity中的基础光照.md",
+    "source/_posts/YooAsset.md",
+    "source/_posts/UnityUGUI源码.md",
+    "source/_posts/UnityShader入门精要笔记-11-让画面动起来.md",
+    "source/_posts/UnityShader入门精要笔记-10-高级纹理.md",
+    "source/_posts/UnityAssetDatabase问题整理.md"
+  ]
+}

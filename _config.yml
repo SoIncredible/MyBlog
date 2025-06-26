@@ -143,20 +143,22 @@ symbols_count_time:
 
 deploy:
   - type: git
-    repo: git@github.com:SoIncredible/SoIncredible.github.io.git
+    repository:
+      github: git@github.com:SoIncredible/SoIncredible.github.io.git
+      coding: git@e.coding.net:g-gzbl4348/EddieLee/SoIncredible.git
     branch: master
   - type:
 
   # https://github.com/hexojs/hexo-generator-sitemap
 sitemap:
   path: sitemap.xml
-  rel: false
-  tags: true
-  categories: true
+  # rel: false
+  # tags: true
+  # categories: true
 
 # https://github.com/coneycode/hexo-generator-baidu-sitemap
-# baidusitemap:
-#     path: baidusitemap.xml
+baidusitemap:
+    path: baidusitemap.xml
 
 # https://github.com/hexojs/hexo-generator-feed
 #Feed Atom
