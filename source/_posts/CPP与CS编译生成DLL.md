@@ -304,7 +304,7 @@ public class Program{
 7.验证 //TODO Eddie 刚才在Unity里面验证了, UnityEditor里面应该帮我自动设置了dll的引用关系, 需要看一下非Unity项目下, 导入一个dll是如何关联的. 
 非托管的dll在Mac上不能用 
 托管的dll可以用
-在Mac上打非托管的dll 给Windows平台用有问题吗
+在Mac上打非托管的dll 给Windows平台用有问题吗 我刚才在Windows Arm虚拟机上试的是不行的
 
 ```C#
 dotnet run
