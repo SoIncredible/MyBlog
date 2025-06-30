@@ -192,8 +192,7 @@ g++ Main.cpp -o a
 # 指定创建的项目名称和.NET版本
 dotnet new classlib -o Utils -f net8.0
 ```
-
-4.编写DLL脚本
+2.编写DLL脚本
 
 ```C#
 // SortUtils.cs
@@ -234,19 +233,19 @@ namespace Utils{
 }
 ```
 
-5.编译生成DLL
+3.编译生成DLL
 
 ```C#
 dotnet build
 ```
 
-6.创建引用DLL的项目
+4.创建引用DLL的项目
 
 ```C#
 dotnet new console -o Project -f net7.0
 ```
 
-7.在项目中引用DLL
+5.在项目中引用DLL
 
 ```shell
 vim Project.csproj
@@ -262,7 +261,7 @@ vim Project.csproj
 </ItemGroup>
 ```
 
-8.编写测试代码
+6.编写测试代码
 
 ```C#
 // Program.cs
@@ -302,7 +301,10 @@ public class Program{
 }
 ```
 
-9.验证
+7.验证 //TODO Eddie 刚才在Unity里面验证了, UnityEditor里面应该帮我自动设置了dll的引用关系, 需要看一下非Unity项目下, 导入一个dll是如何关联的. 
+非托管的dll在Mac上不能用 
+托管的dll可以用
+在Mac上打非托管的dll 给Windows平台用有问题吗
 
 ```C#
 dotnet run
