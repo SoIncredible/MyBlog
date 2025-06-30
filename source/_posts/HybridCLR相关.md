@@ -4,7 +4,7 @@ abbrlink: '20505312'
 date: 2025-06-22 08:31:38
 tags:
 categories:
-cover:
+cover: https://www.notion.so/images/page-cover/met_henri_tl_1892.jpg
 description:
 swiper_index:
 sticky:
@@ -19,9 +19,8 @@ sticky:
 
 .Net Framework、 .NetCore、 .Net这三者是对同一个对象在不同发展时期的不同称谓, 这一对象在不同发展时期具有不同的特点. 
 
-
 ## .Net Framework是啥
-此时的.Net只能够运行在Windows上
+此时的.Net只能够运行在Windows上, 而且C#代码的运行方式是JIT模式
 
 ## .Net Core是啥
 
@@ -88,15 +87,10 @@ JIT方式打包, 在打包阶段, 我们编写的C#代码会被编译成IL, 打�
 # DLL
 
 > C#和C++虽然都能生成DLL, 如果DLL的调用者是C#语言, 那么这两种DLL是有分别的: C#生成的DLL类型是托管类型的DLL, C++生成的DLL是非托管的(原生的)DLL, 前者的DLL导入到C#工程中编译器就能够自动的识别DLL中的成员类型, 后者生成的DLL导入到C#工程中则需要使用`[DLLImport]`Attribute来做一些额外的处理, 并且在C++侧也需要对于要在C#侧调用的方法签名上添加`extern "C"`标识
+> C++可以被编译成dll吗?
 
 # 一个C#工程使用的.Net版本怎么看? 
 # 一个C#工程使用的.Net版本怎么修改? 
-
-## AOT JIT
-
-AOT和JIT是C#(当然别的基于CLR的语言也可以)代码运行的两种方式, AOT即Ahead of Time
-- AOT Ahead of Time
-什么是AOT?
 
 # 代码热更新
 
@@ -105,12 +99,55 @@ AOT和JIT是C#(当然别的基于CLR的语言也可以)代码运行的两种方�
 ## ILRuntime
 
 ## HybridCLR
-## .sln .csproj .dll .asmdef的区别和联系
+## .sln .csproj .dll .asmdef .pdb的区别和联系
 
+[这是C#版本的OpenCV库](https://github.com/shimat/opencvsharp/releases), 下载他的release你会发现,里面还带一个pdb文件. 
 .sln 是
 .csproj 一个sln下会有多个csproj
 .asmdef 这是Unity中的一个概念, 每创建一个asmdef, Unity都会自动生成这个asmdef对应的csproj
 .dll dll一般有两种: 使用C#编译生成的dll, 这类dll属于托管类dll, 导入Unity能够直接被Unity编译器识别; 还有一类是使用c/c++等非托管类语言编译生成的dll, 这类dll需要C#具有能够调用原生(native)代码的能力, 需要使用`[DLLImport]`属性来导入方法
+
+对于简单的项目 完全没必要创建sln 但是像Rider、Visual Studio这些IDE是没有提供只创建csproj的选项的, 这就有点大材小用了 我们可以通过使用命令行
+```shell
+dotnet new console
+```
+这种方式只创建csproj, 然后使用Rider或者VS打开这个csproj, 就可以绕过生成sln文件
+.sln（Solution）文件是 Visual Studio/VS Code/Coderush Rider 等IDE用来管理一组相关项目（.csproj）的容器。比如你要做大型架构、包括多个类库、应用，以及单元测试项目时，.sln文件可以统一管理它们的依赖与结构。
+但是，小项目、单个项目时，完全可以不建 .sln，只用一个 csproj 文件照样编译、运行、开发（如命令行下dotnet build XX.csproj，VS Code 也能直接打开）。
+实例1：你在任意文件夹里新建dotnet new console，它会创建Program.cs和XX.csproj，没有.sln，也能正常dotnet run/build。
+只有需要管理多个项目（比如引用类库或测试工程等），用.sln会更方便。
+
+ pdb 文件是什么？
+
+PDB（Program Database）是Windows/Visual Studio环境下的“程序数据库”文件。
+内容：主要存储了可执行文件（exe/dll等）的调试信息，如：
+源文件名/路径
+行号
+局部变量、函数参数名
+类型信息
+符号表、断点等信息
+目的是：进行调试时，IDE/调试器能还原源代码对应关系、栈、变量名等，是“调试辅助文件”。
+3. dll 和 pdb 的关系
+
+当你用 Visual Studio 编译一个 dll 时（Debug 模式），通常会生成同名的 pdb 文件。
+这个 dll 文件是真正的动态库，pdb 文件不给程序加载，只在调试/分析时让开发者用。
+没有 pdb，发布的 dll 依然可以运行，只是调试难度大。
+4. dylib 是否有对应的 pdb？
+
+macOS 下的 .dylib 通常有类似的调试信息保存在 DWARF 格式的调试段（通常嵌入在二进制内部，或者用 .dSYM 文件夹分离保存）。
+DWARF 用于 LLDB/gdb 等调试器，原理和 pdb 很像，就是格式/机制不同。
+
+2.创建sln([这步不需要, 我们只是需要构建一个dll出来, 不需要创建sln](https://soincredible.github.io/posts/20505312))
+
+```shell
+dotnet new sln -o Utils
+```
+
+3.将DLL项目添加到sln中(这一步也不需要)
+
+```shell
+dotnet sln add Utils/Utils.csproj
+```
 
 # JIT和解释器的区别是啥呢? 不都是运行时编译代码嘛?
 

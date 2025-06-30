@@ -136,17 +136,17 @@ QDebug.Log("转场结束");
 m_ddz_zhounianqing_JY12_zhuanchang_GameObject.SetActiveEx(false);
 ```
 
+# Animation体积优化的问题
+https://blog.uwa4d.com/archives/UWA_Pipeline22.html
+
 
 # DOTweenAnimation组件使用
 
 DOTweenAnimation组件挂载在节点上，调用播放的时候只播第一次，之后不播了，需要搞清楚为什么
 
-
-
 # 协程的坑
 
 - 协程中的等待一秒并不是真正的一秒有可能会有误差
-
 - 提示要执行Coroutine的物体的状态是inactive的
 一个GameObject,在同一帧内,先被SetActive了,然后紧接着用这个GameObject上的一个Mono执行StartCoroutine,会提示GameObject无法被执行,验证是否是这样的.
 
@@ -315,6 +315,7 @@ https://www.zhihu.com/question/20367435
 
 对该工具进行扩充, 变成一个资产库工具, 能够方便开发者快速的管理资源
 见[GitHub](https://github.com/SoIncredible/UnityUtils)工具库
+Unity插件[FR2](https://docs.google.com/document/d/1M3drHsRSCNKk-colYnCYECM_TR2XgtGB_8GFc_La19E/edit?tab=t.0#heading=h.z6ne0og04bp5)
 
 # Unity中合并两个Mesh
 
@@ -334,10 +335,15 @@ Root
 
 在2020.3.48f1中`Preference`->General一栏中取消勾选`Auto Refresh`,但是在2022.3.15f1版本中笔者并没有找到该字段. 
 
-# 以下几个问题是相关联的
 # Unity中使用到的jar包、dll等必须放在Plugins目录下吗
+并不是的, 托管的dll放在任何地方都可以
+在Mac上能编译非托管的dll类型的库嘛? c++为例, 编译之后成dylib了 如果mac上c++编译成了dll, Mac上Unity能用吗?
+
 # Unity中安装的NuGet包
-使用Rider的时候,如果在代码中用到了一些第三方的.Net库,在提示里面会有一个选项是从NuGet中安装该第三方库.但是这个第三方库
+一般来说, Unity中能安装的库, 使用UnityPackageManager就都能安装上, 用不到NuGet的, 
+有些包找不到并不是PackageManager不全 更有可能是Unity支持的.Net版本太低, 你想接的库, 根本就没有兼容这个版本
+
+另外还需要注意Unity对C# Language脚本语言版本的支持情况(https://docs.unity3d.com/cn/current/Manual/CSharpCompiler.html)
 
 # Unity安装Newtonsoft.Json库
 

@@ -1,9 +1,9 @@
 ---
 title: git问题杂记
 tags: 
-  - Git
+  - git
 abbrlink: a72e4bb6
-categories: 硬技能
+categories: 版本管理工具
 date: 2022-07-10 11:11:26
 cover: https://www.notion.so/images/page-cover/met_frederic_edwin_church_1871.jpg
 description: 

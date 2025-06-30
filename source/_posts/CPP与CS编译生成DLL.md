@@ -15,6 +15,9 @@ sticky:
 
 > C#和C++虽然都能生成DLL, 如果DLL的调用者是C#语言, 那么这两种DLL是有分别的: C#生成的DLL类型是托管类型的DLL, C++生成的DLL是非托管的(原生的)DLL, 前者的DLL导入到C#工程中编译器就能够自动的识别DLL中的成员类型, 后者生成的DLL导入到C#工程中则需要使用`[DLLImport]`Attribute来做一些额外的处理, 并且在C++侧也需要对于要在C#侧调用的方法签名上添加`extern "C"`标识
 
+> 在托管代码中调用非托管代码的开销怎么样?
+> 和把所有代码都写在非托管部分的开销对比怎么样?
+
 以实现冒泡排序功能为例记录如何在`C#`和`C++`中编写、生成和调用DLL
 
 # CPP中的DLL
@@ -39,9 +42,8 @@ touch Main.cpp
 
 2.编写各文件
 
-Head.h
-
 ```C++
+// Head.h
 #ifndef HEAD_H
 #define HEAD_H
 	extern "C" void Swap(int &x, int &y);
@@ -50,9 +52,8 @@ Head.h
 #endif
 ```
 
-Utils.cpp
-
 ```C++
+// Utils.cpp
 #include"Head.h"
 #include<iostream>
 
@@ -73,9 +74,8 @@ extern "C" void PrintArr(int *arr, int size){
 }
 ```
 
-SortUtils.cpp
-
 ```C++
+// SortUtils.cpp
 #include"Head.h"
 #include<iostream>
 using namespace std;
@@ -91,9 +91,8 @@ extern "C" void BubbleSort(int *arr, int size){
 }
 ```
 
-Main.cpp
-
 ```C++
+// Main.cpp
 #include<iostream>
 #include<vector>
 // 操作dll相关头文件
@@ -190,27 +189,14 @@ g++ Main.cpp -o a
 1.创建DLL项目
 
 ```shell
-// 指定创建的项目名称和.NET版本
-dotnet new classlib -o Utils -f net7.0
-```
-
-2.创建sln
-
-```shell
-dotnet new sln -o Utils
-```
-
-3.将DLL项目添加到sln中
-
-```shell
-dotnet sln add Utils/Utils.csproj
+# 指定创建的项目名称和.NET版本
+dotnet new classlib -o Utils -f net8.0
 ```
 
 4.编写DLL脚本
 
-SortUtils.cs
-
 ```C#
+// SortUtils.cs
 using System;
 using Utils;
 namespace SortUtils{
@@ -226,9 +212,8 @@ namespace SortUtils{
 }
 ```
 
-Utils.cs
-
 ```C#
+// Utils.cs
 using System;
 namespace Utils{
   public class Utils{
@@ -269,7 +254,7 @@ vim Project.csproj
 
 在Project标签下添加如下代码
 
-```
+```xml
 <ItemGroup>
 	<Reference Include="DLL文件名">
 		<HintPath>DLL文件路径</HintPath>
@@ -279,9 +264,8 @@ vim Project.csproj
 
 8.编写测试代码
 
-Program.cs
-
 ```C#
+// Program.cs
 using System.Text.RegularExpressions;
 using Utils;
 using SortUtils;
@@ -577,6 +561,22 @@ namespace CPP
     }
 }
 ```
+
+# 一些Unity中无法内置的dll的处理
+https://blog.csdn.net/lanchunhui/article/details/53239441
+
+https://zh.wikipedia.org/zh-hans/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83
+
+https://blog.csdn.net/qq_17347313/article/details/106995687
+C#中正态分布的第三方库
+
+# 正态分布
+
+## 标准正态分布
+
+# 正偏态分布
+
+# 累积分布函数
 
 ## ⚠️注意事项
 

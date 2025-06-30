@@ -23,9 +23,6 @@ sticky:
 ## 设置帧率预算
 
 
-
-
-
 # 内存分析
 
 内存对运行时的性能表现的影响微乎其微，
@@ -34,8 +31,6 @@ sticky:
 
 - Memory Profiler module: 这是Unity内置的模块，通过该模块我们可以分析我们的游戏基本的内存占用情况
 - Memory Profiler package: 这是一个Unity Package你可以将其安装到你的Unity项目中。这个模块为Unity Editor添加了额外的Memory Profiler窗口，让你能够更加详细地分析项目的内存使用情况。
-
-
 
 # Unity 性能分析工具
 
@@ -84,9 +79,6 @@ Batches翻译过来是批次，它代表着在这一帧中CPU向GPU输送的绘�
 # 一些想说的
 
 性能优化是一个十分琐碎的事，在性能优化的过程中了解了Unity底层的执行顺序、内存管理等
-
-
-
 
 # 参考资料
 
