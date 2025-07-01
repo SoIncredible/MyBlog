@@ -335,9 +335,6 @@ Root
 
 在2020.3.48f1中`Preference`->General一栏中取消勾选`Auto Refresh`,但是在2022.3.15f1版本中笔者并没有找到该字段. 
 
-# Unity中使用到的jar包、dll等必须放在Plugins目录下吗
-并不是的, 托管的dll放在任何地方都可以
-在Mac上能编译非托管的dll类型的库嘛? c++为例, 编译之后成dylib了 如果mac上c++编译成了dll, Mac上Unity能用吗?
 
 # Unity中安装的NuGet包
 一般来说, Unity中能安装的库, 使用UnityPackageManager就都能安装上, 用不到NuGet的, 

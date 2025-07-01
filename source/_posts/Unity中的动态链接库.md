@@ -1,5 +1,5 @@
 ---
-title: CPP与CS编译生成DLL
+title: Unity中的动态链接库
 abbrlink: 4ea0c9c3
 date: 2023-09-28 18:04:28
 tags: 
@@ -13,10 +13,98 @@ swiper_index:
 sticky:
 ---
 
-> C#和C++虽然都能生成DLL, 如果DLL的调用者是C#语言, 那么这两种DLL是有分别的: C#生成的DLL类型是托管类型的DLL, C++生成的DLL是非托管的(原生的)DLL, 前者的DLL导入到C#工程中编译器就能够自动的识别DLL中的成员类型, 后者生成的DLL导入到C#工程中则需要使用`[DLLImport]`Attribute来做一些额外的处理, 并且在C++侧也需要对于要在C#侧调用的方法签名上添加`extern "C"`标识
+# Unity中使用到的jar包、dll等必须放在Plugins目录下吗
+并不是的, 托管的dll放在任何地方都可以
+在Mac上能编译非托管的dll类型的库嘛? c++为例, 编译之后成dylib了 如果mac上c++编译成了dll, Mac上Unity能用吗?
+
+
+DLL是动态链接库, 但是有分别
+
+刚才在Unity里面验证了, UnityEditor里面应该帮我自动设置了dll的引用关系, 需要看一下非Unity项目下, 导入一个dll是如何关联的. 
+非托管的dll在Mac上不能用 
+托管的dll可以用
+在Mac上打非托管的dll 给Windows平台用有问题吗 我刚才在Windows Arm虚拟机上试的是不行的
+> DLL并不是哪一种语言的专属, 但是由于在不同平台上, dll文件的扩展名也是不一样的, 在Windows上是.dll, 在Mac上是.dylib, 在Linux上是.so, 虽然任何语言都可以生成动态库, 但是按照笔者Unity开发的视角, 我们还是对动态链接库做一下区分: 由C#和非C#语言生成的DLL, 虽然都能生成DLL, 如果DLL的调用者是C#语言, 那么这两种DLL是有分别的: C#生成的DLL类型是托管类型的DLL, C++生成的DLL是非托管的(原生的)DLL, 前者的DLL导入到C#工程中编译器就能够自动的识别DLL中的成员类型, 后者生成的DLL导入到C#工程中则需要使用`[DLLImport]`Attribute来做一些额外的处理, 并且在C++侧也需要对于要在C#侧调用的方法签名上添加`extern "C"`标识
+
+> 注意, 因为每个平台上的动态库的格式不一样, 因此在构建特定平台的动态库的时候, 应直接在对应平台的机器上构建, 不要用交叉编译的方式构建, 会有奇怪的错误
 
 > 在托管代码中调用非托管代码的开销怎么样?
 > 和把所有代码都写在非托管部分的开销对比怎么样?
+
+# [DllImport("__Internal")]
+[DllImport("xxx.dll")] 是 .NET / C# 的 P/Invoke 语法，作用是让 C# 可以调用外部的 C、C++、Objective-C 等“本地函数”。
+
+一般写成这样：
+
+[DllImport("myPlugin")]
+public static extern int MyNativeFunction(int a, int b);
+2. "__Internal" 特殊含义
+
+当你用 [DllImport("__Internal")] 这样写时，“__Internal”是一个特殊的伪名称，而不是指某个实际文件。
+其真正含义是：
+
+让 .NET 或 Unity 在 本进程/本程序/主可执行程序自身 的导出表里寻找本地实现的符号。
+也就是说，被 [DllImport("__Internal")] 标注的方法，对应的本地方法体需要在当前可执行程序内部（而不是某个外部 DLL 文件里）。
+符号名搜索会在自己的 executable 导出里找。
+3. 应用场景举例
+
+场景A：iOS、Mac 等平台（特别是 Unity）
+
+Unity/IL2CPP 在生成 iOS、Mac 原生工程时，如果你写了：
+[DllImport("__Internal")]
+public static extern void MyFunc();
+实际上，IL2CPP 编译器会在最终的 App binary（或 Framework 二进制）里搜 名为 MyFunc 的导出函数，而不是去动态查找某个外部库（.dylib、.so、.dll）。
+这样做的好处：
+iOS 平台不允许像 Windows 那样动态链接第三方 DLL，所有 Native 代码都必须静态链接进 App 的主可执行文件中。
+[DllImport("__Internal")] 是唯一安全支持的方式。
+场景B：自己写好本地函数并链接进主程序
+
+如果你在构建的主程序中嵌入了自己的 C 代码，可以直接给导出符号以供 .NET 查找，无需拆分外部 DLL 文件。
+4. 对比调用外部DLL
+
+[DllImport("user32.dll")] 就是在找 Windows 的系统动态库。
+[DllImport("__Internal")] 是在找当前程序（App、自身进程、主 binary）中定义的本地符号——通常只有在本地代码编译成主程序时才会有。
+5. Unity的常见用法
+
+在 Unity iOS 插件开发中，Native 代码（C/Objective-C/C++/Swift）最终会被链接进主 app binary，此时 C# 访问原生函数都要用 [DllImport("__Internal")]，不能写成 "yourlib.dylib" —— 否则找不到或被苹果审核拒绝。
+
+[DllImport("__Internal")]
+public static extern void MyObjCFunc();
+6. 小结
+
+[DllImport(“__Internal”)] 让 C#（Mono/.NET/Unity）去主程序自身导出符号表里找函数，而不是去加载某个外部DLL文件。
+常见于 iOS、Mac Unity 原生插件开发场景。
+Windows 平台一般用 [DllImport("xxx.dll")] 加载外部库。
+扩展
+
+如果你在 Windows 下用 [DllImport("__Internal")]，绝大多数情况下用不到（除非自己玩自定义可执行文件出口，且用Mono/IL2CPP等特殊方案）。
+
+对于C#来说, 无论是Mac还是Windows, C#导出的动态库都是.dll扩展名的, dll中都是IL语言, 不是本地的机器码
+
+# 本地语言Native Code
+本地语言，在软件开发领域通常指这样的语言或编程环境：
+
+它编写出来的程序，经过编译后直接生成当前操作系统和硬件平台的“本地机器码”（Native Code）。
+程序无需额外的“虚拟机”、“解释器”、“运行时中间层”就能直接在操作系统之上被加载和运行。
+本地语言天然与操作系统、硬件架构强相关。
+通俗说法：
+
+用本地语言写的代码 -> 编译 -> 得到直接跑在操作系统上的“exe”“dll”“so”等文件。
+2. 常见的本地语言举例
+
+以下这些，是典型的本地/原生语言，用它们编译出来的程序就是Native Code：
+
+C
+C++
+Objective-C（macOS/iOS下）
+Rust（默认就是直接编译本地机器码）
+Go语言（Go 1.5以后完全支持无需虚拟机，能直接编译原生机器码）
+Fortran
+Delphi/Pascal（比如 Embarcadero Delphi）
+Zig
+Assembly 汇编（最彻底的native code）
+Swift（编译模式不同，本地或托管两种，主流iOS开发是本地的）
+
 
 以实现冒泡排序功能为例记录如何在`C#`和`C++`中编写、生成和调用DLL
 
@@ -301,16 +389,13 @@ public class Program{
 }
 ```
 
-7.验证 //TODO Eddie 刚才在Unity里面验证了, UnityEditor里面应该帮我自动设置了dll的引用关系, 需要看一下非Unity项目下, 导入一个dll是如何关联的. 
-非托管的dll在Mac上不能用 
-托管的dll可以用
-在Mac上打非托管的dll 给Windows平台用有问题吗 我刚才在Windows Arm虚拟机上试的是不行的
+7.验证 
 
 ```C#
 dotnet run
 ```
 
-# Unity中C#和C++协同
+# Unity中调用非托管的动态库
 
 如果想在C#侧使用C++中的一个类的话,需要将这个类的每一个public成员方法封装一个**静态方法**供C#测调用,然后C#侧做一个中间层的封装,即在C#侧将这些静态方法重新封装成类.
 
@@ -322,29 +407,21 @@ dotnet run
 #ifndef STACKLIBRARY_H
 #define STACKLIBRARY_H
 
-#if defined _WIN32 || defined __CYGWIN__
-#ifdef BUILDING_DLL
-#ifdef __GNUC__
-#define DLL_PUBLIC __attribute__((dllexport))
+#ifdef _WIN32
+    #ifdef BUILDING_DLL
+        #define DLL_PUBLIC __declspec(dllexport)
+    #else
+        #define DLL_PUBLIC __declspec(dllimport)
+    #endif
+    #define DLL_LOCAL
 #else
-#define DLL_PUBLIC __declspec(dllexport) // Note: actually gcc seems to also supports this syntax.
-#endif
-#else
-#ifdef __GNUC__
-#define DLL_PUBLIC __attribute__((dllimport))
-#else
-#define DLL_PUBLIC __declspec(dllimport) // Note: actually gcc seems to also supports this syntax.
-#endif
-#endif
-#define DLL_LOCAL
-#else
-#if __GNUC__ >= 4
-#define DLL_PUBLIC __attribute__((visibility("default")))
-#define DLL_LOCAL __attribute__((visibility("hidden")))
-#else
-#define DLL_PUBLIC
-#define DLL_LOCAL
-#endif
+    #if __GNUC__ >= 4
+        #define DLL_PUBLIC __attribute__((visibility("default")))
+        #define DLL_LOCAL __attribute__((visibility("hidden")))
+    #else
+        #define DLL_PUBLIC
+        #define DLL_LOCAL
+    #endif
 #endif
 
 #include <stack>
@@ -434,36 +511,41 @@ bool Stack::IsEmpty(Stack *stackWrapper)
 }
 ```
 
-```C++
+```cpp
 // StackUtils.cpp
 #include "StackLib.h"
 
 extern "C" {
-
-    DLL_PUBLIC Stack *CreateStack();
-    DLL_PUBLIC void DestroyStack(Stack *stackWrapper);
-    DLL_PUBLIC void Push(Stack *stackWrapper, int value);
-    DLL_PUBLIC int Pop(Stack *StackWrapper);
-    DLL_PUBLIC bool IsEmpty(Stack *StackWrapper);
-
-    Stack* CreateStack(){
+    DLL_PUBLIC Stack* CreateStack() {
         return new Stack();
     }
 
-    void DestroyStack(Stack* stackWrapper){
-        stackWrapper->DestroyStack(stackWrapper);
+    DLL_PUBLIC void DestroyStack(Stack* stackWrapper) {
+        if (stackWrapper) {
+            delete stackWrapper;
+        }
     }
 
-    void Push(Stack* StackWrapper, int value){
-        StackWrapper->Push(StackWrapper, value);
+    DLL_PUBLIC void Push(Stack* stackWrapper, int value) {
+        if (stackWrapper) {
+            stackWrapper->stack->stack.push(value);
+        }
     }
 
-    int Pop(Stack* StackWrapper){
-        return StackWrapper->Pop(StackWrapper);
+    DLL_PUBLIC int Pop(Stack* stackWrapper) {
+        if (stackWrapper && !stackWrapper->stack->stack.empty()) {
+            int value = stackWrapper->stack->stack.top();
+            stackWrapper->stack->stack.pop();
+            return value;
+        }
+        return -1; // 表示栈为空
     }
 
-    bool IsEmpty(Stack* StackWrapper){
-        return StackWrapper->IsEmpty(StackWrapper);
+    DLL_PUBLIC bool IsEmpty(Stack* stackWrapper) {
+        if (stackWrapper) {
+            return stackWrapper->stack->stack.empty();
+        }
+        return true;
     }
 }
 ```
@@ -572,109 +654,14 @@ namespace CPP
 
 ## Windows DLL编译修改
 
-### 1. 修改头文件 (StackLib.h)
 
-确保DLL导出宏正确定义：
-
-```cpp
-// StackLib.h
-#ifndef STACKLIBRARY_H
-#define STACKLIBRARY_H
-
-#ifdef _WIN32
-    #ifdef BUILDING_DLL
-        #define DLL_PUBLIC __declspec(dllexport)
-    #else
-        #define DLL_PUBLIC __declspec(dllimport)
-    #endif
-    #define DLL_LOCAL
-#else
-    #if __GNUC__ >= 4
-        #define DLL_PUBLIC __attribute__((visibility("default")))
-        #define DLL_LOCAL __attribute__((visibility("hidden")))
-    #else
-        #define DLL_PUBLIC
-        #define DLL_LOCAL
-    #endif
-#endif
-
-#include <stack>
-
-// ... 其余代码保持不变 ...
-```
-
-### 2. 修改StackUtils.cpp
-
-确保extern "C"部分正确导出函数：
-
-```cpp
-// StackUtils.cpp
-#include "StackLib.h"
-
-extern "C" {
-    DLL_PUBLIC Stack* CreateStack() {
-        return new Stack();
-    }
-
-    DLL_PUBLIC void DestroyStack(Stack* stackWrapper) {
-        if (stackWrapper) {
-            delete stackWrapper;
-        }
-    }
-
-    DLL_PUBLIC void Push(Stack* stackWrapper, int value) {
-        if (stackWrapper) {
-            stackWrapper->stack->stack.push(value);
-        }
-    }
-
-    DLL_PUBLIC int Pop(Stack* stackWrapper) {
-        if (stackWrapper && !stackWrapper->stack->stack.empty()) {
-            int value = stackWrapper->stack->stack.top();
-            stackWrapper->stack->stack.pop();
-            return value;
-        }
-        return -1; // 表示栈为空
-    }
-
-    DLL_PUBLIC bool IsEmpty(Stack* stackWrapper) {
-        if (stackWrapper) {
-            return stackWrapper->stack->stack.empty();
-        }
-        return true;
-    }
-}
-```
-
-## Windows DLL编译方法
-
-有几种方法可以在Windows上编译DLL：
-
-### 方法1: 使用Visual Studio命令行工具
-
-1. 打开"x64 Native Tools Command Prompt for VS 20XX"（根据你的Visual Studio版本）
-2. 导航到源代码目录
-3. 执行以下命令：
-
-```bat
-cl /LD StackLib.cpp StackUtils.cpp /FeStackLibrary.dll /I.
-```
-
-### 方法2: 使用MinGW (GCC for Windows)
+### 使用MinGW (GCC for Windows)
 
 如果你安装了MinGW，可以使用：
 
 ```bat
 g++ -shared -o StackLibrary.dll StackLib.cpp StackUtils.cpp -DBUILDING_DLL
 ```
-
-### 方法3: 使用Visual Studio IDE
-
-1. 创建新的"Dynamic-Link Library (DLL)"项目
-2. 添加你的源代码文件
-3. 确保项目属性中：
-   - 配置类型设置为"Dynamic Library (.dll)"
-   - 在预处理器定义中添加`BUILDING_DLL`
 
 ## C#侧调用DLL的注意事项
 
