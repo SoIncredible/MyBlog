@@ -564,6 +564,154 @@ namespace CPP
 }
 ```
 
+# Unity中C#和C++协同 - Windows DLL编译指南
+
+> Windows中修改了一些头文件的内容，待会看一下具体修改了什么， 然后再尝试一下用修改过的代码在Mac上编译dll，build出来能不能在WindowsArm虚拟机上执行
+
+在Windows上编译C++代码为DLL与Mac上编译dylib有些不同。以下是针对Windows平台的修改和编译指南：
+
+## Windows DLL编译修改
+
+### 1. 修改头文件 (StackLib.h)
+
+确保DLL导出宏正确定义：
+
+```cpp
+// StackLib.h
+#ifndef STACKLIBRARY_H
+#define STACKLIBRARY_H
+
+#ifdef _WIN32
+    #ifdef BUILDING_DLL
+        #define DLL_PUBLIC __declspec(dllexport)
+    #else
+        #define DLL_PUBLIC __declspec(dllimport)
+    #endif
+    #define DLL_LOCAL
+#else
+    #if __GNUC__ >= 4
+        #define DLL_PUBLIC __attribute__((visibility("default")))
+        #define DLL_LOCAL __attribute__((visibility("hidden")))
+    #else
+        #define DLL_PUBLIC
+        #define DLL_LOCAL
+    #endif
+#endif
+
+#include <stack>
+
+// ... 其余代码保持不变 ...
+```
+
+### 2. 修改StackUtils.cpp
+
+确保extern "C"部分正确导出函数：
+
+```cpp
+// StackUtils.cpp
+#include "StackLib.h"
+
+extern "C" {
+    DLL_PUBLIC Stack* CreateStack() {
+        return new Stack();
+    }
+
+    DLL_PUBLIC void DestroyStack(Stack* stackWrapper) {
+        if (stackWrapper) {
+            delete stackWrapper;
+        }
+    }
+
+    DLL_PUBLIC void Push(Stack* stackWrapper, int value) {
+        if (stackWrapper) {
+            stackWrapper->stack->stack.push(value);
+        }
+    }
+
+    DLL_PUBLIC int Pop(Stack* stackWrapper) {
+        if (stackWrapper && !stackWrapper->stack->stack.empty()) {
+            int value = stackWrapper->stack->stack.top();
+            stackWrapper->stack->stack.pop();
+            return value;
+        }
+        return -1; // 表示栈为空
+    }
+
+    DLL_PUBLIC bool IsEmpty(Stack* stackWrapper) {
+        if (stackWrapper) {
+            return stackWrapper->stack->stack.empty();
+        }
+        return true;
+    }
+}
+```
+
+## Windows DLL编译方法
+
+有几种方法可以在Windows上编译DLL：
+
+### 方法1: 使用Visual Studio命令行工具
+
+1. 打开"x64 Native Tools Command Prompt for VS 20XX"（根据你的Visual Studio版本）
+2. 导航到源代码目录
+3. 执行以下命令：
+
+```bat
+cl /LD StackLib.cpp StackUtils.cpp /FeStackLibrary.dll /I.
+```
+
+### 方法2: 使用MinGW (GCC for Windows)
+
+如果你安装了MinGW，可以使用：
+
+```bat
+g++ -shared -o StackLibrary.dll StackLib.cpp StackUtils.cpp -DBUILDING_DLL
+```
+
+### 方法3: 使用Visual Studio IDE
+
+1. 创建新的"Dynamic-Link Library (DLL)"项目
+2. 添加你的源代码文件
+3. 确保项目属性中：
+   - 配置类型设置为"Dynamic Library (.dll)"
+   - 在预处理器定义中添加`BUILDING_DLL`
+
+## C#侧调用DLL的注意事项
+
+在Windows上，C#调用DLL需要使用`DllImport`特性：
+
+```csharp
+using System;
+using System.Runtime.InteropServices;
+
+public class NativeStack
+{
+    [DllImport("StackLibrary.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern IntPtr CreateStack();
+    
+    [DllImport("StackLibrary.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void DestroyStack(IntPtr stack);
+    
+    [DllImport("StackLibrary.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void Push(IntPtr stack, int value);
+    
+    [DllImport("StackLibrary.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern int Pop(IntPtr stack);
+    
+    [DllImport("StackLibrary.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern bool IsEmpty(IntPtr stack);
+}
+```
+
+## 建议改进
+
+1. **简化设计**：你的设计中有双重封装（StackWrapper和Stack），可以简化为直接使用Stack类
+2. **错误处理**：添加更完善的错误处理机制
+3. **内存管理**：确保所有分配的内存都被正确释放
+4. **跨平台兼容**：考虑使用CMake来统一管理不同平台的构建过程
+
+希望这些信息能帮助你在Windows上成功编译和使用DLL！
+
 # 一些Unity中无法内置的dll的处理
 https://blog.csdn.net/lanchunhui/article/details/53239441
 
