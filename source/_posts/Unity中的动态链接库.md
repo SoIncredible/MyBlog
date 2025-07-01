@@ -31,7 +31,7 @@ DLL是动态链接库, 但是有分别
 > 在托管代码中调用非托管代码的开销怎么样?
 > 和把所有代码都写在非托管部分的开销对比怎么样?
 
-# [DllImport("__Internal")]
+# [DllImport("__Internal")]含义
 [DllImport("xxx.dll")] 是 .NET / C# 的 P/Invoke 语法，作用是让 C# 可以调用外部的 C、C++、Objective-C 等“本地函数”。
 
 一般写成这样：
@@ -394,6 +394,8 @@ public class Program{
 ```C#
 dotnet run
 ```
+# Unity中调用托管库
+
 
 # Unity中调用非托管的动态库
 
@@ -413,49 +415,43 @@ dotnet run
     #else
         #define DLL_PUBLIC __declspec(dllimport)
     #endif
-    #define DLL_LOCAL
 #else
     #if __GNUC__ >= 4
         #define DLL_PUBLIC __attribute__((visibility("default")))
-        #define DLL_LOCAL __attribute__((visibility("hidden")))
     #else
         #define DLL_PUBLIC
-        #define DLL_LOCAL
     #endif
 #endif
 
 #include <stack>
 
-// 定义一个结构体来包装栈类
-typedef struct StackWrapper
-{
-    std::stack<int> stack;
-} StackWrapper;
+class Stack {
+public:
+    Stack();
+    ~Stack();
 
-class Stack{
-    private:
-        
+    void Push(int value);
+    int Pop();
+    bool IsEmpty() const;
 
-    public:
-        StackWrapper *stack;
-
-        // 创建栈实例
-        Stack *CreateStack();
-
-        Stack();
-
-        // 销毁栈实例
-        void DestroyStack(Stack *stackWrapper);
-
-        // 入栈操作
-        void Push(Stack *stackWrapper, int value);
-
-        // 出栈操作
-        int Pop(Stack *stackWrapper);
-
-        // 判断栈是否为空
-        bool IsEmpty(Stack *stackWrapper);
+private:
+    std::stack<int> stack_;
 };
+
+// C风格接口导出
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+DLL_PUBLIC Stack* CreateStack();
+DLL_PUBLIC void DestroyStack(Stack* instance);
+DLL_PUBLIC void Push(Stack* instance, int value);
+DLL_PUBLIC int Pop(Stack* instance);
+DLL_PUBLIC bool IsEmpty(Stack* instance);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // STACKLIBRARY_H
 ```
@@ -463,97 +459,63 @@ class Stack{
 ```C++
 // StackLib.cpp
 #include "StackLib.h"
+#include <stdexcept>
 
-Stack::Stack(){
-    stack = new StackWrapper();
+// --- Stack的实现 ---
+
+Stack::Stack() {}
+Stack::~Stack() {}
+
+void Stack::Push(int value) {
+    stack_.push(value);
 }
 
-// 创建栈实例
-Stack * Stack::CreateStack()
-{
+int Stack::Pop() {
+    if (stack_.empty())
+        return -1; // 或throw std::underflow_error
+    int value = stack_.top();
+    stack_.pop();
+    return value;
+}
+
+bool Stack::IsEmpty() const {
+    return stack_.empty();
+}
+
+// --- C 接口实现 ---
+Stack* CreateStack() {
     return new Stack();
 }
 
-// 销毁栈实例
-void Stack::DestroyStack(Stack* stackWrapper) {
-    if (stackWrapper) {
-        delete stackWrapper;
+void DestroyStack(Stack* instance) {
+    delete instance;
+}
+
+void Push(Stack* instance, int value) {
+    if (instance) {
+        instance->Push(value);
     }
 }
 
-// 入栈操作
-void Stack::Push(Stack *stackWrapper, int value)
-{
-    if (stackWrapper) {
-        stackWrapper->stack->stack.push(value);
-    }
+int Pop(Stack* instance) {
+    return instance ? instance->Pop() : -1;
 }
 
-// 出栈操作
-int Stack::Pop(Stack *stackWrapper)
-{
-    if (stackWrapper && !stackWrapper->stack->stack.empty())
-    {
-        int value = stackWrapper->stack->stack.top();
-        stackWrapper->stack->stack.pop();
-        return value;
-    }
-    return -1; // 表示栈为空
-}
-
-// 判断栈是否为空
-bool Stack::IsEmpty(Stack *stackWrapper)
-{
-    if (stackWrapper) {
-        return stackWrapper->stack->stack.empty();
-    }
-    return true;
+bool IsEmpty(Stack* instance) {
+    return instance ? instance->IsEmpty() : true;
 }
 ```
 
-```cpp
-// StackUtils.cpp
-#include "StackLib.h"
-
-extern "C" {
-    DLL_PUBLIC Stack* CreateStack() {
-        return new Stack();
-    }
-
-    DLL_PUBLIC void DestroyStack(Stack* stackWrapper) {
-        if (stackWrapper) {
-            delete stackWrapper;
-        }
-    }
-
-    DLL_PUBLIC void Push(Stack* stackWrapper, int value) {
-        if (stackWrapper) {
-            stackWrapper->stack->stack.push(value);
-        }
-    }
-
-    DLL_PUBLIC int Pop(Stack* stackWrapper) {
-        if (stackWrapper && !stackWrapper->stack->stack.empty()) {
-            int value = stackWrapper->stack->stack.top();
-            stackWrapper->stack->stack.pop();
-            return value;
-        }
-        return -1; // 表示栈为空
-    }
-
-    DLL_PUBLIC bool IsEmpty(Stack* stackWrapper) {
-        if (stackWrapper) {
-            return stackWrapper->stack->stack.empty();
-        }
-        return true;
-    }
-}
-```
-
-在Mac上,导出dylib:
-
+在Mac上, 导出dylib:
 ```shell
-g++ -shared -o StackLibrary.dylib StackLib.cpp StackUtils.cpp   
+g++ -std=c++11 -dynamiclib -o libStackLibrary.dylib StackLib.cpp
+```
+
+在Windows上, 导出dll:
+笔者这里用的是Visual Studio 2022自带的编译器`x64 Native Tools Command Prompt for VS 2022`, 读者使用Windows自带的搜索功能应该是能搜到的, 打开是一个终端, 输入下面命令:
+
+```bat
+cl /LD /DBUILDING_DLL=1 StackLib.cpp /Fe:StackLibrary.dll
 ```
 
 ## C#侧
@@ -562,9 +524,44 @@ g++ -shared -o StackLibrary.dylib StackLib.cpp StackUtils.cpp
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CPP
 {
+    public class StackCaller : MonoBehaviour
+    {
+        public Text Log;
+        
+        void Start()
+        {
+            Log.text = string.Empty;
+            Log.text += "StackCaller start\n";
+            Debug.Log("StackCaller start");
+            
+            // 创建栈实例
+            var stackWrapper = new StackCPP();
+
+            // 入栈操作
+            stackWrapper.Push(10);
+            stackWrapper.Push(20);
+            stackWrapper.Push(30);
+
+            // 出栈操作并输出结果
+            while (!stackWrapper.IsEmpty())
+            {
+                int value = stackWrapper.Pop();
+                Log.text += "Popped value: " + value + "\n";
+                Debug.Log("Popped value: " + value);
+            }
+
+            // 销毁栈实例
+            stackWrapper.DestroyStack();
+            Log.text += "Stack destroyed";
+            Debug.Log("Stack destroyed");
+        }
+    }
+
+
     public static class StackDLL{
         // 引入C++动态链接库中的函数
         [DllImport("StackLibrary")]
@@ -587,133 +584,35 @@ namespace CPP
     
     public class StackCPP
     {
-        private IntPtr _stackPointer;
+        private readonly IntPtr stackPointer;
         
-        public void StackCpp()
+        public StackCPP()
         {
-            _stackPointer = StackDLL.CreateStack();
+            stackPointer = StackDLL.CreateStack();
         }
 
         public void Push(int value)
         {
-            StackDLL.Push(_stackPointer, value);
+            StackDLL.Push(stackPointer, value);
         }
 
         public int Pop()
         {
-            return StackDLL.Pop(_stackPointer);
+            return StackDLL.Pop(stackPointer);
         }
 
         public bool IsEmpty()
         {
-            return StackDLL.IsEmpty(_stackPointer);
+            return StackDLL.IsEmpty(stackPointer);
         }
 
         public void DestroyStack()
         {
-            StackDLL.DestroyStack(_stackPointer);
+            StackDLL.DestroyStack(stackPointer);
         }
-    }
-    
-    public class StackCaller : MonoBehaviour
-    {
-      
-        void Start()
-        {
-         
-            Debug.Log("StackCaller start");
-            
-           
-            // 创建栈实例
-            StackCPP stackWrapper = new StackCPP();
-
-            // 入栈操作
-            stackWrapper.Push(10);
-            stackWrapper.Push(20);
-            stackWrapper.Push(30);
-
-            // 出栈操作并输出结果
-            while (!stackWrapper.IsEmpty())
-            {
-                int value = stackWrapper.Pop();
-                Debug.Log("Popped value: " + value);
-            }
-
-            // 销毁栈实例
-            stackWrapper.DestroyStack();
-        }
-    }
+    }   
 }
 ```
-
-# Unity中C#和C++协同 - Windows DLL编译指南
-
-> Windows中修改了一些头文件的内容，待会看一下具体修改了什么， 然后再尝试一下用修改过的代码在Mac上编译dll，build出来能不能在WindowsArm虚拟机上执行
-
-在Windows上编译C++代码为DLL与Mac上编译dylib有些不同。以下是针对Windows平台的修改和编译指南：
-
-## Windows DLL编译修改
-
-
-### 使用MinGW (GCC for Windows)
-
-如果你安装了MinGW，可以使用：
-
-```bat
-g++ -shared -o StackLibrary.dll StackLib.cpp StackUtils.cpp -DBUILDING_DLL
-```
-
-## C#侧调用DLL的注意事项
-
-在Windows上，C#调用DLL需要使用`DllImport`特性：
-
-```csharp
-using System;
-using System.Runtime.InteropServices;
-
-public class NativeStack
-{
-    [DllImport("StackLibrary.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr CreateStack();
-    
-    [DllImport("StackLibrary.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DestroyStack(IntPtr stack);
-    
-    [DllImport("StackLibrary.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void Push(IntPtr stack, int value);
-    
-    [DllImport("StackLibrary.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int Pop(IntPtr stack);
-    
-    [DllImport("StackLibrary.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool IsEmpty(IntPtr stack);
-}
-```
-
-## 建议改进
-
-1. **简化设计**：你的设计中有双重封装（StackWrapper和Stack），可以简化为直接使用Stack类
-2. **错误处理**：添加更完善的错误处理机制
-3. **内存管理**：确保所有分配的内存都被正确释放
-4. **跨平台兼容**：考虑使用CMake来统一管理不同平台的构建过程
-
-希望这些信息能帮助你在Windows上成功编译和使用DLL！
-
-# 一些Unity中无法内置的dll的处理
-https://blog.csdn.net/lanchunhui/article/details/53239441
-
-https://zh.wikipedia.org/zh-hans/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83
-
-https://blog.csdn.net/qq_17347313/article/details/106995687
-C#中正态分布的第三方库
-
-# 正态分布
-
-## 标准正态分布
-
-# 正偏态分布
-
-# 累积分布函数
 
 ## ⚠️注意事项
 

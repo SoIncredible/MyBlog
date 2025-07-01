@@ -201,6 +201,23 @@ AOT程序集 就是底包程序集 AOT是一种代码编译方式 它会
 
 # 一直有个问题是如果我区分程序集的话 我只修改了其中某一个程序集的代码 C#的编译器会不会只编译那个被修改代码的程序集而提高编译速度呢?
 
+# 一些Unity中无法内置的dll的处理
+https://blog.csdn.net/lanchunhui/article/details/53239441
+
+https://zh.wikipedia.org/zh-hans/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83
+
+https://blog.csdn.net/qq_17347313/article/details/106995687
+C#中正态分布的第三方库
+
+# 正态分布
+
+## 标准正态分布
+
+# 正偏态分布
+
+# 累积分布函数
+
+
 # 参考
 - [.net 温故知新：【2】 .Net Framework 、.Net 、 .NET Standard的概念与区别](https://www.cnblogs.com/SunSpring/p/15047424.html)
 - [AOT 和 JIT、 IL2CPP和Mono、 CLR、 ILRuntime热更新原理](https://blog.csdn.net/codywangziham01/article/details/123689658)
