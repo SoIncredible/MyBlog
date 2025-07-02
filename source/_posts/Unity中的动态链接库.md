@@ -254,6 +254,55 @@ namespace CPP
 - 在Unity开发场景下, 原生dll适用于必须利用C/C++优势/平台/性能的极特殊场景, 本文只是为了演示作用, 实际开发中是绝对不会在这种场景下调用原生dll的.
 - 想要在哪个平台跑, 就现在哪个平台上构建原生的dll, 然后将构建出的dll导入到Unity, 再用Unity构建出哪个平台的Package.
 
+# [DllImport("__Internal")]
+[DllImport("xxx.dll")] 是 .NET / C# 的 P/Invoke 语法，作用是让 C# 可以调用外部的 C、C++、Objective-C 等“本地函数”。
+
+一般写成这样：
+
+[DllImport("myPlugin")]
+public static extern int MyNativeFunction(int a, int b);
+2. "__Internal" 特殊含义
+
+当你用 [DllImport("__Internal")] 这样写时，“__Internal”是一个特殊的伪名称，而不是指某个实际文件。
+其真正含义是：
+
+让 .NET 或 Unity 在 本进程/本程序/主可执行程序自身 的导出表里寻找本地实现的符号。
+也就是说，被 [DllImport("__Internal")] 标注的方法，对应的本地方法体需要在当前可执行程序内部（而不是某个外部 DLL 文件里）。
+符号名搜索会在自己的 executable 导出里找。
+3. 应用场景举例
+
+场景A：iOS、Mac 等平台（特别是 Unity）
+
+Unity/IL2CPP 在生成 iOS、Mac 原生工程时，如果你写了：
+[DllImport("__Internal")]
+public static extern void MyFunc();
+实际上，IL2CPP 编译器会在最终的 App binary（或 Framework 二进制）里搜 名为 MyFunc 的导出函数，而不是去动态查找某个外部库（.dylib、.so、.dll）。
+这样做的好处：
+iOS 平台不允许像 Windows 那样动态链接第三方 DLL，所有 Native 代码都必须静态链接进 App 的主可执行文件中。
+[DllImport("__Internal")] 是唯一安全支持的方式。
+场景B：自己写好本地函数并链接进主程序
+
+如果你在构建的主程序中嵌入了自己的 C 代码，可以直接给导出符号以供 .NET 查找，无需拆分外部 DLL 文件。
+4. 对比调用外部DLL
+
+[DllImport("user32.dll")] 就是在找 Windows 的系统动态库。
+[DllImport("__Internal")] 是在找当前程序（App、自身进程、主 binary）中定义的本地符号——通常只有在本地代码编译成主程序时才会有。
+5. Unity的常见用法
+
+在 Unity iOS 插件开发中，Native 代码（C/Objective-C/C++/Swift）最终会被链接进主 app binary，此时 C# 访问原生函数都要用 [DllImport("__Internal")]，不能写成 "yourlib.dylib" —— 否则找不到或被苹果审核拒绝。
+
+[DllImport("__Internal")]
+public static extern void MyObjCFunc();
+
+[DllImport(“__Internal”)] 让 C#（Mono/.NET/Unity）去主程序自身导出符号表里找函数，而不是去加载某个外部DLL文件。
+常见于 iOS、Mac Unity 原生插件开发场景。
+Windows 平台一般用 [DllImport("xxx.dll")] 加载外部库。
+如果你在 Windows 下用 [DllImport("__Internal")]，绝大多数情况下用不到（除非自己自定义可执行文件出口，且用Mono/IL2CPP等特殊方案）。
+
+## ⚠️注意事项
+
+- `unknown type name '__declspec' 和 unknown type name 'class' 错误`  https://blog.csdn.net/lc250123/article/details/81985336
+
 ---
 
 以实现冒泡排序功能为例记录如何在`C#`和`C++`中编写、生成和调用DLL
@@ -544,52 +593,3 @@ public class Program{
 ```C#
 dotnet run
 ```
-
-# [DllImport("__Internal")]
-[DllImport("xxx.dll")] 是 .NET / C# 的 P/Invoke 语法，作用是让 C# 可以调用外部的 C、C++、Objective-C 等“本地函数”。
-
-一般写成这样：
-
-[DllImport("myPlugin")]
-public static extern int MyNativeFunction(int a, int b);
-2. "__Internal" 特殊含义
-
-当你用 [DllImport("__Internal")] 这样写时，“__Internal”是一个特殊的伪名称，而不是指某个实际文件。
-其真正含义是：
-
-让 .NET 或 Unity 在 本进程/本程序/主可执行程序自身 的导出表里寻找本地实现的符号。
-也就是说，被 [DllImport("__Internal")] 标注的方法，对应的本地方法体需要在当前可执行程序内部（而不是某个外部 DLL 文件里）。
-符号名搜索会在自己的 executable 导出里找。
-3. 应用场景举例
-
-场景A：iOS、Mac 等平台（特别是 Unity）
-
-Unity/IL2CPP 在生成 iOS、Mac 原生工程时，如果你写了：
-[DllImport("__Internal")]
-public static extern void MyFunc();
-实际上，IL2CPP 编译器会在最终的 App binary（或 Framework 二进制）里搜 名为 MyFunc 的导出函数，而不是去动态查找某个外部库（.dylib、.so、.dll）。
-这样做的好处：
-iOS 平台不允许像 Windows 那样动态链接第三方 DLL，所有 Native 代码都必须静态链接进 App 的主可执行文件中。
-[DllImport("__Internal")] 是唯一安全支持的方式。
-场景B：自己写好本地函数并链接进主程序
-
-如果你在构建的主程序中嵌入了自己的 C 代码，可以直接给导出符号以供 .NET 查找，无需拆分外部 DLL 文件。
-4. 对比调用外部DLL
-
-[DllImport("user32.dll")] 就是在找 Windows 的系统动态库。
-[DllImport("__Internal")] 是在找当前程序（App、自身进程、主 binary）中定义的本地符号——通常只有在本地代码编译成主程序时才会有。
-5. Unity的常见用法
-
-在 Unity iOS 插件开发中，Native 代码（C/Objective-C/C++/Swift）最终会被链接进主 app binary，此时 C# 访问原生函数都要用 [DllImport("__Internal")]，不能写成 "yourlib.dylib" —— 否则找不到或被苹果审核拒绝。
-
-[DllImport("__Internal")]
-public static extern void MyObjCFunc();
-
-[DllImport(“__Internal”)] 让 C#（Mono/.NET/Unity）去主程序自身导出符号表里找函数，而不是去加载某个外部DLL文件。
-常见于 iOS、Mac Unity 原生插件开发场景。
-Windows 平台一般用 [DllImport("xxx.dll")] 加载外部库。
-如果你在 Windows 下用 [DllImport("__Internal")]，绝大多数情况下用不到（除非自己玩自定义可执行文件出口，且用Mono/IL2CPP等特殊方案）。
-
-## ⚠️注意事项
-
-- `unknown type name '__declspec' 和 unknown type name 'class' 错误`  https://blog.csdn.net/lc250123/article/details/81985336
