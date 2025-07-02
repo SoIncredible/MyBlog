@@ -28,11 +28,11 @@ sticky:
 
 至于非托管的动态库, 想要在Unity开发中使用就十分麻烦了(不只是Unity, 所有要跨平台的开发调用非托管动态库都十分麻烦), 因为非托管的动态库与平台强绑定, 如果要做跨平台开发, 就需要针对每一个平台构建专门的动态库, 光这一点就十分麻烦, **应当在各自目标平台上构建动态库, 而不是在一个平台上使用交叉编译的方式构建其他平台的动态库.** 除此之外, 还需要开发者使用`[DLLImport]`属性在C#层手动做一下桥接.
 
-下面是笔者尝试在Unity中构建一个支持在Arm版本的Windows和Arm版本的Mac平台上调用原生DLL的尝试. 最后笔者会总结整个过程中容易出错的点.
+下面是笔者尝试在Unity中构建一个支持在Arm版本的Windows和Arm版本的Mac平台上调用原生DLL的尝试.
 
 # Unity中调用非托管的动态库
 
-如果想在C#侧使用C++中的一个类的话,需要将这个类的每一个public成员方法封装一个**静态方法**供C#测调用,然后C#侧做一个中间层的封装,即在C#侧将这些静态方法重新封装成类.
+如果想在C#侧使用C++中的一个类的话, 需要将这个类的每一个public成员方法封装一个**静态方法**供C#测调用, 然后C#侧做一个中间层的封装,即在C#侧将这些静态方法重新封装成类.
 
 以一个Stack结构为例:
 ## C++侧
@@ -145,11 +145,12 @@ g++ -std=c++11 -dynamiclib -o libStackLibrary.dylib StackLib.cpp
 ```
 
 在Windows上, 导出dll:
-笔者这里用的是Visual Studio 2022自带的编译器`x64 Native Tools Command Prompt for VS 2022`, 读者使用Windows自带的搜索功能应该是能搜到的, 打开是一个终端, 输入下面命令:
+笔者的操作环境是VMWare下的ArmWin11虚拟机, 使用的是Visual Studio 2022自带的编译器`x64 Native Tools Command Prompt for VS 2022`, 安装了VisualStudio之后使用Windows自带的搜索功能应该是能搜到的, 打开是一个终端, 输入下面命令:
 
 ```bat
 cl /LD /DBUILDING_DLL=1 StackLib.cpp /Fe:StackLibrary.dll
 ```
+> 💡笔者也尝试使用[MinGW GCC For ARM](https://sourceforge.net/projects/mingw-gcc-arm-eabi/)来构建DLL, 但是构建出的dll导入到Unity中构建出来exe并不能正确运行, 并没有深究.
 
 ## C#侧
 
@@ -247,72 +248,13 @@ namespace CPP
 }
 ```
 
+# 总结
 
-> 💡 在托管代码中调用非托管代码的开销怎么样?
-> 和把所有代码都写在非托管部分的开销对比怎么样?
-> 你的这个问题非常有代表性！
-**总结一句话：**在你给的场景下，
+- 如果你使用的是Mac, 注意你的Mac架构是arm还是x86的, 在Mac平台的BuildPlayer页面, 选择对应的Apple Silicon、Intel或Apple Silicon + Interl.
+- 在Unity开发场景下, 原生dll适用于必须利用C/C++优势/平台/性能的极特殊场景, 本文只是为了演示作用, 实际开发中是绝对不会在这种场景下调用原生dll的.
+- 想要在哪个平台跑, 就现在哪个平台上构建原生的dll, 然后将构建出的dll导入到Unity, 再用Unity构建出哪个平台的Package.
 
-原生纯C#代码效率更高、且更易维护。
-具体原因
-
-1. C# 纯托管代码
-
-Unity 内部的 C# 代码是编译为 IL（中间语言）字节码，然后由 JIT（或 IL2CPP 时为 AOT，本地机器码）执行。
-.NET/Mono 对容器如 System.Collections.Generic.Stack<T> 优化很好，内存布局高效，垃圾回收管理。
-函数调用、数据操作全在同一运行时上下文内，不涉及任何跨语言、跨运行时的开销。
-2. 跨语言 P/Invoke（你的C++ DLL 方案）
-
-每次调用 DLL 的函数（即 C++ 实现的栈）都需要一次 P/Invoke（平台调用）过程：
-C# -> 托管到非托管转换（参数marshal，栈检查，引用计数，线程切换等）。
-指针/数据类型需要转码，尤其遇到结构体、数组、复杂类型时消耗更大。
-栈的数据存储在 C++ 的堆空间：
-如果你的栈只是管理 int（基础类型）还好，一旦涉及 string/object/struct，这些类型的 marshal 成本和 bug 风险会更高。
-Python/.NET/Java 等现代 JIT 容器同样如此，调用 C/C++ 动态库属于“昂贵操作”，普通业务逻辑不推荐用。
-3. 性能实际对比（总结）
-
-若仅存储/操作 int，且每次入栈/出栈调用都要走 P/Invoke，C# 纯代码比你这样DLL调用快出一个（甚至数个）量级。
-通常 P/Invoke 一次开销可能相当于数十到百次的 C# 方法调用！
-只有当你批量性、长计算、并且纯本地重计算数据时（比如大块音视频处理/加密/AI大循环），C++ DLL 才有优势。
-4. 实际维护与跨平台
-
-C++ DLL 要单独为 Windows/Mac/Linux/ARM 编译多套，代码维护麻烦，不如 C# 直接可移植性好。
-一些平台如 iOS/主机（Switch/PS/Xbox）原生 DLL 支持还有限制。
-结论
-
-比较项	纯C# Stack	P/Invoke+C++ Stack
-性能	更高（无调用/传参开销）	更低（每次P/Invoke有显著性能损耗）
-灵活性	高	低，维护多端库困难
-跨平台性	高	需要多平台分别编译
-安全性	托管，易debug/gc管理	内存泄漏、资源安全需谨慎
-合适场景	常规业务、绝大部分算法	高性能、本地专有硬件/遗留代码
-什么时候才选 C++ DLL？
-
-涉及必须使用 C/C++（如已有遗留算法、调用独立专利库、或 Unity 无法实现的特性/硬件IO/第三方SDK）。
-性能瓶颈点全部在DLL方法内部，且调用次数（P/Invoke）不是瓶颈。如果像音频解码、图片解码那样一调用能处理成百上千数据，可以摊薄调用损耗。
-跟其他C++工程重用，或要接入平台专属硬件API（如iOS/Android的框架库）。
-补充演示
-
-你可以自己微型测试一下：
-
-var sw = Stopwatch.StartNew();
-for(int i=0; i<10000; ++i) stack.Push(i); // C#内建Stack或List
-sw.Stop();
-Debug.Log("C# stack 用时：" + sw.ElapsedMilliseconds);
-
-sw.Restart();
-for(int i=0; i<10000; ++i) StackDLL.Push(dllStack, i); // 你的DLL P/Invoke
-sw.Stop();
-Debug.Log("DLL stack 用时：" + sw.ElapsedMilliseconds);
-通常C# Stack会胜出很多倍。
-
-总结
-
-本例里，纯C#栈的效率明显高于调用C++ DLL。
-DLL适用于必须利用C/C++优势/平台/性能的极特殊场景。
-如需测量实际数据、代码微调或探讨更复杂场景，欢迎追问！
-
-
+---
 
 以实现冒泡排序功能为例记录如何在`C#`和`C++`中编写、生成和调用DLL
 
@@ -642,16 +584,11 @@ iOS 平台不允许像 Windows 那样动态链接第三方 DLL，所有 Native �
 
 [DllImport("__Internal")]
 public static extern void MyObjCFunc();
-6. 小结
 
 [DllImport(“__Internal”)] 让 C#（Mono/.NET/Unity）去主程序自身导出符号表里找函数，而不是去加载某个外部DLL文件。
 常见于 iOS、Mac Unity 原生插件开发场景。
 Windows 平台一般用 [DllImport("xxx.dll")] 加载外部库。
-扩展
-
 如果你在 Windows 下用 [DllImport("__Internal")]，绝大多数情况下用不到（除非自己玩自定义可执行文件出口，且用Mono/IL2CPP等特殊方案）。
-
-对于C#来说, 无论是Mac还是Windows, C#导出的动态库都是.dll扩展名的, dll中都是IL语言, 不是本地的机器码
 
 ## ⚠️注意事项
 
