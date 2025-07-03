@@ -138,7 +138,7 @@ PDB（Program Database）是Windows/Visual Studio环境下的“程序数据库�
 
 # C#代码是怎么跑起来的?
 
-在《CLR via C#》中, 作者只提及了JIT, 因为AOT方式是在2022年在.Net7发布的, 
+在《CLR via C#》中, 作者只提及了JIT, 因为AOT方式是在2022年在.Net7发布的, 本书的成书时间应该是2014年, 没有提及AOT也是很正常的
 ## JIT模式
 在Unity中, 这对应的就是Mono的构建方式
 

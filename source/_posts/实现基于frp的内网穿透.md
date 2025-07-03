@@ -149,7 +149,7 @@ server_port是frp应用占用的端口
 
 1. 终端执行
 
-   ```shell
+```shell
    sudo vim /Library/LaunchDaemons/frpc.plist
 ```
 

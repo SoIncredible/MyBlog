@@ -32,7 +32,7 @@ swiper_index:
 
 现在我希望这个命令可以更加全能一些，它能够帮助我创建git仓库、创建gitignore、创建README文件一体的命令，我将这个命令命名为
 
-但是每一次给Unity项目创建Git仓库的时候都需要手动生成这个`.gitigonre`文件，非常地麻烦，但是我们可以在终端编写一个命令在自动生成`.ginignore`文件，在Mac和Windosw上操作有所不同。
+但是每一次给Unity项目创建Git仓库的时候都需要手动生成这个`.gitigonre`文件，非常地麻烦，但是我们可以在终端编写一个命令在自动生成`.ginignore`文件，在Mac和Windows上操作有所不同。
 
 ## Mac
 
