@@ -335,16 +335,10 @@ Root
 
 在2020.3.48f1中`Preference`->General一栏中取消勾选`Auto Refresh`,但是在2022.3.15f1版本中笔者并没有找到该字段. 
 
-
-# Unity中安装的NuGet包
-一般来说, Unity中能安装的库, 使用UnityPackageManager就都能安装上, 用不到NuGet的, 
-有些包找不到并不是PackageManager不全 更有可能是Unity支持的.Net版本太低, 你想接的库, 根本就没有兼容这个版本
-
-另外还需要注意Unity对C# Language脚本语言版本的支持情况(https://docs.unity3d.com/cn/current/Manual/CSharpCompiler.html)
-
-# Unity安装Newtonsoft.Json库
-
-https://github.com/applejag/Newtonsoft.Json-for-Unity/wiki/Install-official-via-UPM
-
 # Unity 颜色十六进制和RGB之间的转换方式
 https://blog.csdn.net/f_957995490/article/details/120727626
+
+
+# 让一段代码只在Editor模式下运行
+
+两种方式, 一种方式是将代码脚本放到Editor目录下, 另一种是将脚本放在Runtime下, 但是用宏包裹起来, 如果放在Editor下的话则不能挂载到节点上.
