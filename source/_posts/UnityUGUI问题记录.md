@@ -446,7 +446,7 @@ namespace UI.UIItems
 ```
 
 使用
-```
+```C#
     var terms2 = $"<color=#aa3900><a herf={PrivacyPolicyDefine.UrlService}>{ScriptLocalization.terms_of_use}</a></color>";
 
     var policy2 = $"<color=#aa3900><a herf={PrivacyPolicyDefine.UrlPrivacy}>{ScriptLocalization.privacy_policy}</a></color>";

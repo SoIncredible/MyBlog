@@ -342,3 +342,5 @@ https://blog.csdn.net/f_957995490/article/details/120727626
 # 让一段代码只在Editor模式下运行
 
 两种方式, 一种方式是将代码脚本放到Editor目录下, 另一种是将脚本放在Runtime下, 但是用宏包裹起来, 如果放在Editor下的话则不能挂载到节点上.
+
+# GUID与FileID

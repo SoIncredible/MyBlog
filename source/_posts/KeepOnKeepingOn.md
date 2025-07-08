@@ -144,6 +144,7 @@ https://soincredible.github.io/posts/8a8aad75
 - [Photon——一个专注于做Unity多人联机框架的工作室](https://www.photonengine.com/)
 - [开源游戏合集](https://osgameclones.com/)
 - [Fantacy]()
+- [TexturePacker](https://www.codeandweb.com/texturepacker)
 
 # 博客
 - [Frog's Blog](https://frog-game.github.io/posts/blog/wufengdashijie/)
