@@ -414,7 +414,7 @@ class Test
 
 接下来我们看看事件声明的情况：
 
-```
+```C#
 delegate void MyDelegate();
 
 internal class MyDelegateClass

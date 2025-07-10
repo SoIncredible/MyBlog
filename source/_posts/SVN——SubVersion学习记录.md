@@ -29,3 +29,6 @@ svn merge -c -130 .
 svn commit -m "撤销第130次提交"
 
 # SVN查看当前Revision
+```shell
+svn info
+```

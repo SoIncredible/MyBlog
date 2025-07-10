@@ -59,7 +59,7 @@ sticky:
    在本文示例中，笔者在Package根目录下创建`Editor`和`Runtime`两个子目录包含在Editor和Runtime下运行的代码，然后在这两个目录下执行`Assets -> Create -> Assembly Definition`, 创建`asmdef`文件。注意程序集文件的名字和编译后程序集名字和该是没有关系的，程序集的命名由Inspector窗口中的Name字段决定。另外在Inspector窗口中，Runtime目录下的程序集要在Platforms部分勾所有平台都使用，而Editor目录下的程序集勾选只在Editor环境下使用。
 
  - 编写好代码之后我们就可以将我们的代码上传了。按顺序输入以下指令
-    ```
+    ```shell
     git subtree split --prefix=Assets/yourPackageName --branch upm
 
     git tag 1.0.0 upm

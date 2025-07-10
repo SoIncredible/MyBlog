@@ -29,9 +29,9 @@ Assembly程序集提供给了一个`GetTypes()`接口,允许你访问该程序�
 Type中存储了FullName、以及这个Type所处的程序集
 
 在`CodeTypes`脚本的Awake方法中
-```
+```C#
 public void Awake(Assembly[] assemblies)
-{—
+{
     Dictionary<string, Type> addTypes = AssemblyHelper.GetAssemblyTypes(assemblies);
     foreach ((string fullName, Type type) in addTypes)
     {
@@ -54,7 +54,7 @@ public void Awake(Assembly[] assemblies)
 ```
 
 CodeLoader中的Start方法如下:
-```
+```C#
 public void Start()
 {
     if (!Define.IsEditor)
@@ -146,7 +146,7 @@ public void Start()
 也就是说,上面这十个类,通过执行ET的Entry方法之后就已经被创建出来了. 
 
 在`MessageSessionDispatcher`的Awake方法中如下：
-```
+```C#
 public void Awake()
 {
     HashSet<Type> types = CodeTypes.Instance.GetTypes(typeof (MessageSessionHandlerAttribute));
