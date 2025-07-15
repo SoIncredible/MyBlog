@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "source/_posts/UnityAssetDatabase问题整理.md",
+                "file": "source/_posts/YooAsset.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "UnityAssetDatabase问题整理"
+              "title": "YooAsset"
             }
           }
         ]
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "AssetDataBase",
+                "query": "公式",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -74,8 +74,7 @@
               "title": "书签"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -171,21 +170,6 @@
   },
   "active": "54ceb84f05aa2b1f",
   "lastOpenFiles": [
-    "source/_posts/Unity问题杂记.md",
-    "source/_posts/Unity事件更新顺序.md",
-    "source/_posts/Unity发布Package到Github和Gitee.md",
-    "source/_posts/UniTask.md",
-    "source/_posts/Unity-ASE插件问题记录.md",
-    "source/_posts/SVN——SubVersion学习记录.md",
-    "source/_posts/代码热更新合集.md",
-    "source/_posts/对C-中类型转换和拆装箱的思考.md",
-    "source/_posts/关于命名空间.md",
-    "source/_posts/回溯算法.md",
-    "source/_posts/关于依赖注入.md",
-    "source/_posts/关于协程Coroutine.md",
-    "source/_posts/CSharp中的委托.md",
-    "source/_posts/ET中反射与特性的使用.md",
-    "source/_posts/VSCode配置UnityC#开发环境.md",
     "db.json",
     "public/posts/370bdedc/2022_12_15_cover.png",
     "public/img/favourite_anime.png",
@@ -195,27 +179,42 @@
     "public/posts/8d920ebf/image.png",
     "public/posts/e57f243c/image-20220707015057151.png",
     "public/posts/370bdedc/image-20221010191820950.png",
-    "public/posts/e52a9ff3/image4.png",
     "public/posts/b2c547d7/image-7.png",
-    "public/js/tw_cn.js",
+    "public/posts/e52a9ff3/image4.png",
     "public/js/main.js",
+    "public/js/tw_cn.js",
     "public/css/index.css",
     "public/css/var.css",
     "public/js/utils.js",
-    "public/tags/Unity/index.html",
     "public/tags/Shader/index.html",
-    "public/posts/1f15053a/index.html",
+    "public/tags/Unity/index.html",
     "public/posts/1408599b/index.html",
-    "VSCode配置UnityC.md",
-    "source/_posts/UnityShader问题杂记.md",
-    "source/_posts/UnityShader实现云的效果.md",
-    "source/_posts/UnityShader实现水的效果.md",
-    "source/_posts/UnityShader实现草的效果.md",
-    "source/_posts/UnityShader入门精要笔记-15-使用噪声.md",
-    "node_modules/to-regex-range/README.md",
-    "source/_posts/帧同步与状态同步.md",
+    "public/posts/e57f243c/index.html",
+    "public/posts/8d920ebf/index.html",
+    "source/_posts/IEnumerator与IEnumerable理解与辨析.md",
+    "source/_posts/CSharp合集.md",
+    "source/_posts/CSharp前传.md",
     "source/_posts/Extending-the-asynce-methods-in-CSharp-译.md",
+    "source/_posts/Dissecting-the-async-methods-in-CSharp.md",
+    "source/_posts/CSharp中的Task.md",
+    "source/_posts/CSharp中的CancellationToken.md",
+    "source/_posts/CSharp中的委托.md",
+    "source/_posts/CSharp问题杂记.md",
+    "source/_posts/KeepOnKeepingOn.md",
     "source/_posts/MarkDown-LaTeX符号整理.md",
-    "source/_posts/UnityShader入门精要笔记-6-Unity中的基础光照.md"
+    "().md",
+    "source/_posts/数据结构与算法系列.md",
+    "source/_posts/对CSharp中类型转换和拆装箱的思考.md",
+    "source/_posts/Balatro.md",
+    "source/_posts/Unity问题杂记.md",
+    "source/_posts/OpenGL学习记录入门篇.md",
+    "source/_posts/RPG游戏开发记录(三)：Player模型与动画.md",
+    "source/_posts/SVN——SubVersion学习记录.md",
+    "source/_posts/UnityAssetBundle笔记.md",
+    "source/_posts/UnityAssetDatabase问题整理.md",
+    "source/_posts/UnityShader入门精要笔记-14-非真实感渲染.md",
+    "node_modules/markdown-it-mark/CHANGELOG.md",
+    "source/_posts/UnityUGUI解构.md",
+    "source/_posts/Unity性能优化.md"
   ]
 }

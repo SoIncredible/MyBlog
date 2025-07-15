@@ -12,7 +12,7 @@ sticky: 1000
 
 # 合集
 
-[C#]()
+[C#](https://soincredible.github.io/posts/d97e22f1)
 [Unity]()
   - [Animation]()
   - [资源加载管理]()
@@ -27,7 +27,7 @@ sticky: 1000
   - [HDRP]()
   - [插件合集]()
 [设计模式]()
-[算法]()
+[数据结构算法](https://soincredible.github.io/posts/e1a82e1)
 [渲染]()
 [建模]()
 [云服务器]()
@@ -122,7 +122,7 @@ https://soincredible.github.io/posts/8a8aad75
 - [Il2CppDumper](https://github.com/Perfare/Il2CppDumper): 反编译工具
 - [ghidra](https://github.com/NationalSecurityAgency/ghidra): 反编译工具
 - [MarkDown文档编写技巧](https://github.com/LearnShare/Learning-Markdown)
-- [Zenject](https://github.com/modesttree/Zenject): Unity中使用的轻量级依赖注入框架
+- [Zenject](https://github.com/modesttree/Zenject): Unity中使用的轻量级依赖注入框架 类似的还有VContainer
 - [GLFW](https://github.com/glfw/glfw)
 - [Jenkins](https://github.com/jenkinsci/jenkins)
 - [AssetBundleBrowser](https://github.com/Unity-Technologies/AssetBundles-Browser)

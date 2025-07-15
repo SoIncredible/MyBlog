@@ -80,7 +80,7 @@ Animator中必须设置一个从Entry进入的默认状态，这个从Entry进�
 在我们需要播放动画的时机可以通过[`Animator.Play()`](https://docs.unity3d.com/cn/current/ScriptReference/Animator.Play.html)接口，并且在动画播放完之后会自动的进入默认状态，这样的好处是不用通过控制Active状态来控制动画的播放，而且在代码中我们也是通过`Animator.Play`接口控制动画的播放，比通过Active状态来控制的方法更让人知道这行代码在做什么。
 
 接口的具体参数如下，其中第三个参数normalizedTime是一个归一化的时间，[0,1]指从动画的什么时刻开始播放
-```
+```C#
 public void Play (string stateName, int layer= -1, float normalizedTime= float.NegativeInfinity);
 public void Play (int stateNameHash, int layer= -1, float normalizedTime= float.NegativeInfinity);
 ```
@@ -127,7 +127,6 @@ m_ddz_zhounianqing_JY12_zhuanchang_GameObject.SetActiveEx(false);
 
 # Animation体积优化的问题
 https://blog.uwa4d.com/archives/UWA_Pipeline22.html
-
 
 # DOTweenAnimation组件使用
 
@@ -318,7 +317,7 @@ Root
  - Unity工程目录
  - Config目录
 ```
-所以如果你要使用AssetDataBase加载某一个资源的话,资源的路径一定是"Assets/.."起手的
+所以如果你要使用AssetDatabase加载某一个资源的话,资源的路径一定是"Assets/.."起手的
 
 # Unity关闭自动编译
 
@@ -333,3 +332,43 @@ https://blog.csdn.net/f_957995490/article/details/120727626
 两种方式, 一种方式是将代码脚本放到Editor目录下, 另一种是将脚本放在Runtime下, 但是用宏包裹起来, 如果放在Editor下的话则不能挂载到节点上.
 
 # GUID与FileID
+
+一个fbx文件中可能有多个子模型 或者说的更普遍的情况: 一个被AssetDatabase收录的资产中可能包含多个部分, 需要通过guid+fileId的方式才能定位到一个资产
+
+# RectTransform
+
+RectTransform继承自Transform, RectTransform只在UGUI/Canvas体系下有实质意义, 因此我们可以将RectTransform看作是Unity UGUI的一部分, 许多RectTransform的属性字段只在UGUI体系才有意义.
+
+localPosition的含义是当前RectTransform的pivot相对于该RectTransform的父节点rect的中心点的位置, 由于可以调整父节点的rect, 所以可以间接影响子物体的localPosition属性, 而我也可以让rect的绝对位置不变 通过改变pivot的位置来影响localPosition的值, 这在Transform(非RectTransform)体系下是不太可能做到的, 
+
+锚点(Anchor)描述的是当前UI节点和其父节点的位置关系, 锚点虽然叫点, 但是会存在锚点的四个角没有重合的情况. 只不过锚点的四角重合时anchor reference position和该点重合了而已 unity会计算出一个anchor reference point, 和pivot做运算得到anchored position
+中心点(Pivot)描述的是当前UI节点的轴心位置 与父节点无关
+
+## 锚点Anchor
+这个Anchor并不是直接参与位置信息运算的数据, Unity会先根据这个信息计算出一个anchorReferencePosition, 再用这个值进行其他的运算.
+在Unity中 锚点是可以至多被分成四个角的, 并不是一个点. 而在计算一个RectTransform中的一些属性时需要把锚点作为一个"点" 参与运算, 作为四个角不重合的情况, 需要有一个Anchor Reference Position来作为锚点, 
+Anchor Reference Position的计算公式如下:
+$$ AnchorReferencePosition_x = (1 - pivot_x) \times x_0 + pivot_x \times x_1 $$
+$$ AnchorReferencePosition_y = (1 - pivot_y) \times y_0 + pivot_y \times y_1 $$
+其中 (x0, y0)代表的是AnchorMin在该RectTransform的父节点中的位置, (x1, y1)代表的是AnchorMax在该RectTransform的父节点中的位置, (pivotx, pivoty)指的是中心点的归一化位置坐标
+
+有一个概念叫AnchoredPosition, 这个值的含义是Pivot点相对于`Anchor Reference Position`的距离, 当锚点的四个角没有重合在一点时, 我们可能会以为Anchor Reference Position
+
+AnchoredPosition和Local Position的区别是什么?
+在Transform(非RectTransform)体系中, 子物体的localPosition只能通过调整其和父物体的相对位置来实现变化, 在RectTransform体系下, 子物体的localPosition除了受相对位置的影响, 还与父物体的width、子物体本身的pivot有关
+
+我们来看一下RectTransform中的成员(只看RectTransform中有而Transform中没有的)
+rect Rect 注意RectTransform中的rect成员不支持直接修改
+- xMin, 代表的是rect围成矩形区域的左下角的横坐标值, 坐标系原点是这个rect围成的矩形区域的中心点, 
+- yMin, 代表的是rect围成矩形区域的左下角的纵坐标值, 坐标系原点是这个rect围成的矩形区域的中心点, 
+- mHeight, 这个rect围成矩形的高
+- mWidth, 这个rect围成矩形的宽
+注意以上字段都是不可以通过RectTransform操作其值的., 因为没有set属性, 外部没有对它的访问权限
+
+anchorMin Vector2 以当前RectTransform的父节点的rect的左下角为坐标原点, 锚点左下角的归一化位置坐标
+anchorMax Vector2 以当前RectTransform的父节点的rect的左下角为坐标原点, 锚点右上角的归一化位置坐标
+anchoredPosition Vector2
+sizeDelta Vector2 当锚点四角重合时, sizeDelta.x=rect.width=(offsetMax-offsetMin).x, sizeDelta.y=rect.height=(offsetMax-offsetMin).y 当不重合时 sizeDelta.x=(offsetMax-offsetMin).x, sizeDelta.y=(offsetMax-offsetMin).y
+anchoredPosition3D Vector3 包含anchoredPosition的xy分量, 增加了z分量 一般用不到
+offsetMin Vector2 指锚点左下角与rect的左下角的偏移值 以当前RectTransform的父节点的rect的左下角为坐标原点
+offsetMax Vector2  指锚点右上角与rect的右上角的偏移值 以当前RectTransform的父节点的rect的左下角为坐标原点

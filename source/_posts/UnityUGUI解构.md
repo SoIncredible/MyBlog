@@ -9,7 +9,6 @@ description:
 swiper_index:
 sticky:
 ---
-
 # 引子——UGUI中的Text如何被绘制到屏幕上?
 
 参与绘制Text的角色:
