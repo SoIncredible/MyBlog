@@ -36,6 +36,7 @@ sticky: 1000
 [阅读]()
 [迷思]()
 [Jekins]()
+[我写的插件]()
 
 Obsidian + Git + Hexo + PigGo + 云服务器 + 云存储的方案 https://zhuanlan.zhihu.com/p/554333805
 图床方案 https://tbed.hellohao.cn/
