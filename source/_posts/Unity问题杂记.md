@@ -334,3 +334,8 @@ https://blog.csdn.net/f_957995490/article/details/120727626
 # GUID与FileID
 
 一个fbx文件中可能有多个子模型 或者说的更普遍的情况: 一个被AssetDatabase收录的资产中可能包含多个部分, 需要通过guid+fileId的方式才能定位到一个资产
+
+FileID中并没有被序列化在meta文件中, 而是Unity背后有一套生成file的逻辑,
+# Unity的序列化中的几个概念：“GUID”、“Local ID”、“ Instance ID”
+
+[文档](https://blog.csdn.net/qq_33060405/article/details/147315678)

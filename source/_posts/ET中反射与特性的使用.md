@@ -246,3 +246,7 @@ public void Awake()
 3. 它允许延迟绑定的方法和属性
 4. 它允许在运行时创建新的类型，然后使用这些类型执行一些任务
 
+
+
+# TEngine中的反射
+在TEngine中有一个模块, 是在ToolBar上增加按钮的, 根据Unity官方的文档, ToolBar区域是没有对开发者暴露API的, 也就是我们没有办法在ToolBar区域自定义内容, 而TEngine采用反射的方式获取到了控制ToolBar区域表现的实例, 并修改其中的方法字段, 达到了自定义Toolbar的效果. 
