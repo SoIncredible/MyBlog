@@ -213,9 +213,6 @@
   },
   "active": "4450d1e20434ce53",
   "lastOpenFiles": [
-    "source/_posts/近期学吉他心得.md",
-    "source/_posts/读书笔记——程序员超强大脑/image.png",
-    "source/_posts/读书笔记——程序员超强大脑",
     "db.json",
     "public/img/favourite_anime.png",
     "public/posts/370bdedc/2022_12_15_cover.png",
@@ -226,14 +223,19 @@
     "public/posts/8d920ebf/image.png",
     "public/posts/370bdedc/image-20221010191820950.png",
     "public/posts/b2c547d7/image-7.png",
+    "public/posts/e52a9ff3/image4.png",
     "public/js/main.js",
     "public/js/tw_cn.js",
     "public/css/index.css",
     "public/js/utils.js",
     "public/css/var.css",
-    "public/tags/Unity/index.html",
     "public/tags/Shader/index.html",
-    "public/posts/370bdedc/index.html",
+    "public/tags/Unity/index.html",
+    "public/posts/eb885af0/index.html",
+    "public/posts/b4321fd8/index.html",
+    "public/posts/e57f243c/index.html",
+    "source/_posts/读书笔记——乔布斯传.md",
+    "source/_posts/近期学吉他心得.md",
     "source/_posts/读书笔记——人性的弱点.md",
     "source/_posts/读书笔记——时势.md",
     "source/_posts/数据结构算法——排序算法.md",
@@ -256,8 +258,6 @@
     "source/_posts/Dissecting-the-async-methods-in-CSharp.md",
     "source/_posts/CSharp中的Task.md",
     "source/_posts/CSharp问题杂记.md",
-    "source/_posts/CSharp合集.md",
-    "source/_posts/ET框架索引.md",
-    "source/_posts/ET中反射与特性的使用.md"
+    "source/_posts/CSharp合集.md"
   ]
 }
