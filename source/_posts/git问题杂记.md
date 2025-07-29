@@ -56,7 +56,7 @@ fatal: fetch-pack: invalid index-pack output
 git clone --depth 1 <repository-url>
 ```
 或者尝试将缓存增大为1G:
-```
+```shell
 git config --global http.postBuffer 1048576000
 ```
 
