@@ -51,9 +51,12 @@ sudo spctl --master-disable
 
 现在我要安装`Unity2021.3.14f1`和`Unity2021.3.8f1c1`两个版本的Editor和各自对应的`iOS`、`Android`、`MacOS`、`Windows`的module。我先安装了`2021.3.14f1`版本，系统会自动创建`Applications/Unity`路径，然后我也完成了对应版本module的安装。这时如果继续安装`2021.3.8f1c1`的话，系统会直接覆盖掉`Applications/Unity`中`2021.3.14f1`这个版本的Editor，所以我先把这个文件夹的名字改成了`2021.3.8f1c1`，然后再安装新版本的Editor，这样系统又会自动创建`Applications/Unity`这个路径，并在该路径下安装新版本的Editor和module，就不会出现覆盖的问题了。新版本的Editor和module安装完成之后最好将文件夹的名字改成Editor对应的版本号来方便管理，比如`2021.3.14f1`。如果之后需要给某一个版本安装新的module，需要先把该版本的文件夹名改回`Unity`，然后再安装module，安装成功之后将文件夹名再改回对应的版本号。现在我的Mac上就有两个版本的UnityEditor了🤤🤤🤤
 
-![截屏2023-03-08 11.25.15](使用Rider和Unity进行游戏开发初探/截屏2023-03-08 11.25.15.png)
+![](使用Rider和Unity进行游戏开发初探/截屏2023-03-08 11.25.15.png)
 
 最后再记录一个小问题：我每个Editor版本都下载了四个module：`iOS`、`Android`、`Windows`、`MacOS`，前三个安装完成之后都会在`PlaybackEngines`文件夹中找到对应的文件，唯独MacOS的module安装成功之后不会出现在`PlaybackEngines`的文件夹里，我认为可能是因为我的电脑本身就是MacOS，换言之，如果我的电脑是Windows，那在`Playback Engines`这个文件夹下可能就没有Windows相关的module了，这个问题可能与电脑的系统有关。
 
 ![image-20230308112954910](使用Rider和Unity进行游戏开发初探/image-20230308112954910.png)
 
+# Rider使用技巧
+
+- BookMark的使用
