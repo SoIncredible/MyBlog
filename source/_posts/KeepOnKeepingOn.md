@@ -8,8 +8,6 @@ date: 2023-03-27 10:19:52
 description:
 sticky: 1000
 ---
-本文的标题Keep On Keeping On, 出自笔者十分喜爱的一款游戏, 死亡搁浅, 笔者始终都忘不了, 拔叔对Sam说的那一句 你是我通往未来的桥 时所带来的感动, Keep On Keeping On也是一种对待人生的态度
-
 # 合集
 
 [C#](https://soincredible.github.io/posts/d97e22f1)
@@ -177,3 +175,5 @@ https://javahikers.github.io/2019/06/16/personal-blog-being-included-in-google/
 ```shell
 shasum filename
 ```
+
+本文标题**Keep On Keeping On**, 出自小岛秀夫死亡搁浅. 小岛秀夫
