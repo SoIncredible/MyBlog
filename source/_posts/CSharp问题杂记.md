@@ -789,6 +789,26 @@ None      None      None      None      None      None      None      None
 
 https://blog.csdn.net/weixin_42186870/article/details/106086671
 
-```
+```C#
 int expPlus = Mathf.FloorToInt((DoushenMgr.Instance.GetTasksExpPlus() - 1.0f) * 100f);
 ```
+
+
+# C#中的值类型
+
+foreach与值类型天然不相容, 如果要遍历一个值类型的集合, 那么你只能是去访问这些值, 而不能去改变这些值. 因为 这个结构就会导致 data是从集合中深拷贝出来的, 跟集合里的数据已经没有关系了.
+```C#
+foreach(var data in dataCollection){
+
+}
+```
+
+
+```C#
+public struct Info{
+    public string name;
+    public int age;
+}
+```
+如果使用一个Collection比如List或者Dictionary遍历由Info构成的集合, 并且尝试修改其中的值, 是不支持的, foreach嘛 如果这是个class就可以
+这是值类型和引用类型的本质区别 
