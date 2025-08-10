@@ -383,6 +383,8 @@ LocalIdentifierInFileType AssetImporter::GenerateFileIDHashBased(const Unity::Ty
 
 # Unity中的PhysicsRaycaster为什么要继承UIBehaviour
 
+RectTransformUtility.ScreenPointToLocalPointInRectangle接口
+
 # Unity中的对称按钮
 
 有一类需求, 会出一个按钮, 向左的, 然后要你水平翻转一下变成向右的 注意要用RectTransform的scale 不要用Rotation 因为Rotation会把这个图片的正面反转的背离摄像机 这样射线就检测不到这个图片了
