@@ -254,5 +254,15 @@ int main(){
 
 # 如何在C++中实现C#中的反射 HybridCLR可能会用到
 
+
+
+# C++ volatile 关键字
+
+# C++ inline 关键字
+
+# C++ 友元
+
+# C++ 继承多个类    
+
 # 参考资料
 [【CMake】 简单的CMakeLists命令](https://zhuanlan.zhihu.com/p/652187383)

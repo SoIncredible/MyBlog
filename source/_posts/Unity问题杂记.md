@@ -335,10 +335,53 @@ https://blog.csdn.net/f_957995490/article/details/120727626
 
 一个fbx文件中可能有多个子模型 或者说的更普遍的情况: 一个被AssetDatabase收录的资产中可能包含多个部分, 需要通过guid+fileId的方式才能定位到一个资产
 
-FileID中并没有被序列化在meta文件中, 而是Unity背后有一套生成file的逻辑,
+FileID中并没有被序列化在meta文件中, 在翻阅的Unity的源码之后, 找到了FileID的生成逻辑:
+
+在`YAMLNode.cpp`脚本里面, YAMLMapping方法, 用来向meta文件中添加fileID, FileId被PersistentManager管理
+```c++
+YAMLMapping::YAMLMapping(const PPtr<Object>& value) : useInlineStyle(true)
+{
+    GetPersistentManager().Lock();
+
+    SerializedObjectIdentifier identifier;
+    if (GetPersistentManager().InstanceIDToSerializedObjectIdentifier(value.GetInstanceID(), identifier))
+    {
+        FileIdentifier id = GetPersistentManager().PathIDToFileIdentifierInternal(identifier.serializedFileIndex);
+        Append("fileID", identifier.localIdentifierInFile);
+        Append("guid", id.guid);
+        Append("type", id.type);
+    }
+    GetPersistentManager().Unlock();
+}
+```
+
+上面是取的, 在`AssetImporter.cpp`中, 根据导入资产的名字和资产的类型生成一个id
+
+```c++
+LocalIdentifierInFileType AssetImporter::GenerateFileIDHashBased(const Unity::Type* type, const core::string& name)
+{
+    MdFourGenerator mdfourGen;
+    mdfourGen.Feed(static_cast<int>(type->GetPersistentTypeID()));
+    mdfourGen.Feed(name);
+    Hash128 Hash128 = mdfourGen.Finish();
+    LocalIdentifierInFileType fileID = (SInt32)(*reinterpret_cast<UInt32*>(&Hash128));
+    Assert(m_FileIDToRecycleName.empty());
+
+    if (m_UsedFileIDs.count(fileID) == 1 || fileID == kAssetImporterFileID || fileID == kAssetMetaDataFileID)
+        return 0;
+    else
+        return fileID;
+}
+```
+
+通过
+
 # Unity的序列化中的几个概念：“GUID”、“Local ID”、“ Instance ID”
 
 [文档](https://blog.csdn.net/qq_33060405/article/details/147315678)
+
+
+# Unity中的PhysicsRaycaster为什么要继承UIBehaviour
 
 # Unity中的对称按钮
 

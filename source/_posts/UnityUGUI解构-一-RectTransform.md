@@ -49,3 +49,42 @@ localPosition的含义是当前RectTransform的pivot相对于该RectTransform的
 
 
 
+# IDragHandler
+
+在此猜测 , IDragHandler的生效逻辑是什么
+
+
+每一帧 Unity都会从摄像机出发生成一个射线 由你的pointer投射到场景中的gameObject上, 每一帧你都会拿到这些信息 拿到这些物体, 查看这些物体上挂载的组件有没有实现IDragHandler接口, 如果有, 出发这个IDragHnader的fafa
+
+
+在Unity源码中 搜 localIdentifierInFile
+
+
+
+
+BuildSerialization.cpp
+```c++
+static void ConvertSceneObjectsToInstanceIDBuildRemap(const core::string& path, const WriteDataArray& sceneObjects, InstanceIDBuildRemap& output)
+{
+    int pathIndex = GetPersistentManager().GetSerializedFileIndexFromPath(path);
+
+    output.reserve(output.size() + sceneObjects.size());
+    for (WriteDataArray::const_iterator i = sceneObjects.begin(); i != sceneObjects.end(); i++)
+    {
+        Assert(i->localIdentifierInFile != 0);
+        output.push_unsorted(i->instanceID, SerializedObjectIdentifier(pathIndex, i->localIdentifierInFile));
+    }
+    output.sort();
+}
+```
+
+ResourceManager.cpp中的void BuiltinResourceManager::InitializeResources()方法
+
+
+
+
+
+
+下面这段代码, 推测应该是Unity给资产生成FileId的逻辑
+明天验证一下 对于大部分的FBX中的mesh资源, 他们应该都是叫同样的名字, 又因为他们都是mesh, 所以传入的参数一样, 所以在meta文件中, 你可以看到, 即便是引用了不同的fbx的mesh, 变的只有guid, fileid都是一样了 
+明天验证一下, 两个mesh名不一样的fbx, 应该fileId就会不一样, 而且改了mesh的名字, fileId的名字也就会跟着变
