@@ -348,6 +348,7 @@ EditorUtility.DisplayDialog( "", "Board64中不存在对Board100的依赖", "OK"
 https://www.cnblogs.com/CloudLiu/p/9957335.html
 
 # 在Scene窗口中添加按钮
+```C#
 using UnityEngine;
 using UnityEditor;
 
@@ -517,6 +518,7 @@ public class Particle2DUGUIEditor : Editor {
 		ugui.material = mat;
 	}
 }
+```
 
 
 # 在Play按钮旁边添加按钮
