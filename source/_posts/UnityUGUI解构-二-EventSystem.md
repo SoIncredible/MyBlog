@@ -1,5 +1,6 @@
 ---
 title: UnityUGUI解构(二)-EventSystem
+abbrlink: 28d70de0
 date: 2025-08-10 08:42:26
 tags:
 categories:
