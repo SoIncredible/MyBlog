@@ -145,7 +145,6 @@ deploy:
   - type: git
     repository:
       github: git@github.com:SoIncredible/SoIncredible.github.io.git
-      coding: git@e.coding.net:g-gzbl4348/EddieLee/SoIncredible.git
     branch: master
   - type:
 
