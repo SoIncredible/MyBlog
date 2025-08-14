@@ -34,3 +34,12 @@ ProviderBase
 - 创建ResourcePackage，根据最新的Manifest创建运行时的AssetSystem
 
 分帧加载是什么意思?
+
+Persistent下的
+BuildinRoot-> streamingAssets/YooAssetSettingsData.Setting.DefaultYooFolderName
+BuildinPackageRoot
+SandboxRoot->UnityEngine.Application.persistentDataPath, YooAssetSettingsData.Setting.DefaultYooFolderName
+SandboxPackageRoot
+
+ManifestFileName PackageManifest
+DefaultYooFolderName yoo
