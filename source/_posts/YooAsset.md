@@ -10,21 +10,6 @@ swiper_index:
 sticky:
 ---
 
-# 角色
-OperationSystem类，管理、驱动所有异步操作
-
-AsyncOperationBase类，所有异步操作要继承的积累
-
-IPlayModeServices 下载相关的接口
-IBundleServices Bundle信息相关的接口
-IRemoteServices 服务器URL相关
-
-
-PackageManifest 资源信息 资源包的版本、名称、资源列表等
-PackageAsset 
-AssetSystem
-ProviderBase
-
 # 资源信息热更新流程
 
 - 游戏启动
@@ -115,3 +100,41 @@ Sandbox Path，指应用私有可读写目录。
 Unity Application.streamingAssetsPath
 Unity Application.persistentDataPath
 如果你在文档、配置、代码注释里这样使用，一般团队成员都能理解。如果要求更官方，可用“StreamingAssets Path”、“Persistent Data Path”的全称表述。
+
+
+有一些资源是被打入底包的, 同时这些资源也会被热更, 在游戏启动流程中, YooAsset首先跟远端请求最新的资源版本, 有两种可能, 1本地的资源就是最新的, 这里指的是Buildin的资源, 2本地资源不是最新的, 那么就会先去CDN上下载最新的BuildIn资源, 把这些资源下载到Persistent沙盒目录下, 在加载资源的时候, YooAsset会先判断这个资源在Persistent沙盒路径下有没有, 然后再去BuildInstreamingPath下去找.
+根据BudleInfo的LoadMode字段
+
+
+```C#
+private BundleInfo CreateBundleInfo(PackageBundle packageBundle)
+{
+   if (packageBundle == null)
+      throw new Exception("Should never get here !");
+
+   // 查询分发资源
+   if (IsDeliveryPackageBundle(packageBundle))
+   {
+      DeliveryFileInfo deliveryFileInfo = GetDeiveryFileInfo(packageBundle);
+      BundleInfo bundleInfo = new BundleInfo(packageBundle, BundleInfo.ELoadMode.LoadFromDelivery, deliveryFileInfo.DeliveryFilePath, deliveryFileInfo.DeliveryFileOffset);
+      return bundleInfo;
+   }
+
+   // 查询沙盒资源
+   if (IsCachedPackageBundle(packageBundle))
+   {
+      BundleInfo bundleInfo = new BundleInfo(packageBundle, BundleInfo.ELoadMode.LoadFromCache);
+      return bundleInfo;
+   }
+
+   // 查询APP资源
+   if (IsBuildinPackageBundle(packageBundle))
+   {
+      BundleInfo bundleInfo = new BundleInfo(packageBundle, BundleInfo.ELoadMode.LoadFromStreaming);
+      return bundleInfo;
+   }
+
+   // 从服务端下载
+   return ConvertToDownloadInfo(packageBundle);
+}
+```
