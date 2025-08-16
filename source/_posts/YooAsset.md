@@ -49,7 +49,9 @@ DefaultYooFolderName yoo
       2. 如果本地都没有这个版本的资源 那么这次真的要去远端下载了 至此Manifest检查与加载流程完毕
 3. 更新被打上特殊标记的资源
 
-问题: 在启动的时候, 只是从底包中也就是streaming目录下把Manifest拷贝过来了啊, 底包中带的那些bundle有没有拷贝过来呢?
+问题: 在启动的时候, 只是从底包中也就是streaming目录下把Manifest拷贝过来了啊, 底包中带的那些bundle有没有拷贝过来呢? 结论是并没有拷贝过来, 
+
+底包中的资源也是可以热更的, 但是热更的底包资源是放在persistent沙盒目录下的, 首先是YooAsset拿到的最新的manifest, 在最新的manifest中 如果底包中的资源发生了变化, 那么这个资源的bundle名以为有hash值, hash值是会变的, 所以在底包中就找不到这个资源. 所以就会触发热更逻辑.
 
 1、Unity中，StreamingAssetsPath称为buildin路径，persistentPath称为Sandbox路径，可以吗？
 

@@ -393,3 +393,8 @@ RectTransformUtility.ScreenPointToLocalPointInRectangle接口
 
 
 [Unity控制台输出过多不显示的解决方案](https://www.cnblogs.com/tian98/p/15623292.html)
+
+
+# Unity中的Awake
+
+如果一个节点实例化出来被设置为了active为false, 其Awake方法就不会执行, 所以不应该使用Unity提供的生命周期
