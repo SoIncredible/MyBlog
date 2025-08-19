@@ -229,8 +229,3 @@ Unity Shader中可以使用`CGINCLUDE`的方法将一些数据结构、字段在
 
 ## Unity Shader是怎么被收集然后打进包内的？
 
-
-# Unity中的Awake
-
-如果一个节点实例化出来被设置为了active为false, 其Awake方法就不会执行, 所以不应该使用Unity提供的生命周期
-

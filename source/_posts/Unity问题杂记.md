@@ -53,7 +53,7 @@ Spine动画有一个专门针对UI的组件叫做SkeletonGraphic，SkeletonGraph
 另外还有专门为非UI播放动画的SkeletonAnimation组件，该组件的渲染是基于MeshRenderer的，因此不受Canvas的管理，当要在UI上展示Spine动画的时候，要选择使用SkeletonGraphic组件。
 
 SkeletonGraphic相关接口
-```
+```C#
 // 停止当前正在播放的动画
 // heartBeatFlower.AnimationState.ClearTrack(0);    
 heartBeatFlower.AnimationState.SetEmptyAnimation(0,0); 
@@ -64,7 +64,7 @@ heartBeatFlower.AnimationState.SetAnimation(0, "chufa", false);
 > 使用SkeletonGraphic.AnimationState.ClearTrack(0)遇到坑了，目前笔者还不清楚Spine的作用原理，从表现上看，调用该接口会将Spine动画从轨道上移除，之后想要再次播放该动画的话就无法在轨道上找到这个动画，所以如果有切换播放动画的需求，只需要调用heartBeatFlower.AnimationState.SetAnimation(0, "chufa", false);  就可以了
 
 SkeletonAnimation相关接口
-```
+```C#
 // 停止当前正在播放的动画
 heartBeatFlower.state.SetEmptyAnimation(0,0);            
 // 播放新的动画
@@ -90,6 +90,8 @@ public void Play (int stateNameHash, int layer= -1, float normalizedTime= float.
 > ![](Unity问题杂记/image-1.png)
 > 2025.6.18更新
 > 更健壮的版本 TODO Eddie 这个问题能不能抽成
+> Unity的Animator太难用了 笔者是希望在动画播放完成之后 执行某个操作 Animator只需要给我一个回调的接口就可以 这样就不需要我自己来实现了.
+> Animacer插件应该是有这个接口的, 需要验证一下
 ```C#
 m_ddz_zhounianqing_JY12_zhuanchang_GameObject.SetActiveEx(true);
 yield return null;
