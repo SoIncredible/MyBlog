@@ -12,6 +12,20 @@ sticky:
 
 # GUI、EditorGUI、GUILayout、EditorGUILayout、EditorGUIUtility、GUIUtility
 
+GUI附带的还有GUIGroup、GUIStyle等 EditorGUI好像没有?
+在UnityEditor开发中下面这些类型都是可以用的
+https://docs.unity3d.com/ScriptReference/GUI.html
+https://docs.unity3d.com/ScriptReference/GUIContent.html
+https://docs.unity3d.com/ScriptReference/GUISkin.html
+https://docs.unity3d.com/ScriptReference/GUIStyle.html
+https://docs.unity3d.com/ScriptReference/EditorGUI.html
+https://docs.unity3d.com/ScriptReference/EditorStyles.html
+
+# EditorToolBar
+
+
+# EditorApplication
+
 # 在Editor下使用异步
 
 ## 多线程方式
