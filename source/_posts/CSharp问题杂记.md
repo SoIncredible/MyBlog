@@ -812,3 +812,8 @@ public struct Info{
 ```
 如果使用一个Collection比如List或者Dictionary遍历由Info构成的集合, 并且尝试修改其中的值, 是不支持的, foreach嘛 如果这是个class就可以
 这是值类型和引用类型的本质区别 
+
+
+# C# CodeGenerator
+
+https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/
