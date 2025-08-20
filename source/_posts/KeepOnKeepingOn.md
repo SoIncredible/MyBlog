@@ -111,7 +111,7 @@ https://soincredible.github.io/posts/8a8aad75
 - 
 - Cocos2d
 - Godot
-- [算法, 代码随想录不错]()
+- [算法, 代码随想录不错](https://programmercarl.com/)
 - 设计模式
 - [Blender教程](https://www.bilibili.com/video/BV14u41147YH/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102)
 - [Vim]()
@@ -149,6 +149,7 @@ https://soincredible.github.io/posts/8a8aad75
 - [庄懂技术美术课程](https://www.bilibili.com/video/BV1sE411g7N9?spm_id_from=333.788.videopod.sections&vd_source=83f4165825ce9df46cf4fd576ccb1102)
 - [庄懂技术美术课程配套资源](https://github.com/BoyanTata/AP01)
 - [B站UP主samlee2025的Shader系列, 就是通过他才知道了庄懂](https://www.bilibili.com/video/BV1TX4y1g75w?spm_id_from=333.788.videopod.sections&vd_source=83f4165825ce9df46cf4fd576ccb1102)
+- [UP主samlee2025的笔记](https://www.kdocs.cn/l/cbSqBT9pOXH5)
 - [ShaderForge](https://github.com/FreyaHolmer/ShaderForge)
 
 # 博客
