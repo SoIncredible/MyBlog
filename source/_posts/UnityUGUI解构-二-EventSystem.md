@@ -82,5 +82,3 @@ public virtual bool Raycast(Vector2 sp, Camera eventCamera)
 
 
 不管市面上的UnityUI的方案(比如FGUI)多炫酷, 最终到Unity中都是要走UGUI的底层
-
-# 
