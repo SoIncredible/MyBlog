@@ -107,10 +107,11 @@ https://soincredible.github.io/posts/8a8aad75
 - [IOS开发](https://developer.apple.com/documentation/)
 - [OpenGL学习](https://learnopengl-cn.github.io/intro/)
 - 游戏逆向
-- Unreal
+- [Unreal谌嘉诚的蓝图教程不错](https://www.bilibili.com/cheese/play/ss32685?csource=Hp_searchresult&spm_id_from=333.337.0.0)
+- 
 - Cocos2d
 - Godot
-- 算法
+- [算法, 代码随想录不错]()
 - 设计模式
 - [Blender教程](https://www.bilibili.com/video/BV14u41147YH/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102)
 - [Vim]()
@@ -143,8 +144,12 @@ https://soincredible.github.io/posts/8a8aad75
 - [YooAsset](https://www.yooasset.com/docs/Introduce)
 - [Photon——一个专注于做Unity多人联机框架的工作室](https://www.photonengine.com/)
 - [开源游戏合集](https://osgameclones.com/)
-- [Fantacy]()
+- [Fantacy](https://github.com/qq362946/Fantasy)
 - [TexturePacker](https://www.codeandweb.com/texturepacker)
+- [庄懂技术美术课程](https://www.bilibili.com/video/BV1sE411g7N9?spm_id_from=333.788.videopod.sections&vd_source=83f4165825ce9df46cf4fd576ccb1102)
+- [庄懂技术美术课程配套资源](https://github.com/BoyanTata/AP01)
+- [B站UP主samlee2025的Shader系列, 就是通过他才知道了庄懂](https://www.bilibili.com/video/BV1TX4y1g75w?spm_id_from=333.788.videopod.sections&vd_source=83f4165825ce9df46cf4fd576ccb1102)
+- [ShaderForge](https://github.com/FreyaHolmer/ShaderForge)
 
 # 博客
 - [Frog's Blog](https://frog-game.github.io/posts/blog/wufengdashijie/)
@@ -158,6 +163,7 @@ https://soincredible.github.io/posts/8a8aad75
 - [L's Blog](https://www.liuocean.com/)
 - [Stephen Cleary](https://blog.stephencleary.com/) C#专家
 - [行尸走油](https://walkingfat.com/)
+- [ShaderForge作者的博客, 还是个数学家](https://acegikmo.com/)
 
 # Cover
 - https://www.notion.so/images/page-cover/met_gerome_1890.jpg
@@ -176,7 +182,7 @@ https://javahikers.github.io/2019/06/16/personal-blog-being-included-in-google/
 shasum filename
 ```
 
-本文标题**Keep On Keeping On**, 出自小岛秀夫死亡搁浅. 小岛秀夫
+本文标题**Keep On Keeping On**, 出自小岛秀夫死亡搁浅.
 
 
 
