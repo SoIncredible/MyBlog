@@ -1,5 +1,6 @@
 ---
 title: 迷思——CSharp接口
+abbrlink: 4d82216e
 date: 2025-08-21 01:36:58
 tags:
 categories:
