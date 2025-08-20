@@ -43,7 +43,7 @@ love .
 
 游戏的update逻辑在`game.lua`脚本的`function Game:update(dt)`中.
 在`globals.lua`中,可以看到游戏状态机中的状态:
-```
+```lua
 self.STATES = {
         SELECTING_HAND = 1,
         HAND_PLAYED = 2,
@@ -71,7 +71,7 @@ self.STATES = {
 
 小丑牌的配置在`functions/misc_functions.lua`脚本中,在这里你可以修改游戏的初始参数,比如初始金币、手牌上限、小丑牌栏位上限等等.
 
-```
+```lua
 function get_starting_params()
 return {
     dollars = 100,
@@ -92,7 +92,7 @@ end
 
 
 主界面的绘制在`UI_definitions.lua`脚本中,在小丑牌中页面的拼接用的是类似json一样的嵌套结构来描述UI的信息,重点关注`UIBox_button`的button参数,该参数指明该按钮和其相应点击的事件.
-```
+```lua
 function create_UIBox_main_menu_buttons()
   local text_scale = 0.45
   local language = nil
@@ -156,7 +156,7 @@ end
 # 洗牌算法
 
 在`state_events.lua`脚本中`new round`方法内`G.deck:shuffle('nr'..G.GAME.round_resets.ante)`这一行.
-```
+```lua
 G.E_MANAGER:add_event(Event({
   trigger = 'immediate',
   func = function()
@@ -171,7 +171,7 @@ G.E_MANAGER:add_event(Event({
 }))
 ```
 洗牌算法的具体实现在`cardarea.lua`中.
-```
+```lua
 function CardArea:shuffle(_seed)
     pseudoshuffle(self.cards, pseudoseed(_seed or 'shuffle'))
     self:set_ranks()

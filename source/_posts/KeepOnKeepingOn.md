@@ -25,11 +25,13 @@ sticky: 1000
   - [URP]()
   - [HDRP]()
   - [插件合集]()
+[UnrealEngine]()
 [设计模式]()
 [数据结构算法](https://soincredible.github.io/posts/e1a82e1)
 [渲染]()
 [建模]()
 [云服务器]()
+[计算机网络]()
 [AI]()
 [阅读]()
 [迷思]()
@@ -151,6 +153,9 @@ https://soincredible.github.io/posts/8a8aad75
 - [B站UP主samlee2025的Shader系列, 就是通过他才知道了庄懂](https://www.bilibili.com/video/BV1TX4y1g75w?spm_id_from=333.788.videopod.sections&vd_source=83f4165825ce9df46cf4fd576ccb1102)
 - [UP主samlee2025的笔记](https://www.kdocs.cn/l/cbSqBT9pOXH5)
 - [ShaderForge](https://github.com/FreyaHolmer/ShaderForge)
+- [菲兹杂货铺](https://www.bilibili.com/video/BV1Zr4y147Jx/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102)
+- [Kerry佬](https://space.bilibili.com/4435618?spm_id_from=333.337.0.0)
+- [GPU 编程与CG 语言之阳春白雪下里巴人](https://enjoyphysics.cn/%E6%96%87%E4%BB%B6/soft/Hlsl/GPU-Programming-AndCgLanguage-Primer.pdf)
 
 # 博客
 - [Frog's Blog](https://frog-game.github.io/posts/blog/wufengdashijie/)
@@ -165,11 +170,6 @@ https://soincredible.github.io/posts/8a8aad75
 - [Stephen Cleary](https://blog.stephencleary.com/) C#专家
 - [行尸走油](https://walkingfat.com/)
 - [ShaderForge作者的博客, 还是个数学家](https://acegikmo.com/)
-
-# Cover
-- https://www.notion.so/images/page-cover/met_gerome_1890.jpg
-
-不知道从哪里听到的一句话 程序员只要能把云、水、草的Shader渲染搞明白就算过关了。
 
 博客收录 https://zhuanlan.zhihu.com/p/100922816
 https://javahikers.github.io/2019/06/16/personal-blog-being-included-in-google/

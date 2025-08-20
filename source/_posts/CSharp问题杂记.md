@@ -818,15 +818,3 @@ public struct Info{
 
 https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/
 
-# C# 接口
-定义接口的目的, 让一些类型具有某些行为, 并且可以通过声明接口类型, 来持有接口的实例, 一个实例的对象既可以是该实例的class类型, 也可以是其实现的任意一个接口的类型.
-
-两种场景:
-1. Unity的EventSystem提供了IDragHandler、IBeginDragHandler一系列接口用来获取用户的操作输入行为.
-   这种场景下, 接口的作用是 保证了EventSystem的独立性、隔离性, EventSystem通过对外暴露接口的方式, 让外部 EventSystem中
-
-
-2. C#中的非托管资源在使用的时候可以实现IDisposable接口
-
-
-3. 语法糖foreach
