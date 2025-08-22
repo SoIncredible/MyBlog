@@ -400,3 +400,6 @@ RectTransformUtility.ScreenPointToLocalPointInRectangle接口
 # Unity中的Awake
 
 如果一个节点实例化出来被设置为了active为false, 其Awake方法就不会执行, 所以不应该使用Unity提供的生命周期
+
+
+Unity也有Asset功能
