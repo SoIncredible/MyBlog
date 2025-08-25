@@ -1,5 +1,6 @@
 ---
 title: UnityRenderPipeline
+abbrlink: d1e0d4f0
 date: 2025-08-23 00:25:44
 tags:
 categories:

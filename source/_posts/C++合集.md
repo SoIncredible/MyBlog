@@ -1,5 +1,6 @@
 ---
 title: C++合集
+abbrlink: e78f9514
 date: 2025-08-23 16:21:10
 tags:
 categories:
