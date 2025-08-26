@@ -403,3 +403,80 @@ RectTransformUtility.ScreenPointToLocalPointInRectangle接口
 
 
 Unity也有Asset功能
+
+
+
+# Unity中的OffScreenRender离屏渲染
+
+在 **Unity** 或图形学开发中，“**Off Screen Render**” 或 “**Offscreen Rendering**” 通常指的是“**离屏渲染**”。
+
+---
+
+## 1. 直观解释
+
+**OffScreen Render（离屏渲染）**：  
+不是直接将画面渲染到屏幕（monitor）上，而是渲染到某个内存区域（如 RenderTexture、Frame Buffer）的过程。
+
+- **On Screen** 渲染：把画面绘制到显示设备上用户直接看到
+- **Off Screen** 渲染：画面先渲染到一个**纹理**或缓冲区，之后你可以对它做后处理、保存、合成、变换，最后再决定怎么展示或用
+
+---
+
+## 2. Unity中的典型用法
+
+在 Unity 里，**离屏渲染**主要体现在以下场景：
+
+### a. RenderTexture
+最常用的离屏渲染就是**渲染到 RenderTexture**，比如：
+
+- **摄像机（Camera）输出**不直接显示，而是输出到一个 RenderTexture
+- 后期处理（Post Process），比如模糊、特效
+- Mini Map（小地图）、分屏、投影、镜子、监控摄像头
+
+**示例**：
+
+```csharp
+public Camera cam;
+public RenderTexture myRT;
+
+void Start()
+{
+    cam.targetTexture = myRT;
+}
+```
+这样，摄像机渲染内容就**不会直接显示在屏幕上**，而是画到 myRT 里，你可以贴到 UI、另一个物体等任意想用的地方。
+
+### b. Texture合成或图片保存
+- 把场景渲染到 RenderTexture，再通过 `Texture2D.ReadPixels` 等读取数据，保存为 PNG、异步上传等
+
+### c. 特殊效果
+- 画面截图、动态环境贴图、实时反射球等都要离屏渲染
+
+---
+
+## 3. 图形原理解释
+
+离屏渲染在底层其实是：
+- 创建一个“帧缓冲区”（Frame Buffer Object, FBO），或者用 RenderTexture 作为目标
+- 将渲染管线的输出写入内存而不是实际屏幕
+- 后续可以把这块内存的数据用于其它用途（二次渲染、后期处理、特效合成等）
+
+---
+
+## 4. 为什么要 OffScreen Render?
+
+- 方便实现后处理特效（例如 HDR, Bloom, VFX 类效果先渲染到纹理，再处理再显示）
+- 实现多视角展示（分屏、监控、全景图、小地图）
+- 做动态贴图，比如车漆反射、摄像头画面、视频等
+- 截图及保存画面
+- 编辑器工具、UI复杂效果
+
+---
+
+## 5. 总结一句话
+
+**OffScreen Render 在 Unity 就是“把渲染结果输出到一个纹理或者缓冲区内存”，而不是直接输出到屏幕，便于实现特效、截图、合成等各种高级功能。**
+
+---
+
+如果你需要具体离屏渲染场景的代码例子或不同平台的兼容问题，可以告诉我你的需求！
