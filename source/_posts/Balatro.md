@@ -20,18 +20,18 @@ sticky:
 # 运行游戏
 
 首先在`~/.zshrc`中添加以下文本
-```
+```shell
 # alias to love
 alias love="/Applications/love.app/Contents/MacOS/love"
 ```
 
 退出`zshrc`,执行
-```
+```shell
 source ~/.zshrc
 ```
 
 来到小丑牌的根目录,执行:
-```
+```shell
 love .
 ```
 
