@@ -39,3 +39,6 @@ AssetDataBase.FindAssets接口 对于预制体来说, 必须传进去的是预�
 - Font
 - Prefab
 - Audioin
+
+# 对Prefab的处理可以全部用PrefabUtility
+

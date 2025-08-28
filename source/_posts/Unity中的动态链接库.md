@@ -590,6 +590,6 @@ public class Program{
 
 7.验证 
 
-```C#
+```shell
 dotnet run
 ```
