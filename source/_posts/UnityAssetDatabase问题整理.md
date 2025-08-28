@@ -24,21 +24,102 @@ sticky:
 
 # 查询资源引用
 
-AssetDataBase.FindAssets接口 对于预制体来说, 必须传进去的是预制体所在的目录, 是文件夹, 不能是具体的预制体, 但是对于Texture来说, 传入Texture路径却是没问题的.
+AssetDataBase.FindAssets接口 **对于预制体来说, 必须传进去的是预制体所在的目录, 是文件夹, 不能是具体的预制体, 但是对于Texture来说, 传入Texture路径却是没问题的.**
 
+# 使用AssetDatabse创建文件夹
 
-# 案例
-
-需要做热更,将原来混在一起的资源隔离出来,
-
-资源的分类
-
-- Material
-- Texture
-- Animation
-- Font
-- Prefab
-- Audioin
 
 # 对Prefab的处理可以全部用PrefabUtility
+
+加载一个预制体, 如果只是对一个预制体 只读, 那么可以使用AssetDatabase的Load接口加载, 但是如果是要对预制体的内容进行修改, 则要使用PrefabUtility中的Load接口,
+
+
+# AssetPostProcessor
+# AssetModificationProcessor
+# AssetImporter
+# AudioImporter
+
+思考一下 Unity里面有几种类型的资源:
+
+模型、Texture、Audio类 他们都会有一个ImportSettings, 这类资源不是Unity可以Create的.
+
+
+预制体
+
+材质呢?
+
+你的理解很接近真实的Unity资源体系！我帮你进一步理清和补充：
+
+---
+
+## 你总结的三种类型资源
+
+### 1. **外部导入资源（有Importer处理）**
+**特征：**  
+- 源文件本身不是Unity创建，比如 `.png`、`.jpg`、`.fbx`、`.wav`、`.mp3` 等
+- 需要导入器（Importer），比如 TextureImporter、ModelImporter、AudioImporter
+- 在Unity导入流程中，Importer负责转换参数、导入设置、生成meta数据和最终的Unity对象（如Texture、Mesh、AudioClip等）
+- 你可以通过Importer批量修改这些资源的导入参数
+
+**例子：**  
+- 外部图片 → TextureImporter → Texture2D
+- 外部模型 → ModelImporter → Mesh, Material, AnimationClip
+- 外部音频 → AudioImporter → AudioClip
+
+---
+
+### 2. **Unity创建且有专门管理模块/接口的资源**
+**特征：**  
+- 这些资源类型由Unity原生创建和管理
+- 编辑器暴露了专门的管理API或工具类用于批量处理、特殊保存
+- 典型代表如Prefabs（PrefabUtility）、场景Scene（EditorSceneManager），还有Timeline Asset、AnimatorController等等
+- 这类资源一般有特别的生命周期或内容变换机制
+
+**例子：**  
+- Prefab（通过PrefabUtility管理加载/保存/变更）
+- 场景（通过EditorSceneManager管理保存/加载/脏标记）
+- AnimatorController（部分模块有专用API，但不全）
+
+---
+
+### 3. **Unity创建但没有专用管理模块的资源**
+**特征：**  
+- Unity里手动创建的资产，但官方没有专门的批量接口或"导入管理器"
+- 通常直接通过AssetDatabase和EditorUtility.SetDirty来批量处理
+- 典型如Material、ScriptableObject、普通.asset文件、PhysicMaterial等
+
+**例子：**  
+- Material
+- ScriptableObject（自定义游戏数据）
+- PhysicMaterial
+- LightingDataAsset等
+
+---
+
+## 补充细节
+
+- 有些资源类型可能同时涉及多种管理方式，比如模型文件（.fbx）导入，既由ModelImporter处理，也会自动生成Material和Prefab资源。
+- Unity的资源归类实际还和“如何生成/管理/编辑/导入/保存/批量变更”有关，而不是单纯“能不能创建”。
+- 一些资源有编辑器扩展，但没有专门管理器（比如LightingSettings之类）。
+- 场景、Prefab等是少数拥有专门流程和API的资产；绝大多数Unity资产都是“你需要自己查找、编辑、SetDirty然后SaveAssets。”
+
+---
+
+## 总结归纳表
+
+| 类型              | 来源              | 管理方式                        | 例子                    |
+|-------------------|-------------------|---------------------------------|-------------------------|
+| 外部导入资源      | Unity外部         | Importer/AssetPostprocessor     | .png, .fbx, .wav        |
+| Unity专有模块资源 | Unity内部创建     | 专用API（PrefabUtility等）      | Prefab, Scene           |
+| 普通Unity资产     | Unity内部创建     | AssetDatabase+EditorUtility     | Material, ScriptableObject |
+
+---
+
+### 你的理解是正确的！
+
+- 可完全理解为：“Importer类仅服务于外部导入的资源，部分Unity资产（Prefab/Scene）有专门工具模块管理，剩下绝大多数Unity自己创建的资产（如Material）则没有专门模块，需要自己脚本批量处理。”
+
+---
+
+如需更精细的分类表、具体批量方案、API对比可以继续问！
 
