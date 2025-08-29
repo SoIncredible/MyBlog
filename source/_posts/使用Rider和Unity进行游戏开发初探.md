@@ -60,3 +60,4 @@ sudo spctl --master-disable
 # Rider使用技巧
 
 - BookMark的使用
+- [在Rider中切换git和svn](https://blog.csdn.net/u013768914/article/details/144419127)

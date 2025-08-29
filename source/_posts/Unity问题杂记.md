@@ -47,6 +47,11 @@ GetComponentInParent方法中要一个参数，这个参数的作用是是否包
 
 DoTween不仅可以用来做动画，也可以实现音频减弱、图片的渐显操作。
 
+# DOTweenAnimation组件使用
+
+DOTweenAnimation组件挂载在节点上，调用播放的时候只播第一次，之后不播了，需要搞清楚为什么
+
+
 # Spine动画的使用
 
 Spine动画有一个专门针对UI的组件叫做SkeletonGraphic，SkeletonGraphic组件是基于UICanvas绘制的，因此它的渲染层级可以被Canvas管理
@@ -126,13 +131,15 @@ while (m_ddz_zhounianqing_JY12_zhuanchang_Animator.GetCurrentAnimatorStateInfo(0
 QDebug.Log("转场结束");
 m_ddz_zhounianqing_JY12_zhuanchang_GameObject.SetActiveEx(false);
 ```
-
 # Animation体积优化的问题
+
 https://blog.uwa4d.com/archives/UWA_Pipeline22.html
 
-# DOTweenAnimation组件使用
+# Unity的Animation的使用的坑
 
-DOTweenAnimation组件挂载在节点上，调用播放的时候只播第一次，之后不播了，需要搞清楚为什么
+Animation中有一个Legacy字段，如果不勾选这个选项，在Animation中是没有办法通过Animation.Play()接口播放该动画的。
+有兴趣可以做一个实验，创建一个勾选了Legacy和一个未勾选Legacy的动画，将这两个动画都添加到一个Animation组件上。在代码中获取这个Animation组件的引用，调用`Animation.GetClipCount()`接口得到的值为2，但是如果使用`foreach(AnimationState state in Animation)`去遍历却只会遍历到勾选了Legacy的AnimationClip
+
 
 # 协程的坑
 
@@ -140,10 +147,6 @@ DOTweenAnimation组件挂载在节点上，调用播放的时候只播第一次�
 - 提示要执行Coroutine的物体的状态是inactive的
 一个GameObject,在同一帧内,先被SetActive了,然后紧接着用这个GameObject上的一个Mono执行StartCoroutine,会提示GameObject无法被执行,验证是否是这样的.
 
-# Unity的Animation的使用的坑
-
-Animation中有一个Legacy字段，如果不勾选这个选项，在Animation中是没有办法通过Animation.Play()接口播放该动画的。
-有兴趣可以做一个实验，创建一个勾选了Legacy和一个未勾选Legacy的动画，将这两个动画都添加到一个Animation组件上。在代码中获取这个Animation组件的引用，调用`Animation.GetClipCount()`接口得到的值为2，但是如果使用`foreach(AnimationState state in Animation)`去遍历却只会遍历到勾选了Legacy的AnimationClip
 
 # XML文件读取逻辑
 
@@ -312,6 +315,8 @@ Unity插件[FR2](https://docs.google.com/document/d/1M3drHsRSCNKk-colYnCYECM_TR2
 https://blog.csdn.net/qq_42980269/article/details/123064307
 
 # 在Unity工程中使用相对路径
+
+一套是File接口, 一套是AssetDatabase接口, 两者使用相对路径都是从Assets开始的, 因为Unity生成的C#工程csproj是跟Assets目录同级的.
 
 如果你在C#中看到这样的目录:` configFilePath = $"../Config/Excel/s/{Options.Instance.StartConfig}/{configType.Name}.bytes"; `,它代表的是跟Unity工程的根目录同级下有一个Config目录:
 ```
