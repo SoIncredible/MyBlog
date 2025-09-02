@@ -9,6 +9,9 @@ description:
 swiper_index:
 sticky:
 ---
+
+CornerStone真的垃圾, 用Rider中的SVN插件进行版本控制.
+
 SVN中的两种冲突
 ## 1. 文件冲突（file conflict）是什么？
 
