@@ -146,6 +146,8 @@ Animation中有一个Legacy字段，如果不勾选这个选项，在Animation�
 - 协程中的等待一秒并不是真正的一秒有可能会有误差
 - 提示要执行Coroutine的物体的状态是inactive的
 一个GameObject,在同一帧内,先被SetActive了,然后紧接着用这个GameObject上的一个Mono执行StartCoroutine,会提示GameObject无法被执行,验证是否是这样的.
+而且在App切回后台之后, 协程会被暂停 如果要做一个倒计时类的功能, 绝对不呢个依赖协程, 要依赖sinceStartUp那个字段
+
 
 
 # XML文件读取逻辑
@@ -548,3 +550,5 @@ void Start()
 
 
 # Unity在Scene窗口中可以一直在一个位置点来拾取当前位置的节点 按ControlZ是可以回滚的, 防止你点过了!
+
+# 之前有记过一个创建预制体把预制体的所有节点Layer设置成UI的来让预制体打开预览的时候 根节点多了一个挂在Canvas的父节点, 那条描述是有误的, 只要让这个预制下挂载一些继承Graphic的组件, 然后只要有一个Graphic组件的父节点中没有Canvas, 那么Unity就会自动给你在跟节点层级上再生成一个挂有Canvas组件的父节点 Layer这个东西跟摄像机有关, 如果你发现你的UI层级什么的都是对的 sortingorder什么都是对的 但是UI就是显示不出来, 那么你就需要检查一个渲染UI的摄像机的渲染Layer有哪些, 以及你这个UI是不是在这个渲染层级里面
