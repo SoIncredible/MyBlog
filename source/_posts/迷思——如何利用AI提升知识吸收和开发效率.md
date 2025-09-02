@@ -9,3 +9,6 @@ description:
 swiper_index:
 sticky:
 ---
+
+
+早些时间之前, 笔者尝试从零做一个RPG游戏, 现在要拾起来, 但是在整个过程中加入AI, 是用Cursor或者ChatGPT其实没那么重要.
