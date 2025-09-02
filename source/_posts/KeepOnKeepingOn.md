@@ -112,6 +112,7 @@ https://soincredible.github.io/posts/8a8aad75
 - [Aseprite官网](https://www.aseprite.org/)
 - Cocos2d
 - Godot
+- [桌游Geek](https://boardgamegeek.com/)
 - [算法, 代码随想录不错](https://programmercarl.com/)
 - 设计模式
 - [Blender教程](https://www.bilibili.com/video/BV14u41147YH/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102)

@@ -253,7 +253,7 @@ GLAD和GLFW都是第三方库，在VSCode直接使用是没有提示的。使用
 
 ## 编写测试程序
 测试代码来自参考OpenGL教程的[HelloWindow](https://learnopengl-cn.github.io/01%20Getting%20started/03%20Hello%20Window/)章节
-```
+```cpp
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -333,7 +333,7 @@ void processInput(GLFWwindow *window)
 
 在Windows和MacOS上通用的`CMakeLists.txt`文件内容如下：
 
-```
+```CMake
 cmake_minimum_required(VERSION 3.10)
 project(HelloWindow VERSION 0.1.0)
 
