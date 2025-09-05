@@ -47,32 +47,33 @@ Unity中用到的资源文件, 本质上都是一组数据, Unity在运行时将
 # 合集
 
 [C#](https://soincredible.github.io/posts/d97e22f1)
-[Unity]()
-  - [Animation]()
-  - [资源加载管理]()
-  - [代码热更]()
-  - [网络通信]()
-  - [设计模式]()
+[C++](https://soincredible.github.io/posts/e78f9514)
+[Unity](https://soincredible.github.io/posts/127bc3c9)
+  - [Animation](https://soincredible.github.io/posts/)
+  - [资源加载管理](https://soincredible.github.io/posts/)
+  - [代码热更](https://soincredible.github.io/posts/)
+  - [网络通信](https://soincredible.github.io/posts/)
+  - [设计模式](https://soincredible.github.io/posts/)
   - [工具开发](https://soincredible.github.io/ae5b3442)
   - [性能优化]()
   - [UGUI](https://soincredible.github.io/e0e34b4b)
   - [渲染合集](https://soincredible.github.io/b20b7f63)
-  - [Shader]()
-  - [URP]()
-  - [HDRP]()
-  - [插件合集]()
-[UnrealEngine]()
-[设计模式]()
+  - [Shader](https://soincredible.github.io/posts/)
+  - [URP](https://soincredible.github.io/posts/)
+  - [HDRP](https://soincredible.github.io/posts/)
+  - [插件合集](https://soincredible.github.io/posts/)
+[UnrealEngine](https://soincredible.github.io/posts/)
+[设计模式](https://soincredible.github.io/posts/)
 [数据结构算法](https://soincredible.github.io/posts/e1a82e1)
-[渲染]()
-[建模]()
-[云服务器]()
-[计算机网络]()
-[AI]()
-[阅读]()
-[迷思]()
-[Jekins]()
-[我写的插件]()
+[渲染](https://soincredible.github.io/posts/)
+[建模](https://soincredible.github.io/posts/)
+[云服务器](https://soincredible.github.io/posts/)
+[计算机网络](https://soincredible.github.io/posts/)
+[AI](https://soincredible.github.io/posts/)
+[阅读](https://soincredible.github.io/posts/)
+[迷思](https://soincredible.github.io/posts/)
+[Jekins](https://soincredible.github.io/posts/)
+[我写的插件](https://soincredible.github.io/posts/)
 
 Obsidian + Git + Hexo + PigGo + 云服务器 + 云存储的方案 https://zhuanlan.zhihu.com/p/554333805
 图床方案 https://tbed.hellohao.cn/
@@ -189,9 +190,6 @@ https://soincredible.github.io/posts/8a8aad75
 博客收录 https://zhuanlan.zhihu.com/p/100922816
 https://javahikers.github.io/2019/06/16/personal-blog-being-included-in-google/
 
-# Unity 插件合集
-
-[vFolders 2](https://assetstore.unity.com/packages/tools/utilities/vfolders-2-255470)
 
 直接使用Mac命令行比较两个文件是否一模一样 基于hash值
 ```shell

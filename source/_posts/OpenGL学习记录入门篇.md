@@ -77,7 +77,7 @@ This function sets hints for the next call to glfwCreateWindow. The hints, once 
 
 Window hints need to be set before the creation of the window and context you wish to have the specified attributes. They function as additional arguments to glfwCreateWindow.
 
-```
+```cpp
 
 GLFWwindow * glfwCreateWindow(int width,
                             int height,
@@ -88,7 +88,7 @@ GLFWwindow * glfwCreateWindow(int width,
 ```
 This function creates a window and its associated OpenGL or OpenGL ES context. Most of the options controlling how the window and its context should be created are specified with window hints.
 
-```
+```cpp
 void glfwMakeContextCurrent	(GLFWwindow * window)
 ```
 
