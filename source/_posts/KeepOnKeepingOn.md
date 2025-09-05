@@ -13,6 +13,37 @@ Unity中用到的资源文件, 本质上都是一组数据, Unity在运行时将
 
 实现全场景可破坏 体素渲染
 
+# TODO
+
+- Unity网络游戏开发实战
+- UnityShader Kerry佬教程
+- UGUIContentSizeFitter源码阅读 做一个可以根据文本内容长度自适应长度的ContentSizeFitter
+- [UnityRender一节文档](https://docs.unity3d.com/2022.3/Documentation/Manual/Graphics.html)
+- ET源码梳理
+- Unity源码梳理 PlayerLoop中Render渲染部分的时序图
+- C# Task源码的执行时序图
+- C# yield return 协程的时序图
+- 资源校对方案整理 YooAsset、FigmaConvertToUnity、UnityAssetDatabase的资源校验
+- YooAsset源码梳理
+- LitJson源码梳理
+- OpenGL
+- Blender
+- UE
+- 游戏行业报告
+- ⭕️ 正则表达式
+- ⭕️ LinQ表达式
+- ⭕️ 场景如果打了AssetBundle是如何加载的？和普通资源一样吗？-> AssetBundle博客补全
+- ⭕️ 反编译入门
+- ⭕️ 依赖注入博客
+- ⭕️ [搞清楚Unity TextureImporter中几种压缩格式的使用](https://docs.unity3d.com/2022.3/Documentation/Manual/class-TextureImporterOverride.html)
+- ⭕️ Unity粒子系统的使用 -> UI框架博客+实现
+- ⭕️ Unity渲染管线了解
+- ⭕️ 注意到图集和散图一样,都是可以设置在不同平台上的Compress Format的,需要测试的是,即使将图集设置了合理的压缩格式,如果图集中的散图用的压缩格式不合理,还是会导致包体会大.
+- ⭕️ TimeLine插件
+- ⭕️ Cinemachine插件
+- ⭕️ 二叉树算法整理
+- ⭕️ 图算法整理
+
 # 合集
 
 [C#](https://soincredible.github.io/posts/d97e22f1)
@@ -25,7 +56,7 @@ Unity中用到的资源文件, 本质上都是一组数据, Unity在运行时将
   - [工具开发](https://soincredible.github.io/ae5b3442)
   - [性能优化]()
   - [UGUI](https://soincredible.github.io/e0e34b4b)
-  - [渲染]()
+  - [渲染合集](https://soincredible.github.io/b20b7f63)
   - [Shader]()
   - [URP]()
   - [HDRP]()
@@ -64,22 +95,6 @@ https://soincredible.github.io/posts/8a8aad75
 - [WorldStreamer](https://assetstore.unity.com/packages/tools/terrain/world-streamer-2-176482#description) 大地图加载方案
 - [UniStorm]()
 
-# TODO
-
-- 游戏行业报告
-- ⭕️ 正则表达式
-- ⭕️ LinQ表达式
-- ⭕️ 场景如果打了AssetBundle是如何加载的？和普通资源一样吗？-> AssetBundle博客补全
-- ⭕️ 反编译入门
-- ⭕️ 依赖注入博客
-- ⭕️ [搞清楚Unity TextureImporter中几种压缩格式的使用](https://docs.unity3d.com/2022.3/Documentation/Manual/class-TextureImporterOverride.html)
-- ⭕️ Unity粒子系统的使用 -> UI框架博客+实现
-- ⭕️ Unity渲染管线了解
-- ⭕️ 注意到图集和散图一样,都是可以设置在不同平台上的Compress Format的,需要测试的是,即使将图集设置了合理的压缩格式,如果图集中的散图用的压缩格式不合理,还是会导致包体会大.
-- ⭕️ TimeLine插件
-- ⭕️ Cinemachine插件
-- ⭕️ 二叉树算法整理
-- ⭕️ 图算法整理
 - [Unity面试](https://www.mmzsblog.cn/articles/2022/02/23/1645604883865.html#toc_h4_188)
 - [ARPG](https://www.bilibili.com/video/BV1sB4y1n7hg/?spm_id_from=333.1387.homepage.video_card.click&vd_source=83f4165825ce9df46cf4fd576ccb1102)
 - [Unity Animator](https://www.bilibili.com/video/BV1x44y1e7Ro/?spm_id_from=333.337.search-card.all.click&vd_source=83f4165825ce9df46cf4fd576ccb1102)
@@ -184,21 +199,3 @@ shasum filename
 ```
 
 本文标题**Keep On Keeping On**, 出自小岛秀夫死亡搁浅.
-
-
-
-
-
-
-
-
-
-
-
-
-心智
-经济
-历史
-小说
-运动健康
-工作技能
