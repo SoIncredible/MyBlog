@@ -30,6 +30,8 @@ public class PlayerEntityProperty : CharacterProperty
 
 ```
 
+在Editor中, 使用AssetDatabaseLoad上来一个SO, 通过一个对象持有它, 然后同样的操作让另一个对象持有它, 这两个对象同时修改它, 会不会冲突啊? 对这两个对象SetDirty, 然后调用AssetDatabase的Save接口, 会怎么样?
+
 # Unity项目代码正常运行但是在Rider中大量报红
 
 Rider的`solution wide analysis`组件有问题，在Unity的`Settings -> External Tools -> Regenerate project files`解决。
