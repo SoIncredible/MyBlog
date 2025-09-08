@@ -29,6 +29,8 @@ Unity中用到的资源文件, 本质上都是一组数据, Unity在运行时将
 - OpenGL
 - Blender
 - UE
+- 看到了UnityText组件的TextGenerator 对 UV 有些疑惑 推测 Unity将 Text中的字体信息传给C++层, C++层根据字体信息、文本内容 生成每个字符在字体文件材质上的位置 也就是UV 需要验证一下 可以通过在Unity层打Log或者去C++层看TextGenerator实现两种方式验证
+- Mesh SetUV的作用是什么?
 - 游戏行业报告
 - ⭕️ 正则表达式
 - ⭕️ LinQ表达式
