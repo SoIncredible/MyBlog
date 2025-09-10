@@ -13,7 +13,7 @@ sticky:
 
 # 何为IMGUI
 
- IMGUI即Immediate Mode GUI
+ IMGUI即Immediate Mode GUI 随着Unity的版本更新, Unity官方逐渐抛弃IMGUI, 转用UITookit
 # 一些疑问
 # 1. Editor GUI（OnGUI）模式
 

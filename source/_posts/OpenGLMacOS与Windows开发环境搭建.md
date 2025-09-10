@@ -1,5 +1,5 @@
 ---
-title: MacOS与WindowsOpenGL开发环境搭建
+title: OpenGLMacOS与Windows开发环境搭建
 abbrlink: fd5f8e8b
 date: 2024-12-02 19:10:32
 tags: 

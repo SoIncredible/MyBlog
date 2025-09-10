@@ -10,7 +10,7 @@ swiper_index:
 sticky:
 ---
 
-[Skynet入门](https://www.bilibili.com/video/BV19d4y1678X/?vd_source=83f4165825ce9df46cf4fd576ccb1102)
+[Skynet入门](https://www.bilibil~i.com/video/BV19d4y1678X/?vd_source=83f4165825ce9df46cf4fd576ccb1102)
 
 # 路由器的概念
 

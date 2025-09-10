@@ -1,5 +1,5 @@
 ---
-title: UnityAndroid工程包体优化
+title: Unity包体优化
 abbrlink: 279644bd
 date: 2024-11-16 11:44:23
 tags:
@@ -8,6 +8,10 @@ categories: 硬技能
 cover: https://www.notion.so/images/page-cover/met_cezanne_1890.jpg
 description:
 ---
+
+包体优化属于项目资产清理导致的一个结果,
+
+# 什么操作会影响包体
 
 # 包体构成
 
@@ -33,6 +37,8 @@ UnityResources目录下的内容都被打包进了一个unity_3d的目录下，
 # AssetBundle打包问题
 
 # 资源冗余
+
+Unity的加载是以AssetBundle为单位的.
 
 如果两个ab A和B中的一些资源都依赖了一个没有被指定要打包的资源C，那么C就会同时被打进ab A和B中，造成资源的冗余，增大ab和安装包的体积。而这个被A，B依赖的资源C又可以分为两种类型，一种是Assets下外部导入的资源，即开发者导入或创建的资源；另一种则是Unity内置的资源，例如内置的Shader，Default-Material和UGUI一些组件如Image用的一些纹理资源等等。因此要解决资源冗余的问题，就要分别对这两种被依赖的资源进行处理。
 

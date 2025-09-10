@@ -15,6 +15,7 @@ Unity中用到的资源文件, 本质上都是一组数据, Unity在运行时将
 
 # TODO
 
+- 给Hexo拓展一个功能, hexo new的时候自动从一些网站上拉取一张封面下来 然后每次部署的时候去遍历这些封面看看是否还有效, 无效的就再拉取一个新的封面
 - Unity网络游戏开发实战
 - UnityShader Kerry佬教程
 - UGUIContentSizeFitter源码阅读 做一个可以根据文本内容长度自适应长度的ContentSizeFitter

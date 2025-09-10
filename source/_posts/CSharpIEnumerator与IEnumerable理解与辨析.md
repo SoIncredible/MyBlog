@@ -1,5 +1,5 @@
 ---
-title: IEnumerator与IEnumerable理解与辨析
+title: C#IEnumerator与IEnumerable理解与辨析
 tags:
   - C#
 categories: 学习笔记
