@@ -161,6 +161,10 @@ Unity的AssetDataBase接口里面的GetAllDependency接口，在获取一个资�
 
 Sprite和Sprite Atlas是两个类，他们中具有一些图片信息的数据成员，他们不是真的“图片”！而Texture才是真正的图片，因此在MemoryProfiler中你可以看到SpriteAtlas和Sprite类外加真正的图片Texture被加载到内存中
 
+# 关于Unity中Texture的Inspector窗口中的导入格式
+
+ASTC什么4x4之类的 数的含义 是怎么算的 在内存里是怎么展开的 受内存对齐的影响 一个非2的n次幂的图会被扩成2的n次幂 图在内存里其实就是一个二维的数组
+
 # 参考资料
 
 - https://blog.csdn.net/yinfourever/article/details/109493160
