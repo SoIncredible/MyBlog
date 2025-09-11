@@ -315,6 +315,65 @@ b) 或者在背后自动将你的NPOT纹理放大到下一个更大的POT尺寸�
 **是的，如果您不需要Mipmaps，并且目标平台是现代GPU，那么您应该毫不犹豫地使用NPOT纹理。**
 
 这不仅是允许的，更是一种**优化资源使用、简化工作流程**的最佳实践。您例子中的1280x511纹理就是一个非常好的、高效的尺寸。
+
+你发现得很准确，**在Unity的Texture Import Settings里，Non Power of 2（NPOT）选项只在Texture Type为Default时才可见，而Sprite类型时则没有这个选项。**  
+这个现象背后，其实涉及Unity底层资源管理和渲染优化的机制。
+
+---
+
+## 1. 为什么会有 Non Power of 2 选项？
+
+- 图像的长宽如果是2的幂（如128, 256, 512, ...），称为**Power of 2（POT）**
+- 很多老的显卡或平台（比如WebGL），对素材要求POT尺寸，否则GPU不能高效压缩/采样或用mipmap。
+- **NPOT（非2的幂）贴图**在一些情况下Unity需要决定怎么自动“补齐”或压缩它 —— 所以有这个选项（None, ToNearest, ToLarger, ToSmaller, 等）
+
+---
+
+## 2. 为什么 Sprite 没有这个选项？
+
+### Sprite在Unity里的作用和工作方式：
+
+- Sprite主要用于2D游戏（精灵动画、UI图标等）
+- **Sprite并不需要mipmap、三维采样、复杂的压缩和过滤**
+- Sprite在渲染时一般不会用到纹理平铺、贴图重复等高级GPU功能（用的是Canvas或SpriteRenderer）
+
+### Unity对Sprite资源管理方式：
+
+- Unity强制直接加载原始尺寸，不经过自动补齐，因为**Sprite用途下(2D)，绝大部分情况下不需要优化为POT**
+- 此外，Unity的Sprite Atlas或Packing机制，会自动打包分割纹理，更加灵活地处理NPOT的问题
+- **你如果把NPOT贴图设置为Sprite，Unity就是无限制地支持原始尺寸，不显示也不允许调整NPOT方式**
+
+### 而Default类型：
+
+- 适合3D模型、Shader贴图、UI材质等，这些场景往往需要mipmap、压缩采样等，POT优化很重要
+- 所以Default类型纹理才需要NPOT选项
+
+---
+
+## 3. 官方参考出处
+
+Unity官方[文档](https://docs.unity3d.com/Manual/NPOTTextures.html)有明确说明：
+
+> “Note that NPOT settings only apply when the Texture Type is set to Default. For Texture Types like Sprite, Unity always imports and keeps the original size of the texture.”
+
+---
+
+## 4. 快速结论
+
+- **Sprite类型：只关心2D渲染，Unity总是保留原图尺寸，无需GPU压缩POT对齐，所以没有NPOT选项**
+- **Default类型：用于3D纹理、需要mipmap等，对POT有优化需求，所以才有NPOT选项来决定如何处理非2的幂尺寸的贴图**
+
+---
+
+### 总结一句：
+
+> **只有Default类型贴图才需要“NPOT修正”选项，Sprite类型总是用原图尺寸，不做补齐和压缩，所以没有该选项。**
+
+---
+
+你如果想做特殊用途（比如UI里用mipmap贴图、特殊压缩、GPU滤镜），应该用Default类型而非Sprite！  
+如还想问关于Compress格式、mipmap、贴图类型细节，随时欢迎继续！
+
 # 参考资料
 
 - https://blog.csdn.net/yinfourever/article/details/109493160
