@@ -195,7 +195,7 @@ private IEnumerator LoadAsync(string path){
 }
 ```
 
-编译器在背后就会把`AssetBundle.LoadFromFileAsync(path)`返回的`AsyncOperation`实例列为要迭代的元素. 魔法就发生在MonoBehaviour每一帧Update之后对迭代器的迭代操作中, 有可能会先判断这个`AsyncOperation`元素中的`isDone`字段, 然后再决定是否要执行MoveNext方法, 以下是笔者的猜测`MonoBehaviour`中执行的伪代码:
+编译器在背后就会把`AssetBundle.LoadFromFileAsync(path)`返回的`AsyncOperation`实例列为要迭代的元素. 魔法就发生在MonoBehaviour每一帧Update之后对迭代器的迭代操作中, 有可能会先判断这个`AsyncOperation`元素中的`isDone`字段, 然后再决定是否要执行`MoveNext`方法, 以下是笔者的猜测`MonoBehaviour`中执行的伪代码:
 
 ```C#
 class MyMonoBehaviour
