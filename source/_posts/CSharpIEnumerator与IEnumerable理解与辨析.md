@@ -68,6 +68,36 @@ yield关键字用来声明序列中的下一个值或者是一个无意义的值
 
 根据定义，Microsoft .NET Framework集合是至少可以实现`IEnumerable<T>`（或非泛型IEnumerable类型）的类，此接口至关重要，因为至少必须实现`IEnumerable<T>`的方法，才支持迭代集合。
 
+```C#
+ public void X(){
+    var list = new List<int>();
+    foreach(var item in list){
+            
+    }
+}
+```
+
+通过SharpLab可以看到foreach的实际逻辑
+
+```C#
+public void X()
+{
+    List<int> list = new List<int>();
+    List<int>.Enumerator enumerator = list.GetEnumerator();
+    try
+    {
+        while (enumerator.MoveNext())
+        {
+            int current = enumerator.Current;
+        }
+    }
+    finally
+    {
+        ((IDisposable)enumerator).Dispose();
+    }
+}
+```
+
 foreach语法十分简单，开发者无需知道元素数量，避免编码过于复杂。不过，运行时`Runtime`不直接支持foreach语句。C#编译器会转换代码，接下来会对此部分进行介绍：
 
 foreach和数组：下面展示了简单的foreach循环，用于迭代整数数组，然后将每个整数打印输出到控制台中：

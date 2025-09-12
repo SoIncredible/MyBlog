@@ -11,4 +11,4 @@ sticky:
 ---
 
 
-[行尸走油]()
+[还原《塞尔达-旷野之息》的草地](https://walkingfat.com/%e8%bf%98%e5%8e%9f%e3%80%8a%e5%a1%9e%e5%b0%94%e8%be%be%e3%80%8b%e7%9a%84%e8%8d%89%e5%9c%b0/)
