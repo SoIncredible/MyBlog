@@ -167,6 +167,350 @@ Coroutine中会持有m_Current字段, 然后通过如下的接口判断m_Current
 代码如下:
 
 ```c++
+#include "UnityPrefix.h"
+
+#include "Coroutine.h"
+
+#include "Runtime/Misc/AsyncOperation.h"
+#include "Runtime/Mono/MonoBehaviour.h"
+#include "Runtime/Mono/MonoScript.h"
+#include "Runtime/Mono/MonoIncludes.h"
+#include "Runtime/Mono/MonoManager.h"
+#include "Runtime/GameCode/CallDelayed.h"
+#include "Runtime/Scripting/ScriptingUtility.h"
+#include "Runtime/ScriptingBackend/ScriptingApi.h"
+#include "Runtime/Scripting/ScriptingObjectWithIntPtrField.h"
+
+#if UNITY_IPHONE_API
+# include "Runtime/Input/OnScreenKeyboard.h"
+#endif
+
+#include "Runtime/ScriptingBackend/ScriptingApi.h"
+
+// copied from MonoBehaviour.cpp
+// if they should be synced - blame the author not me ;-)
+#define DEBUG_COROUTINE 0
+#define DEBUG_COROUTINE_LEAK 0
+
+Coroutine::Coroutine()
+    : m_DoneRunning(false)
+    , m_CoroutineEnumeratorGCHandle()
+    , m_IsIEnumeratorCoroutine(false)
+{
+    #if DEBUG_COROUTINE
+    static int coroutineCounter = 0;
+    coroutineCounter++;
+    printf_console("Allocating coroutine %d --- %d : 0x%x\n", this, coroutineCounter, &m_RefCount);
+    #endif
+}
+
+Coroutine::~Coroutine()
+{
+    Assert(!m_CoroutineEnumeratorGCHandle.HasTarget());
+
+    #if DEBUG_COROUTINE
+    printf_console("Deconstructor coroutine %d\n", this);
+    #endif
+}
+
+void Coroutine::SetMoveNextMethod(ScriptingMethodPtr method)
+{
+    m_MoveNext = method;
+}
+
+void Coroutine::SetCurrentMethod(ScriptingMethodPtr method)
+{
+    m_Current = method;
+}
+
+CallObjectState Coroutine::ContinueCoroutine(Object* o, void* userData)
+{
+    Coroutine* coroutine = (Coroutine*)userData;
+    Assert(coroutine->m_RefCount > 0 && coroutine->m_RefCount < 1000000);
+
+    if ((Object*)coroutine->m_Behaviour != o)
+    {
+        ErrorString("Coroutine continue failure");
+        #if DEBUG_COROUTINE
+        if ((Object*)coroutine->m_Behaviour != o)
+        {
+            printf_console("continue Coroutine corruption %d refcount: %d behaviour: %d \n", coroutine, coroutine->m_RefCount, coroutine->m_Behaviour);
+            printf_console("continue Coroutine corruption name: %s methodname\n", ((MonoBehaviour*)(o))->GetScript()->GetName());
+            if (!coroutine->m_CoroutineMethod.IsNull())
+                printf_console("continue Coroutine methodname: %s\n", scripting_method_get_name(coroutine->m_CoroutineMethod));
+        }
+        #endif
+        return kCallObjectAlive;
+    }
+
+    return coroutine->Run();
+}
+
+CallObjectState Coroutine::CleanupCoroutine(void* userData)
+{
+    Coroutine* coroutine = (Coroutine*)userData;
+    Assert(coroutine->m_RefCount > 0);
+    Assert(coroutine->m_RefCount <= 1000000);
+    coroutine->m_RefCount--;
+
+    #if DEBUG_COROUTINE
+    printf_console("decrease refcount %d - active: %d \n", coroutine, coroutine->m_RefCount);
+    #endif
+
+    if (coroutine->m_RefCount > 0)
+        return kCallObjectAlive;
+
+    coroutine->m_DoneRunning = true;
+
+    #if DEBUG_COROUTINE
+    printf_console("CleanupCoroutine %d\n", coroutine);
+    if (coroutine->m_Behaviour && GetDelayedCallManager().HasDelayedCall(coroutine->m_Behaviour, Coroutine::ContinueCoroutine, CompareCoroutineMethodName, coroutine))
+    {
+        printf_console("CORRUPTION is still in delayed call manager%d!\n", coroutine->m_Behaviour);
+    }
+    #endif
+
+    if (coroutine->m_ContinueWhenFinished)
+    {
+        CleanupCoroutine(coroutine->m_ContinueWhenFinished);
+        coroutine->m_ContinueWhenFinished = NULL;
+    }
+
+    if (coroutine->m_WaitingFor)
+    {
+        coroutine->m_WaitingFor->m_ContinueWhenFinished = NULL;
+        //Set the WaitingFor variable to NULL. Otherwise it might happen that a coroutine is cleaned up because another coroutine has it set as its m_ContinueWhenFinished.
+        //If then this coroutine is cleaned up using MonoBehaviour::StopCoroutine, it will be cleaned up again and trigger asserts
+        coroutine->m_WaitingFor = NULL;
+    }
+
+    coroutine->RemoveFromList();
+
+    if (coroutine->m_AsyncOperation)
+    {
+        coroutine->m_AsyncOperation->SetCoroutineCallback(NULL, NULL, NULL, NULL);
+        coroutine->m_AsyncOperation->Release();
+        coroutine->m_AsyncOperation = NULL;
+    }
+
+    Assert(coroutine->m_CoroutineEnumeratorGCHandle.HasTarget());
+    coroutine->m_CoroutineEnumeratorGCHandle.ReleaseAndClear();
+
+    if (!coroutine->m_IsReferencedByMono)
+    {
+        delete coroutine;
+
+        #if DEBUG_COROUTINE_LEAK
+        gCoroutineCounter--;
+        #endif
+        return kCallObjectDestroyed;
+    }
+
+    return kCallObjectAlive;
+}
+
+void Coroutine::CleanupCoroutineGC(void* userData)
+{
+    Coroutine* coroutine = (Coroutine*)userData;
+    if (!coroutine->m_IsReferencedByMono)
+        return;
+
+    if (coroutine->m_RefCount != 0)
+    {
+        coroutine->m_IsReferencedByMono = false;
+        return;
+    }
+
+    ErrorIf(coroutine->IsInList());
+
+    delete coroutine;
+
+    #if DEBUG_COROUTINE
+    printf_console("GC free coroutine: %d\n", coroutine);
+    #endif
+
+    #if DEBUG_COROUTINE_LEAK
+    gCoroutineCounter--;
+    #endif
+}
+
+bool Coroutine::CompareCoroutineMethodName(void* callBackUserData, void* cancelUserdata)
+{
+    Coroutine* coroutine = (Coroutine*)callBackUserData;
+    if (coroutine->m_CoroutineMethod.IsNull())
+        return false;
+
+    return strcmp(scripting_method_get_name(coroutine->m_CoroutineMethod), (const char*)cancelUserdata) == 0;
+}
+
+static bool ScriptingObjectPtrsEqual(ScriptingObjectPtr o1, ScriptingObjectPtr o2)
+{
+#if ENABLE_DOTNET
+    return WinRT::Bridge::GetUtils()->CompareObjects(o1, o2);
+#else
+    return o1 == o2;
+#endif
+}
+
+bool Coroutine::CompareCoroutineEnumerator(void* callBackUserData, void* cancelUserdata)
+{
+    Coroutine* coroutine = (Coroutine*)callBackUserData;
+    if (!coroutine->m_CoroutineEnumeratorGCHandle.HasTarget())
+        return false;
+
+    ScriptingObjectPtr* handle = (ScriptingObjectPtr*)cancelUserdata;
+    if (!handle)
+        return false;
+
+    if (ScriptingObjectPtrsEqual(coroutine->m_CoroutineEnumeratorGCHandle.Resolve(), *handle))
+        return true;
+
+    if (!coroutine->m_IsIEnumeratorCoroutine)
+        return false;
+
+    if (coroutine->m_ContinueWhenFinished == NULL)
+        return false;
+
+    return ScriptingObjectPtrsEqual(coroutine->m_ContinueWhenFinished->m_CoroutineEnumeratorGCHandle.Resolve(), *handle);
+}
+
+bool Coroutine::CompareCoroutineDirect(void* callBackUserData, void* cancelUserdata)
+{
+    Coroutine* callBackCoroutine = (Coroutine*)callBackUserData;
+    Coroutine* cancelCoroutine = (Coroutine*)cancelUserdata;
+
+    if (callBackCoroutine == cancelCoroutine)
+        return true;
+
+    if (!callBackCoroutine->m_IsIEnumeratorCoroutine)
+        return false;
+
+    if (callBackCoroutine->m_ContinueWhenFinished == NULL)
+        return false;
+
+    return callBackCoroutine->m_ContinueWhenFinished == cancelCoroutine;
+}
+
+bool Coroutine::InvokeMoveNext(ScriptingExceptionPtr* exception)
+{
+    bool result = false;
+    ScriptingInvocation invocation(GetCoreScriptingClasses().invokeMoveNext);
+    invocation.AddObject(m_CoroutineEnumeratorGCHandle.Resolve());
+    invocation.AddIntPtr(&result);
+    invocation.classContextForProfiler = m_Behaviour->GetClass();
+    invocation.methodContextForProfiler = m_MoveNext;
+    invocation.objectInstanceIDContextForException = m_Behaviour->GetInstanceID();
+    invocation.Invoke(exception);
+    return result && *exception == SCRIPTING_NULL;
+}
+
+CallObjectState Coroutine::Run(bool *exceptionThrown)
+{
+    Assert(m_RefCount != 0);
+    Assert(m_Behaviour != NULL);
+
+    #if DEBUG_COROUTINE
+    Assert(!GetDelayedCallManager().HasDelayedCall(m_Behaviour, Coroutine::ContinueCoroutine, CompareCoroutineMethodName, this));
+    if (m_Behaviour == NULL)
+    {
+        printf_console("Coroutine error %d refcount: %d behaviour%d\n", this, m_RefCount, m_Behaviour);
+    }
+    #endif
+
+    // - Call MoveNext (This processes the function until the next yield!)
+    // - Call Current (This returns condition when to continue the coroutine next.)
+    //   -> Queue it based on the continue condition
+
+    // Temporarily increase refcount so the object will not get destroyed during the m_MoveNext call
+    m_RefCount++;
+    ScriptingExceptionPtr exception = SCRIPTING_NULL;
+    bool keepLooping = InvokeMoveNext(&exception);
+    Assert(m_RefCount > 0 && m_RefCount <= 10000000);
+
+    bool coroutineWasDestroyedDuringMoveNext = m_RefCount == 1;
+    Coroutine* continueWhenFinished = m_ContinueWhenFinished;
+    // Decrease temporary refcount so the object will not get destroyed during the m_MoveNext call
+    CleanupCoroutine(this);
+
+    // The coroutine has been destroyed in the mean time, probably due to a call to StopAllCoroutines, stop executing further
+    if (coroutineWasDestroyedDuringMoveNext)
+    {
+        Assert(continueWhenFinished == NULL);
+        return kCallObjectDestroyed;
+    }
+
+    if (exceptionThrown)
+        *exceptionThrown = exception != SCRIPTING_NULL;
+
+    if (exception != SCRIPTING_NULL)
+        return kCallObjectAlive;
+
+    // Are we done with this coroutine?
+    if (!keepLooping)
+    {
+        // If there is a coroutine waiting for this one to finish Run it!
+        if (m_ContinueWhenFinished)
+        {
+            Assert(this == m_ContinueWhenFinished->m_WaitingFor);
+            Coroutine* continueWhenFinished = m_ContinueWhenFinished;
+            m_ContinueWhenFinished->m_WaitingFor = NULL;
+            m_ContinueWhenFinished = NULL;
+            // The coroutine might have been stopped inside of the last coroutine invokation
+            if (continueWhenFinished->m_Behaviour)
+            {
+                // If the continuation coroutine yields waiting for this coroutine, it must know that this coroutine is finished
+                m_DoneRunning = true;
+                continueWhenFinished->Run();
+            }
+            CleanupCoroutine(continueWhenFinished);
+        }
+
+        return kCallObjectAlive;
+    }
+
+    if (m_Behaviour == NULL)
+        return kCallObjectAlive;
+
+    ProcessCoroutineCurrent();
+
+    return kCallObjectAlive;
+}
+
+void Coroutine::ProcessCoroutineCurrent()
+{
+    ScriptingExceptionPtr exception = SCRIPTING_NULL;
+
+    ScriptingInvocation invocation(m_Current);
+    invocation.objectInstanceIDContextForException = m_Behaviour->GetInstanceID();
+    invocation.classContextForProfiler = m_Behaviour->GetClass();
+
+#if !ENABLE_DOTNET
+    ScriptingClassPtr methodKlass = scripting_method_get_class(m_Current);
+    if (scripting_class_is_valuetype(methodKlass))
+        invocation.SetTarget(scripting_object_unbox(m_CoroutineEnumeratorGCHandle.Resolve()));
+    else
+#endif
+    {
+        invocation.SetTarget(m_CoroutineEnumeratorGCHandle.Resolve());
+    }
+
+    ScriptingObjectPtr monoWait = invocation.Invoke(&exception);
+
+    Assert(m_RefCount > 0 && m_RefCount <= 10000000);
+
+    if (exception != SCRIPTING_NULL)
+        return;
+
+    if (monoWait == SCRIPTING_NULL)
+    {
+        m_RefCount++;
+        CallDelayed(ContinueCoroutine, m_Behaviour, 0.0F, this, 0.0F, CleanupCoroutine, DelayedCallManager::kRunDynamicFrameRate | DelayedCallManager::kWaitForNextFrame);
+        return;
+    }
+
+    HandleIEnumerableCurrentReturnValue(monoWait);
+}
+
 void Coroutine::HandleIEnumerableCurrentReturnValue(ScriptingObjectPtr monoWait)
 {
     AsyncOperation* async = NULL;
@@ -296,6 +640,7 @@ void Coroutine::HandleIEnumerableCurrentReturnValue(ScriptingObjectPtr monoWait)
     CallDelayed(ContinueCoroutine, m_Behaviour, 0.0F, this, 0.0F, CleanupCoroutine, DelayedCallManager::kRunDynamicFrameRate | DelayedCallManager::kWaitForNextFrame);
     //Ext_MarshalMap_Release_ScriptingObject(monoWait);//RH TODO : RELEASE THE MONOWAIT OBJECTS SOMEWHERE
 }
+
 ```
 
 C++到C#的理解有些难度, 我们可以实现一个纯C#的协程:
