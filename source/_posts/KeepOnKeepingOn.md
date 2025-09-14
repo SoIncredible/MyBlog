@@ -105,6 +105,7 @@ https://soincredible.github.io/posts/8a8aad75
 - [街霸导论](https://www.bilibili.com/opus/904636480410877954)
 
 # 资源
+- [Perl语言教程](https://qntm.org/perl_cn)
 - [一个能在线查看经过C#编译器处理过后C#代码的网站](https://sharplab.io/)
 - [C#源码](https://referencesource.microsoft.com/) 2025.7.18 这个网站挂掉了https://sourceroslyn.io/
 - [Mac安装Windows虚拟机](https://zhuanlan.zhihu.com/p/452412091)
