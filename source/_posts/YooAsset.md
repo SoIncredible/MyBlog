@@ -140,3 +140,39 @@ private BundleInfo CreateBundleInfo(PackageBundle packageBundle)
    return ConvertToDownloadInfo(packageBundle);
 }
 ```
+
+# 复述一下YooAsset构建bundle的过程
+
+
+# YooAssetCollector里面的Group的含义是什么? 已经有collector了, 已经可以实现针对不同的路径使用不同的打bundle策略了, 我能想到的Group的作用是在不同的平台上使用不同的Group
+
+
+# 下面两者的区别 同步和异步的接口都是一样的, 只是传入的参数不一样 怎么做到的
+
+```C#
+/// <summary>
+/// 同步加载资源对象
+/// </summary>
+/// <typeparam name="TObject">资源类型</typeparam>
+/// <param name="location">资源的定位地址</param>
+public AssetHandle LoadAssetSync<TObject>(string location) where TObject : UnityEngine.Object
+{
+   DebugCheckInitialize();
+   AssetInfo assetInfo = ConvertLocationToAssetInfo(location, typeof(TObject));
+   return LoadAssetInternal(assetInfo, true, 0);
+}
+
+
+/// <summary>
+/// 异步加载资源对象
+/// </summary>
+/// <typeparam name="TObject">资源类型</typeparam>
+/// <param name="location">资源的定位地址</param>
+/// <param name="priority">加载的优先级</param>
+public AssetHandle LoadAssetAsync<TObject>(string location, uint priority = 0) where TObject : UnityEngine.Object
+{
+   DebugCheckInitialize();
+   AssetInfo assetInfo = ConvertLocationToAssetInfo(location, typeof(TObject));
+   return LoadAssetInternal(assetInfo, false, priority);
+}
+```
