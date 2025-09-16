@@ -818,3 +818,5 @@ public struct Info{
 
 https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/
 
+
+# C#Stopwatch
