@@ -10,6 +10,8 @@ swiper_index:
 sticky:
 ---
 
+初看Unity的PlayerLoop逻辑, 像是在业务开发中常用的事件中心的编程模型类似
+
 ```c++
 void PlayerLoop()
 {
