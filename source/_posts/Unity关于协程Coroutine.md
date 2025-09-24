@@ -634,5 +634,5 @@ public class TestCoroutine : MonoBehaviour
 
 我个人感觉这和直接写在Update中没有任何区别啊，这样写难道有什么别的好处么？🥲不过这样确实也达到了连续渐变的效果。
 > 2025.5.10更新
-> 这段实现方式以笔者现在的水平来看确实是要优于前两者的. 首先WaitForSecond会造成额外开销, 而协程会在每一帧Update之后、LateUpdate之前执行, 使用`Time.deltaTime`是合理的. 其次, 在`Update()`方法里面做颜色渐变有点大材小用的感觉了. 说不上来.
+> 这段实现方式以笔者现在的水平来看确实是要优于前两者的. 首先WaitForSecond会造成额外开销, 而协程会在每一帧Update之后、LateUpdate之前执行, 使用`Time.deltaTime`是合理的. 其次, 在`Update()`方法里面做颜色渐变很蠢, Update只要这个Mono存在就会每帧执行, 做一个渐变效果要每一次Update里都要判断简便要不要执行是很cumbersome的.
 

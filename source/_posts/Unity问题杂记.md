@@ -402,6 +402,16 @@ RectTransformUtility.ScreenPointToLocalPointInRectangle接口
 有一类需求, 会出一个按钮, 向左的, 然后要你水平翻转一下变成向右的 注意要用RectTransform的scale 不要用Rotation 因为Rotation会把这个图片的正面反转的背离摄像机 这样射线就检测不到这个图片了
 
 
+Unity控制台输出过多不显示的解决方案
+有时候编译Unity项目的时候有错误，查看错误的时候控制台输出<message truncated>，是因为输出信息过长显示不下，于是就被截断了的原因。
+
+这时如果想看完整的错误信息，可以去查找Editor.log来查看日志。
+
+这个文件在每个系统上的路径不一致，具体如下：
+
+Mac osx:  ~/Library/Logs/Unity/Editor.log
+Windows xp: C:\Documents and Settings\username\Local Settings\Application Data_\Unity\Editor\Editor.log
+Windows vista/7/8/10: C:\Users(用户)\username\AppData\Local\Unity\Editor\Editor.log
 
 [Unity控制台输出过多不显示的解决方案](https://www.cnblogs.com/tian98/p/15623292.html)
 
