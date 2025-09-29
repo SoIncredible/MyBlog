@@ -589,3 +589,7 @@ void Start()
 # 问题
 
 有些Android手机设置帧率120HZ但是实际上达不到的问题https://answer.uwa4d.com/question/64e7779266b5c657c78be192
+
+
+# Android真机连接Unity Profiler
+https://blog.csdn.net/Czhenya/article/details/87877398

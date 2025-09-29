@@ -60,8 +60,6 @@ localPosition的含义是当前RectTransform的pivot相对于该RectTransform的
 在Unity源码中 搜 localIdentifierInFile
 
 
-
-
 BuildSerialization.cpp
 ```c++
 static void ConvertSceneObjectsToInstanceIDBuildRemap(const core::string& path, const WriteDataArray& sceneObjects, InstanceIDBuildRemap& output)
@@ -88,3 +86,92 @@ ResourceManager.cpp中的void BuiltinResourceManager::InitializeResources()方�
 下面这段代码, 推测应该是Unity给资产生成FileId的逻辑
 明天验证一下 对于大部分的FBX中的mesh资源, 他们应该都是叫同样的名字, 又因为他们都是mesh, 所以传入的参数一样, 所以在meta文件中, 你可以看到, 即便是引用了不同的fbx的mesh, 变的只有guid, fileid都是一样了 
 明天验证一下, 两个mesh名不一样的fbx, 应该fileId就会不一样, 而且改了mesh的名字, fileId的名字也就会跟着变
+
+
+# 说说RectTransform中的更新逻辑
+
+```c++
+void RectTransform::InitializeClass()
+{
+    RegisterAllowNameConversion(TypeOf<RectTransform>()->GetName(), "m_Position", "m_AnchoredPosition");
+
+    REGISTER_MESSAGE(kTransformChanged, OnTransformChanged, int);
+
+    InitializeRectTransformAnimationBindingInterface();
+}
+
+void RectTransform::OnTransformChanged(int mask)
+{
+    // If reparenting then simply dirty the rectangle.
+    if (mask & Transform::kParentingChanged)
+    {
+        UpdatePosAndRectRecursive();
+        return;
+    }
+
+    // Only update if transform position changed.
+    if (!(mask & Transform::kPositionChanged))
+        return;
+
+    // Don't process rect-updates otherwise we'll get infinite recursion.
+    // Don't process parent-changes as these will come from the prefab-merging code when it is dealing with sibling positioning which causes positioning issues.
+    if (mask & (Transform::kDontUpdateRect | Transform::kSiblingOrderChanged))
+        return;
+
+    Vector3f targetLocalPosition = GetLocalPosition();
+    Vector2f rectLocalPosition = CalculateLocalPosition2();
+    Vector2f anchoredPosition = Vector2f(m_AnchoredPosition.x + targetLocalPosition.x - rectLocalPosition.x, m_AnchoredPosition.y + targetLocalPosition.y - rectLocalPosition.y);
+
+    if (mask & Transform::kReceivedDueToCameraTRSChanged)
+        SetAnchoredPositionWithoutNotification(anchoredPosition);
+    else
+        SetAnchoredPosition(anchoredPosition);
+}
+
+void RectTransform::UpdatePosAndRectRecursive(bool sendTransformChange, const Rectf* forceRect)
+{
+    UInt32 changeMask = 0;
+
+    if (forceRect)
+    {
+        if (m_CachedRect != *forceRect)
+        {
+            changeMask |= kLocalRectChanged;
+            m_CachedRect = *forceRect;
+        }
+    }
+    else
+    {
+        changeMask = UpdatePosAndRect(sendTransformChange);
+    }
+
+    if (changeMask & kLocalPositionChange)
+    {
+        if (sendTransformChange)
+            SendTransformChanged(Transform::kPositionChanged | Transform::kDontUpdateRect);
+    }
+
+    // Recursively update the cached rect if the local rect has changed
+    if (changeMask & kLocalRectChanged)
+    {
+        int childCount = GetChildrenCount();
+        for (int i = 0; i < childCount; i++)
+        {
+            Transform& child = GetChild(i);
+            RectTransform* childRect = dynamic_pptr_cast<RectTransform*>(&child);
+            if (childRect != NULL)
+            {
+                childRect->UpdatePosAndRectRecursive(sendTransformChange);
+            }
+        }
+
+
+        if (sendTransformChange)
+        {
+            // LocalPosition or local Rect has changed, all geometry must be recomputed.
+            // We send the message kOnRectTransformDimensionsChange  to children first, and then to their parents and so on.
+            SendMessage(kOnRectTransformDimensionsChange);
+        }
+    }
+}
+```
