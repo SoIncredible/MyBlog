@@ -52,4 +52,9 @@ $
 $\mathbf{D} =\left( \begin{array}{ccc}d_1&\ldots & \ldots \\\\\ldots & d_{2} & \ldots \\\\\vdots & \vdots & \ddots\end{array} \right)
 $
 `
+- thea角 $\theta$ `$\theta$`
 
+# 参考资料
+
+[在线LaTex生成器](https://www.latexlive.com/)
+https://www.overleaf.com/learn/latex/List_of_Greek_letters_and_math_symbols
