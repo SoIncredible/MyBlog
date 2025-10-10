@@ -176,3 +176,5 @@ public AssetHandle LoadAssetAsync<TObject>(string location, uint priority = 0) w
    return LoadAssetInternal(assetInfo, false, priority);
 }
 ```
+
+YooAsset的静态打包方式可以用来预放置一些资源, 虽然这些资源在当前版本没有被引用, 但是有可能在未来会被引用到, 之后新版本上线了之后, 这个资源可以不用被热更了, 省去了热更的开销
