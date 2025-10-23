@@ -11,6 +11,9 @@ cover: https://www.notion.so/images/page-cover/met_arnold_bocklin_1880.jpg
 description: 熟悉Rider搭配Unity开发
 ---
 
+> 2025.10.13更新
+> Unity现在的重定向已经十分恶心了, 笔者只有挂了美国的节点才能够访问到国际版的Unity官网, 如果使用UnityHub下载UnityEditor的方式的话, 下载全程都必须挂着美国的节点, 不然NDK、JDK这些东西都下载不下来.
+
 # 本文记录的问题
 
 [解决M1Mac “无法打开应用，因为Apple无法检查其是否包含恶意软件” 的问题](#1)

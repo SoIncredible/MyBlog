@@ -36,7 +36,7 @@ sticky:
 
 - 首先创建好本地项目和远端的仓库，在Asset下创建一个文件夹作为Package的根路径，依次创建好：`README`、`CHANGELOG`、`LICENSE`和`package.json`文件。
 - 编写package.json信息
-  ```
+  ```json
   {
   "name": "com.eddielee.candle-gameframework",
   "displayName": "Candle Game Framework",
