@@ -176,7 +176,7 @@ Markdown All in One
 ### 智能提示
 
 GLAD和GLFW都是第三方库，在VSCode直接使用是没有提示的。使用Mac上的 `Shift + CMD + P` 或者 Windows上的 `Shift + Control + P` 在弹出的搜索栏中输入`C/C++:Edit Configurations(JSON)`，会新建如下Json文件：
-```
+```json
 {
     "configurations": [
         {
