@@ -237,6 +237,10 @@ svn commit -m "撤销r130提交内容"
 svn merge -c -130 .
 svn commit -m "撤销第130次提交"
 
+# SVN插件一直弹出Authoration Required窗口
+
+要你什么证书, 看一下是仓库的路径填的有问题. 改一下仓库的路径就可以!
+
 # SVN查看当前Revision
 ```shell
 svn info
