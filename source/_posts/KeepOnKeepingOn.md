@@ -127,6 +127,7 @@ https://soincredible.github.io/posts/8a8aad75
 - Android
 - [IOS开发](https://developer.apple.com/documentation/)
 - [OpenGL学习](https://learnopengl-cn.github.io/intro/)
+- [LearnOpenGL里面提到的学习资源](http://www.lighthouse3d.com/tag/shaders/)
 - 游戏逆向
 - [Unreal谌嘉诚的蓝图教程不错](https://www.bilibili.com/cheese/play/ss32685?csource=Hp_searchresult&spm_id_from=333.337.0.0)
 - [Aseprite官网](https://www.aseprite.org/)
