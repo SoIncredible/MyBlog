@@ -543,3 +543,8 @@ void Start()
 
 # Android真机连接Unity Profiler
 https://blog.csdn.net/Czhenya/article/details/87877398
+
+# Atlas与AssetBundle的问题
+ 
+atlas与原图不打到一个bundle里面, 会发生图集错乱的问题
+atlas中包含了多个文件夹下的图片, 打bundle的时候如果多个文件夹没有被打到一个bundle里, atlas会被多次打到不同的bundle里, 也会导致图集错乱问题
